@@ -26,6 +26,9 @@ from oledlife.dmx import *
 
 
 
+DEFAULT_MODE = MODE.glider
+
+
 ## MAIN ########################################################################
 
 
@@ -59,7 +62,8 @@ def main(modename, device, preview, step, blend, invert, gain, **params):
     try:
         mode = MODE(modename)
     except ValueError as x:
-        usage()
+        pass
+#        usage()
     
     try:
         mode = Mode.Init(modename,step)
@@ -157,26 +161,17 @@ def quit(sig,frame):
 
 
 
-################################################################################
-## MODE
     
 
 
-DEFAULT_MODE = MODE.glider
 
 
 
-HELP = { m:m.name for m in list(MODE) } 
-HELP[MODE.fyi ] = "show FYI logo"
-HELP[MODE.glider ] = "two gliders"
-HELP[MODE.draft] = "quick n dirty"
-HELP[MODE.test]    = "test patterns"
-#HELP[MODE.random ] = "random pattern"
 
 
 
-################################################################################
-## PARAMS
+## PARAMS ######################################################################
+    
     
     
 
@@ -234,7 +229,7 @@ def usage():
 
     log("## Modes")
     for k in MODE:
-        log("  {:8} {:15}    {}".format(k.name,"",HELP[k]))
+        log("  {:8} {:15}    {}".format(k.name,"",""))
     log("")
 
     exit(-1)

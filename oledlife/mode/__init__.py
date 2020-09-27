@@ -54,7 +54,7 @@ class Mode(dlMode):
         try:
             cls = __import__("oledlife.mode."+str(mode), fromlist=[''])
         except ModuleNotFoundError as x:   # ??
-            error("module {} not found: {}".format(mode,str(x)))
+#            error("module {} not found: {}".format(mode,str(x)))
             raise Error("module {} not found".format(mode))
         except Exception as x:
             raise Error("mode {} imported exception: {}".format(mode,str(x)))
