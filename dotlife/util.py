@@ -1,14 +1,11 @@
 
 import logging, subprocess, pprint, re
-import enum
 
 
+from enum import Enum
 
 
 from dotlife.about import NAME
-
-def debugable(): 
-    return logging.getLogger(NAME).level <= logging.DEBUG
 
 def debug(s): 
     for l in s.split("\n"): logging.getLogger(NAME).debug(l)
@@ -16,11 +13,9 @@ def info(s):
     for l in s.split("\n"): logging.getLogger(NAME).info(l)
 def log(s):   
     for l in s.split("\n"): logging.getLogger(NAME).log(logging.WARNING,l)
-def warn(s):  
-    for l in s.split("\n"): logging.getLogger(NAME).warning("!! " + l)
 def error(s): 
     for l in s.split("\n"): logging.getLogger(NAME).error("!!ERROR! " + l)
-def fatal(s): 
+def FATAL(s): 
     for l in s.split("\n"): 
         logging.getLogger(NAME).critical("!!FATAL! " + l); 
     exit(-2)
@@ -35,13 +30,6 @@ class Error(Exception):
         return self.str
 
 
-class Enum(enum.Enum):
-#    def _generate_next_value_(name,s_,c_,l_):
-#        return name
-    pass
-
-#def auto(): 
-#    return enum.auto()
 
 
 def shell(cmd,inn=None):

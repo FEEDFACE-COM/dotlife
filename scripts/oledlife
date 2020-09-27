@@ -11,7 +11,7 @@ from bdb import BdbQuit
 import dotlife
 from dotlife import *
 from dotlife.util import *
-from dotlife.about import VERSION
+from dotlife.about import VERSION, NAME
 
 from dotlife.mode import *
 
@@ -22,10 +22,10 @@ from dotlife.pattern import *
 from dotlife.dmx import *
 from dotlife.clock import Clock, FRAME, NOW
 
-NAME = "oledlife"
 
-################################################################################
-## MAIN
+
+
+## MAIN ########################################################################
 
 
 
@@ -33,9 +33,13 @@ NAME = "oledlife"
 
 def main(modename, device, preview, step, blend, invert, gain, **params):
 
+
     step = step * 1000.
 
-    log( "\n" * 4 + str(PATTERN.OLIFE.value)[1:-1] ) 
+    info( "\n" * 2 + str(PATTERN.DOTLIFE.value)[1:-1] + "\n" * 2) 
+    info("oledlife mode {:s}".format(modename))
+
+
 
     # register signals
     signal.signal(signal.SIGQUIT, quit)
@@ -47,24 +51,25 @@ def main(modename, device, preview, step, blend, invert, gain, **params):
             info("open dmx {}".format(device))
             dmx = DMX(device)
         except DMXError as x:
-            fatal("open dmx {}: {}".format(device,x))
+            FATAL("open dmx {}: {}".format(device,x))
 
     
     Clock.Init()
-    mode = Mode.Init(modename,step)
+    try:
+        mode = MODE(modename)
+    except ValueError as x:
+        usage()
     
+    try:
+        mode = Mode.Init(modename,step)
+    except Error as x:
+        FATAL("fail init mode {:s}: {:s}".format(modename,str(x)))
+        
     prev = ( FRAME(), NOW() )
     pointbreak= False
     while True:
         try:
             Clock.Tick()
-            if pointbreak:
-                try:
-                    mode.print()
-                except Exception as x:
-                    pass
-#                breakpoint()
-                import pdb; pdb.set_trace()
             framebuffer = FrameBuffer()
 
             buffer = mode.draw()
@@ -90,48 +95,45 @@ def main(modename, device, preview, step, blend, invert, gain, **params):
                 send(dmx,framebuffer)
 
             if FRAME() % 60 == 0:
-                info("{:s} {:.1f}fps {:s}".format(Clock.Str(),fps(prev),str(mode)))
+                if FRAME() % 600 == 0:
+                    debug("{:s} {:.1f}fps {:s}".format(Clock.Str(),fps(prev),str(mode)))
                 prev = ( FRAME(), NOW() )
-#                debug("{:s}".format(str(buffer)))
 
-            if True and preview:
-                up = "\u001b[10A"
-                left = "\u001b[8D"
+            if preview:
+                X = FRAMEWIDTH+1
+                columns,lines = os.get_terminal_size()
+                up   = "\u001b[{:d}A".format( FRAMEWIDTH + 1 + X )
+                down   = "\u001b[1E"
+                right = "\u001b[{:d}C".format(columns - ((FRAMEWIDTH+2) * 2 ))
                 buf = str(framebuffer).split("\n")
-                sys.stdout.write(left + up)
-                sys.stdout.write( "                  \n")
-                sys.stdout.write(str(framebuffer) + "\n")
+                sys.stdout.write(up)
+                for i in range(X):
+                    sys.stdout.write( right + 20*" " + down)
+                for s in buf:
+                    sys.stdout.write(right + s + down)
+                sys.stdout.write( right + 20*" " + down)
                 sys.stdout.flush()
 
 #            Clock.Sleep()
             
         except Error as x:
-            fatal("{}".format( str(x) ))
+            FATAL("error: {:s}".format( str(x) ))
     
-
-        except BdbQuit as x:
-            pointbreak= False
-            info("continue" )
 
         except KeyboardInterrupt as x:
-            info("debug")  
-            if debugable():
-                mode.signal()
-            else:
-                break
-#            info("break")  
-#            if debugable():
-#                pointbreak= True
-#            else:
-#                break
+            info("user interrupt")  
+            break
     
-#        except SystemExit as x:
-#            log("exit.")
-#            break
-    
-#        except Exception as x:
-#            log( repr(x) )
-            
+        except SystemExit as x:
+            info("exit.")
+            break
+   
+        except BrokenPipeError:
+            error("broken pipe, disable preview")
+            preview = False
+   
+        except Exception as x:
+            FATAL("unexpected: " + repr(x) )
             
 
 def fps(prev):
@@ -177,22 +179,25 @@ HELP[MODE.test]    = "test patterns"
     
     
 
-PARAMS = [
+FLAGS = [
     # short long param default help func #             
-    ("m:", "mode=",             "modename",            DEFAULT_MODE.value,      "mode",          lambda x : MODE(x) ),
-    ("b:", "blend=",            "blend",               dotlife.Blend.Jump.value,  "blend style {}".format(",".join([ b.value for b in Blend])), lambda x : dotlife.Blend(x) ),
-    ("s:", "step=",             "step",                1.0,                     "step speed",                                                 lambda x : float(x) ),
-    ("",   "inv",               "invert",              False,                   "invert brightness",                                          None ),
-    ("",   "gain=",             "gain",                1.0,                     "gain brightness",                                            lambda x: float(x) ),
     ("S:", "serial=",           "device",              "",                      "serial device",                                              None ),
     ("v",  "verbose",           None,                  None,                    "increase verbosity",                                         None ),
-    ("q",  "quiet",             None,                  None,                    "log errors only",                                            None ),
     ("P", "preview",            "preview",             False,                   "preview on stdout",                                          None ),                  
     ("V",  "version",           None,                  None,                    "display version",                                            None ),
     ("h",  "help",              None,                  None,                    "display help",                                               None ),
 ]
 
+MODEFLAGS = [
+    # short long param default help func #             
+    ("", "",                   "modename",             DEFAULT_MODE.name,      "mode",          None ),
+    ("b:", "blend=",            "blend",               dotlife.Blend.Jump.value,  "blend style {}".format(",".join([ b.value for b in Blend])), lambda x : dotlife.Blend(x) ),
+    ("s:", "step=",             "step",                1.0,                     "step speed",                                                 lambda x : float(x) ),
+    ("",   "inv",               "invert",              False,                   "invert brightness",                                          None ),
+    ("",   "gain=",             "gain",                1.0,                     "gain brightness",                                            lambda x: float(x) ),
+]
 
+PARAMS = FLAGS + MODEFLAGS
 
 
 
@@ -202,25 +207,39 @@ PARAMS = [
 def usage():
     if len(logging.getLogger(NAME).handlers) > 0:
         logging.getLogger(NAME).handlers[0].setFormatter( logging.Formatter( "%(message)s") )
-    log("""    
-{} [-vq{}] [ --mode {} ]
-""".format(NAME,"".join([s[0] if len(s) >= 1 else "" for (s,_,_,_,_,_) in PARAMS]),",".join([ m.name for m in MODE])))
-    for k in MODE:
-        log("  {:8} {:15}    {}".format(k.name,"",HELP[k]))
-    log("")
-    for (s,l,p,d,h,_) in PARAMS:
+        
+    log("""## Usage
+
+{} [-{}] {} <MODE>
+""".format(
+        "oledlife",
+        "".join([s[0] if len(s) >= 1 else "" for (s,_,_,_,_,_) in FLAGS]),
+        " ".join(["[--{:s}]".format(l) if len(l) >= 1 else "" for (_,l,_,_,_,_) in MODEFLAGS]),
+        )
+    )
+
+    log("## Flags")
+    for (s,l,p,d,h,_) in FLAGS:
         if not s and not l:
             continue
         log("  {:3} {:20}    {}{}".format( "-"+s.rstrip(":")+"," if s else "","--"+l.rstrip("=") if l else "",h,("" if d is None else ", default "+str(d).lower()) ))
     log("")
+
+    for (s,l,p,d,h,_) in MODEFLAGS:
+        if not s and not l:
+            continue
+        log("  {:3} {:20}    {}{}".format( "-"+s.rstrip(":")+"," if s else "","--"+l.rstrip("=") if l else "",h,("" if d is None else ", default "+str(d).lower()) ))
+    log("")
+
+    log("## Modes")
+    for k in MODE:
+        log("  {:8} {:15}    {}".format(k.name,"",HELP[k]))
+    log("")
+
     exit(-1)
 
-
-
-
-
-################################################################################
-## UTILITY
+    
+## UTILITY #####################################################################
 
 #REM, raspbian utf8 trouble: https://unix.stackexchange.com/questions/347914/how-to-set-lc-all-en-gb-utf-8-in-raspbian
 
@@ -229,7 +248,7 @@ def about():
         logging.getLogger(NAME).handlers[0].setFormatter( logging.Formatter( "%(message)s") )
     log("""\
 {} {}
-©2019 FEEDFACE.COM.
+©2020 FEEDFACE.COM
 """.format(NAME,VERSION) )
     exit(0)
     
@@ -265,15 +284,17 @@ if __name__ == "__main__":
         elif opt in ("-V", "--version"):
             about()
         elif opt in ("-v", "--verbose"):
-            if verbosity > logging.DEBUG:
-                verbosity -= 10
-                logger.setLevel(verbosity)
-                handler.setLevel(verbosity)
+            if verbosity == logging.WARNING:
+                verbosity = logging.INFO
+            elif verbosity == logging.INFO:
+                verbosity = logging.DEBUG
+            logger.setLevel(verbosity)
+            handler.setLevel(verbosity)
         elif opt in ("-q", "--quiet"):
-            logger.setLevel(logging.ERROR)
-            handler.setLevel(logging.ERROR)
+            verbosity = logging.ERROR
+            logger.setLevel(verbosity)
+            handler.setLevel(verbosity)
         elif opt in ("-P", "--preview"):
-            handler.setFormatter( logging.Formatter( "                    %(message)s") )
             params["preview"] = True
         else:
             for (s,l,p,_,h,f) in PARAMS:
@@ -294,14 +315,17 @@ if __name__ == "__main__":
                 error("internal error: option {} not implemented.".format(opt))
                 usage()            
 
-#    dump(params)
     for (s,l,n,_,_,_) in PARAMS:
         if n and params[n] is None:
             error("mandatory parameter {}/{} missing.".format("-"+s.rstrip(":") if s else "","--"+l.rstrip("=") if l else ""))
             usage()
 
+    if len(args) >= 1:
+        params['modename'] = args[0]
+    
 
 
+#    dump(params)
     exit( main(**params) )
     
    

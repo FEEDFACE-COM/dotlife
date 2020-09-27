@@ -68,7 +68,7 @@ class Life:
 
         self.gen = self.gen+1
         self.board = tmp
-        debug(str(self))
+        info(str(self))
 
 
 

@@ -72,10 +72,12 @@ class Mode():
         from dotlife.mode import fire
         
         try:
-            cls = __import__("dotlife.mode."+str(mode.value), fromlist=[''])
-    #    except ModuleNotFoundError as x:   # ??
+            cls = __import__("dotlife.mode."+str(mode), fromlist=[''])
+        except ModuleNotFoundError as x:   # ??
+#            error("module {} not found: {}".format(mode,str(x)))
+            raise Error("module {} not found".format(mode))
         except Exception as x:
-            fatal("mode {} not imported: {}".format(mode.name,str(x)))
+            raise Error("mode {} imported exception: {}".format(mode,str(x)))
         
         timer = clock.Clock.Timer(step,repeat=True)
         ret = cls.Init(timer)

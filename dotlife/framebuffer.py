@@ -36,7 +36,7 @@ class FrameBuffer(Buffer):
 
         for x in range(FRAMEWIDTH):
             ret += " {:01d}".format(x)
-        ret += "\n"
+        ret += "  \n"
         
         return ret[:-1]
 

@@ -17,7 +17,7 @@ for m in MODE:
         cls = __import__("dotlife.mode."+str(m.name), fromlist=[''])
 #    except ModuleNotFoundError as x:   # ??
     except Exception as x:
-        fatal("mode {} not imported: {}".format(m.name,str(x)))
+        FATAL("mode {} not imported: {}".format(m.name,str(x)))
 
 def p(x): 
     print(x)

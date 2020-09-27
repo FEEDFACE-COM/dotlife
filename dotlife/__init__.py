@@ -1,6 +1,6 @@
 
 from dotlife.util import *
-
+from enum import Enum
 
 FRAMEWIDTH = 8
 FRAMEHEIGHT = 8
