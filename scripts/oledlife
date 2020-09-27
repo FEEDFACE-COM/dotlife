@@ -13,15 +13,16 @@ from dotlife import *
 from dotlife.util import *
 from dotlife.about import VERSION, NAME
 
-from dotlife.mode import *
 
 from dotlife.life import Life
 from dotlife.buffer import Buffer
-from dotlife.framebuffer import FrameBuffer
 from dotlife.pattern import *
-from dotlife.dmx import *
 from dotlife.clock import Clock, FRAME, NOW
 
+from oledlife.mode import *
+from oledlife import FRAMEWIDTH,FRAMEHEIGHT
+from oledlife.framebuffer import FrameBuffer
+from oledlife.dmx import *
 
 
 
@@ -100,14 +101,14 @@ def main(modename, device, preview, step, blend, invert, gain, **params):
                 prev = ( FRAME(), NOW() )
 
             if preview:
-                X = FRAMEWIDTH+1
+                Y = FRAMEHEIGHT+1
                 columns,lines = os.get_terminal_size()
-                up   = "\u001b[{:d}A".format( FRAMEWIDTH + 1 + X )
+                up   = "\u001b[{:d}A".format( FRAMEWIDTH + 1 + Y )
                 down   = "\u001b[1E"
                 right = "\u001b[{:d}C".format(columns - ((FRAMEWIDTH+2) * 2 ))
                 buf = str(framebuffer).split("\n")
                 sys.stdout.write(up)
-                for i in range(X):
+                for i in range(Y):
                     sys.stdout.write( right + 20*" " + down)
                 for s in buf:
                     sys.stdout.write(right + s + down)
@@ -132,8 +133,8 @@ def main(modename, device, preview, step, blend, invert, gain, **params):
             error("broken pipe, disable preview")
             preview = False
    
-        except Exception as x:
-            FATAL("unexpected: " + repr(x) )
+#       except Exception as x:
+#            FATAL("unexpected: " + repr(x) )
             
 
 def fps(prev):

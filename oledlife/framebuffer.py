@@ -2,7 +2,7 @@ from dotlife import *
 from dotlife.buffer import Buffer
 from dotlife.util import *
 
-
+from oledlife import FRAMEWIDTH, FRAMEHEIGHT, FRAMESIZE
 
 class FrameBuffer(Buffer):
 

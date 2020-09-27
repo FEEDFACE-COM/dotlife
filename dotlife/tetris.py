@@ -20,8 +20,9 @@ class Tetris:
         return ret
         
         
-    def __init__(self):
+    def __init__(self,size=(8,8)):
         random.seed()
+        self.w,self.h = size
         tetros = []
         for t in Tetris.Tetronimo:
             tetros.append( t )
@@ -32,7 +33,7 @@ class Tetris:
 
     def step(self):
         x,y = self.tile.x, self.tile.y
-        if y >= FRAMEHEIGHT: # new tile
+        if y >= self.h: # new tile
             tetros = []
             for t in Tetris.Tetronimo:
                 tetros.append( t )
@@ -58,8 +59,8 @@ class Tetris:
 
         if x < 0:
             x = 0
-        if x > FRAMEWIDTH - self.tile.mask.w:
-            x = FRAMEWIDTH - self.tile.mask.w
+        if x > self.w - self.tile.mask.w:
+            x = self.w - self.tile.mask.w
 
 
         self.tile.x = x

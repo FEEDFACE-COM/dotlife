@@ -1,7 +1,7 @@
 
+
 from dotlife import *
 from dotlife.util import *
-from dotlife.mode import Mode
 from dotlife.math import *
 
 from dotlife.pattern import PATTERN
@@ -11,6 +11,7 @@ import dotlife.plasma as plasma
 from dotlife.palette import Palette
 from dotlife.clock import Timer
 
+from oledlife.mode import Mode
 
 
 

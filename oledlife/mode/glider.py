@@ -4,6 +4,7 @@ from dotlife.mode import Mode
 
 from dotlife.life import *
 
+from oledlife import FRAMESIZE
 
 def Init(timer):
     return Glider(timer)
@@ -12,14 +13,15 @@ def Init(timer):
 
 class Glider(Mode):
     
+    
     def __init__(self,timer):
         super().__init__(timer)
-        self.life = Life()
+        self.life = Life(size=FRAMESIZE)
         self.life.addGlider(pos=(3,3),step=0, direction=Direction.Center)
         self.life.addGlider(pos=(-1,-1),step=3, direction=Direction.Center)
 
     def draw(self):
-        buffer = Buffer()
+        buffer = Buffer(size=FRAMESIZE)
         buffer.add (self.life.buffer(0x1,0x00) )
         return buffer
 

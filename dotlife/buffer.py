@@ -5,6 +5,8 @@ from dotlife.util import *
 
 
 class Buffer:
+
+    DefaultSize = (8,8)
     
     def __str__(self):
         ret = ""
@@ -50,13 +52,12 @@ class Buffer:
         return ret[:-1]
         
 
-    def __init__(self,val=0x00,size=FRAMESIZE):
+    def __init__(self,val=0x00,size=DefaultSize):
         self.w, self.h = size
         if self.w <= 0 or self.h <= 0:
             raise dotlife.Error("invalid buffer dimensions {}x{}".format(self.w,self.h)) 
         val = Clamp(val)
         self.pixel = [ [ val for yy in range(self.h) ] for xx in range(self.w) ]
-            
     
     
     def __getitem__(self,pos):
@@ -135,7 +136,7 @@ class Buffer:
         
 
 
-    def buffer(self,size=FRAMESIZE,pos=(0,0)):
+    def buffer(self,size=DefaultSize,pos=(0,0)):
         w,h = size
         dx,dy = pos
         ret = Buffer(size=size)
@@ -149,7 +150,7 @@ class Buffer:
 
 
 
-    def Fill(gray=0x1, size=FRAMESIZE ):
+    def Fill(gray=0x1, size=DefaultSize ):
         w,h = size
         ret = Buffer(size=size)
         for y in range(h):
@@ -157,7 +158,7 @@ class Buffer:
                 ret[x,y] = gray
         return ret
 
-    def Gradient(heading=Direction.North, size=FRAMESIZE):
+    def Gradient(heading=Direction.North, size=DefaultSize):
         ret = Buffer(size=size)
         w,h = size
         u,v = heading.value
@@ -187,7 +188,7 @@ class Buffer:
                 c += 1
         return ret
     
-    def Checkers(black=0x00,white=0x20, size=FRAMESIZE):
+    def Checkers(black=0x00,white=0x20, size=DefaultSize):
         ret = Buffer()
         w,h = size
         for y in range(h):
@@ -198,7 +199,7 @@ class Buffer:
                     ret[x,y] = white
         return ret
 
-    def Ranges(size=FRAMESIZE, mul=1):
+    def Ranges(size=DefaultSize, mul=1):
         ret = Buffer()
         w,h = size
         c = 1

@@ -7,8 +7,6 @@ from dotlife.mask import Mask
 
 class Life:
 
-    W = FRAMEWIDTH
-    H = FRAMEHEIGHT
     
     ALIVE = 0x80
     DEAD = 0x00
@@ -54,14 +52,14 @@ class Life:
         ret.mask( self.board, light=alive )
         return ret
     
-    def __init__(self,gen=0):
+    def __init__(self,size=(8,8),gen=0):
         self.gen = gen
-        self.board = Mask( size=(Life.W,Life.H) )
+        self.board = Mask( size=size )
         
     def step(self):
-        tmp = Mask(size=(Life.W,Life.H) )
-        for x in range(Life.W):
-            for y in range(Life.H):
+        tmp = Mask(size=(self.board.w,self.board.h) )
+        for x in range(self.board.w):
+            for y in range(self.board.h):
                 if self.alive(x,y):
                     tmp[x,y] = True
                 
