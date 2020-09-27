@@ -1,0 +1,305 @@
+#!/usr/bin/env python3
+
+
+import sys, os, re, pprint
+import datetime, time
+import logging, getopt
+import signal
+
+from bdb import BdbQuit
+
+import dotlife
+from dotlife import *
+from dotlife.util import *
+from dotlife.about import NAME,VERSION
+
+from dotlife.mode import *
+
+from dotlife.life import Life
+from dotlife.buffer import Buffer
+from dotlife.framebuffer import FrameBuffer
+from dotlife.pattern import *
+from dotlife.dmx import *
+from dotlife.clock import Clock, FRAME, NOW
+
+################################################################################
+## MAIN
+
+
+
+
+
+def main(modename, device, preview, step, blend, invert, gain, **params):
+
+    step = step * 1000.
+
+    log( "\n" * 4 + str(PATTERN.OLIFE.value)[1:-1] ) 
+
+    # register signals
+    signal.signal(signal.SIGQUIT, quit)
+    
+    # open serial
+    dmx = None
+    if device:
+        try:
+            info("open dmx {}".format(device))
+            dmx = DMX(device)
+        except DMXError as x:
+            fatal("open dmx {}: {}".format(device,x))
+
+    
+    Clock.Init()
+    mode = Mode.Init(modename,step)
+    
+    prev = ( FRAME(), NOW() )
+    pointbreak= False
+    while True:
+        try:
+            Clock.Tick()
+            if pointbreak:
+                try:
+                    mode.print()
+                except Exception as x:
+                    pass
+#                breakpoint()
+                import pdb; pdb.set_trace()
+            framebuffer = FrameBuffer()
+
+            buffer = mode.draw()
+
+            if blend == dotlife.Blend.Jump:
+                pass
+            elif blend == dotlife.Blend.Black:
+                buffer.mul( mode.timer.sin0(1.) )
+            elif blend == dotlife.Blend.Frame:
+                buffer.mul(16. * (mode.timer.ease(freq=4.)))
+                tmp = Buffer()
+                tmp.add( mode.last )
+                tmp.mul(16. * (1. - mode.timer.ease(freq=4.)))
+                buffer.add( tmp )
+        
+            
+            if gain != 0x00:
+                buffer.mul( gain )
+        
+            framebuffer.add( buffer )
+
+            if dmx:
+                send(dmx,framebuffer)
+
+            if FRAME() % 60 == 0:
+                info("{:s} {:.1f}fps {:s}".format(Clock.Str(),fps(prev),str(mode)))
+                prev = ( FRAME(), NOW() )
+#                debug("{:s}".format(str(buffer)))
+
+            if True and preview:
+                up = "\u001b[10A"
+                left = "\u001b[8D"
+                buf = str(framebuffer).split("\n")
+                sys.stdout.write(left + up)
+                sys.stdout.write( "                  \n")
+                sys.stdout.write(str(framebuffer) + "\n")
+                sys.stdout.flush()
+
+#            Clock.Sleep()
+            
+        except Error as x:
+            fatal("{}".format( str(x) ))
+    
+
+        except BdbQuit as x:
+            pointbreak= False
+            info("continue" )
+
+        except KeyboardInterrupt as x:
+            info("debug")  
+            if debugable():
+                mode.signal()
+            else:
+                break
+#            info("break")  
+#            if debugable():
+#                pointbreak= True
+#            else:
+#                break
+    
+#        except SystemExit as x:
+#            log("exit.")
+#            break
+    
+#        except Exception as x:
+#            log( repr(x) )
+            
+            
+
+def fps(prev):
+    (frame, time) = prev
+    return float( (FRAME() - frame) /  ((NOW() - time)/1000.) )
+
+
+def send(dmx,framebuffer):
+    try:
+        frame = framebuffer.bytes()
+        dmx.send(frame)
+    except DMXError as x:
+        error("fail send {:d} byte: {}".format(len(frame),x))
+        
+
+def quit(sig,frame):
+    log("exit.")   
+    sys.exit(0)
+
+
+
+
+################################################################################
+## MODE
+    
+
+
+DEFAULT_MODE = MODE.glider
+
+
+
+HELP = { m:m.name for m in list(MODE) } 
+HELP[MODE.fyi ] = "show FYI logo"
+HELP[MODE.glider ] = "two gliders"
+HELP[MODE.draft] = "quick n dirty"
+HELP[MODE.test]    = "test patterns"
+#HELP[MODE.random ] = "random pattern"
+
+
+
+################################################################################
+## PARAMS
+    
+    
+
+PARAMS = [
+    # short long param default help func #             
+    ("m:", "mode=",             "modename",            DEFAULT_MODE.value,      "mode",          lambda x : MODE(x) ),
+    ("b:", "blend=",            "blend",               dotlife.Blend.Jump.value,  "blend style {}".format(",".join([ b.value for b in Blend])), lambda x : dotlife.Blend(x) ),
+    ("s:", "step=",             "step",                1.0,                     "step speed",                                                 lambda x : float(x) ),
+    ("",   "inv",               "invert",              False,                   "invert brightness",                                          None ),
+    ("",   "gain=",             "gain",                1.0,                     "gain brightness",                                            lambda x: float(x) ),
+    ("S:", "serial=",           "device",              "",                      "serial device",                                              None ),
+    ("v",  "verbose",           None,                  None,                    "increase verbosity",                                         None ),
+    ("q",  "quiet",             None,                  None,                    "log errors only",                                            None ),
+    ("P", "preview",            "preview",             False,                   "preview on stdout",                                          None ),                  
+    ("V",  "version",           None,                  None,                    "display version",                                            None ),
+    ("h",  "help",              None,                  None,                    "display help",                                               None ),
+]
+
+
+
+
+
+
+
+
+def usage():
+    if len(logging.getLogger(NAME).handlers) > 0:
+        logging.getLogger(NAME).handlers[0].setFormatter( logging.Formatter( "%(message)s") )
+    log("""    
+{} [-vq{}] [ --mode {} ]
+""".format(NAME,"".join([s[0] if len(s) >= 1 else "" for (s,_,_,_,_,_) in PARAMS]),",".join([ m.name for m in MODE])))
+    for k in MODE:
+        log("  {:8} {:15}    {}".format(k.name,"",HELP[k]))
+    log("")
+    for (s,l,p,d,h,_) in PARAMS:
+        if not s and not l:
+            continue
+        log("  {:3} {:20}    {}{}".format( "-"+s.rstrip(":")+"," if s else "","--"+l.rstrip("=") if l else "",h,("" if d is None else ", default "+str(d).lower()) ))
+    log("")
+    exit(-1)
+
+
+
+
+
+################################################################################
+## UTILITY
+
+#REM, raspbian utf8 trouble: https://unix.stackexchange.com/questions/347914/how-to-set-lc-all-en-gb-utf-8-in-raspbian
+
+def about():
+    if len(logging.getLogger(NAME).handlers) > 0:
+        logging.getLogger(NAME).handlers[0].setFormatter( logging.Formatter( "%(message)s") )
+    log("""\
+{} {}
+©2019 FEEDFACE.COM.
+""".format(NAME,VERSION) )
+    exit(0)
+    
+    
+    
+
+
+if __name__ == "__main__":
+
+    verbosity = logging.WARNING
+    logger = logging.getLogger(NAME)
+    handler = logging.StreamHandler()
+    formatter = logging.Formatter("%(message)s")
+    handler.setFormatter(formatter)
+    handler.setLevel(verbosity)
+    logger.setLevel(verbosity)
+    logger.addHandler(handler)
+    
+    
+    short = "".join( [s for (s,_,_,_,_,_) in PARAMS if s is not None] )
+    long = [l for (_,l,_,_,_,_) in PARAMS if l is not None] 
+    params = dict( [(n,d) for (_,_,n,d,_,_) in PARAMS if n is not None] )
+    
+    try:
+        opts, args = getopt.getopt(sys.argv[1:],short,long)
+    except getopt.GetoptError as x:
+        error("{}".format(x))
+        usage()
+    
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            usage()
+        elif opt in ("-V", "--version"):
+            about()
+        elif opt in ("-v", "--verbose"):
+            if verbosity > logging.DEBUG:
+                verbosity -= 10
+                logger.setLevel(verbosity)
+                handler.setLevel(verbosity)
+        elif opt in ("-q", "--quiet"):
+            logger.setLevel(logging.ERROR)
+            handler.setLevel(logging.ERROR)
+        elif opt in ("-P", "--preview"):
+            handler.setFormatter( logging.Formatter( "                    %(message)s") )
+            params["preview"] = True
+        else:
+            for (s,l,p,_,h,f) in PARAMS:
+                if s is None and l is None:
+                    continue
+                if opt in ["-"+s.rstrip(":"),"--"+l.rstrip("=")]:
+                    fun = f if f else lambda x: x
+                    if s.endswith(":") or l.endswith("="):
+                        try:
+                            params[p] = fun(arg)
+                        except Exception as x:
+                            error("invalid argument: {} {}".format(opt,arg))
+                            usage()
+                    else:
+                        params[p] = True
+                    break
+            else:
+                error("internal error: option {} not implemented.".format(opt))
+                usage()            
+
+#    dump(params)
+    for (s,l,n,_,_,_) in PARAMS:
+        if n and params[n] is None:
+            error("mandatory parameter {}/{} missing.".format("-"+s.rstrip(":") if s else "","--"+l.rstrip("=") if l else ""))
+            usage()
+
+
+
+    exit( main(**params) )
+    
+   

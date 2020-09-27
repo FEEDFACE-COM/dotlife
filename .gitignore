@@ -1,0 +1,8 @@
+dotlife/about.py
+build/
+dist/
+dotlife.egg-info/
+__pycache__/
+.AppleDouble
+*.pyc
+
