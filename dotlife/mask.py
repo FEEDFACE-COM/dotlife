@@ -8,6 +8,8 @@ from dotlife.util import *
 
 class Mask:
 
+    DefaultSize = (8,8)
+
     def __str__(self):
         ret = ""
         for y in range(self.h):
@@ -21,7 +23,8 @@ class Mask:
         return ret[:-1]
     
     
-    def __init__(self,val=False,size=(4,4)):
+    
+    def __init__(self,val=False,size=DefaultSize):
         self.w, self.h = size
         if self.w <= 0 or self.h <= 0:
             raise dotlife.Error("invalid mask dimensions {}x{}".format(self.w,self.h)) 

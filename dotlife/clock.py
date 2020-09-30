@@ -44,8 +44,8 @@ class Clock:
                 tmp += [ timer ]
         Clock.timers = tmp
             
-    def Sleep():
-        time.sleep( 1. / FRAME_RATE )
+    def Sleep(duration=1./FRAME_RATE):
+        time.sleep( duration )
     
     def Timer(duration,repeat=True):
         ret = Timer(duration,repeat)

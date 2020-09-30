@@ -4,7 +4,8 @@
 import sys, os, re, pprint
 import datetime, time
 import logging, getopt
-import signal
+import signal, socket
+import math
 
 from bdb import BdbQuit
 
@@ -19,15 +20,15 @@ from dotlife.buffer import Buffer
 from dotlife.pattern import *
 from dotlife.clock import Clock, FRAME, NOW
 
-from oledlife.mode import *
-from oledlife import FRAMEWIDTH,FRAMEHEIGHT
-from oledlife.framebuffer import FrameBuffer
-from oledlife.dmx import *
+from fliplife.mode import *
+from fliplife import FRAMEWIDTH,FRAMEHEIGHT
+from fliplife.mask import Mask
 
 
 
-DEFAULT_MODE = MODE.glider
+DEFAULT_MODE = MODE.test
 
+DEFAULT_HOST = "87.193.3.53"
 
 ## MAIN ########################################################################
 
@@ -35,123 +36,62 @@ DEFAULT_MODE = MODE.glider
 
 
 
-def main(modename, device, preview, step, blend, invert, gain, **params):
+def main(modename, host, preview, step, **params):
 
 
     step = step * 1000.
 
     info( "\n" * 2 + str(PATTERN.DOTLIFE.value)[1:-1] + "\n" * 2) 
-    info("oledlife mode {:s}".format(modename))
+    info("fliplife mode {:s}".format(modename))
 
 
 
     # register signals
     signal.signal(signal.SIGQUIT, quit)
     
-    # open serial
-    dmx = None
-    if device:
-        try:
-            info("open dmx {}".format(device))
-            dmx = DMX(device)
-        except DMXError as x:
-            FATAL("open dmx {}: {}".format(device,x))
-
+    
+    address = ""
+    try:
+        address = socket.gethostbyname(host)
+    except socket.gaierror as x:
+        FATAL("fail to get address for {:s}: {:s}".format(host,str(x)))
+    
     
     Clock.Init()
     try:
-        mode = MODE(modename)
+        _ = MODE(modename)
     except ValueError as x:
-        pass
-#        usage()
+        usage()
     
     try:
-        mode = Mode.Init(modename,step)
+        mode = Mode.Init(modename,address,printBuffer,step)
     except Error as x:
         FATAL("fail init mode {:s}: {:s}".format(modename,str(x)))
-        
-    prev = ( FRAME(), NOW() )
-    pointbreak= False
-    while True:
-        try:
+
+    try:
+        run = mode.run(**params)
+        while run:
             Clock.Tick()
-            framebuffer = FrameBuffer()
-
-            buffer = mode.draw()
-
-            if blend == dotlife.Blend.Jump:
-                pass
-            elif blend == dotlife.Blend.Black:
-                buffer.mul( mode.timer.sin0(1.) )
-            elif blend == dotlife.Blend.Frame:
-                buffer.mul(16. * (mode.timer.ease(freq=4.)))
-                tmp = Buffer()
-                tmp.add( mode.last )
-                tmp.mul(16. * (1. - mode.timer.ease(freq=4.)))
-                buffer.add( tmp )
-        
+            buf = mode.draw(**params)
+            printBuffer(str(buf))
+            Clock.Sleep( step )
             
-            if gain != 0x00:
-                buffer.mul( gain )
+    except KeyboardInterrupt as x:
+        info("user interrupt") 
         
-            framebuffer.add( buffer )
-
-            if dmx:
-                send(dmx,framebuffer)
-
-            if FRAME() % 60 == 0:
-                if FRAME() % 600 == 0:
-                    debug("{:s} {:.1f}fps {:s}".format(Clock.Str(),fps(prev),str(mode)))
-                prev = ( FRAME(), NOW() )
-
-            if preview:
-                Y = FRAMEHEIGHT+1
-                columns,lines = os.get_terminal_size()
-                up   = "\u001b[{:d}A".format( FRAMEWIDTH + 1 + Y )
-                down   = "\u001b[1E"
-                right = "\u001b[{:d}C".format(columns - ((FRAMEWIDTH+2) * 2 ))
-                buf = str(framebuffer).split("\n")
-                sys.stdout.write(up)
-                for i in range(Y):
-                    sys.stdout.write( right + 20*" " + down)
-                for s in buf:
-                    sys.stdout.write(right + s + down)
-                sys.stdout.write( right + 20*" " + down)
-                sys.stdout.flush()
-
-#            Clock.Sleep()
-            
-        except Error as x:
-            FATAL("error: {:s}".format( str(x) ))
+    except Error as x:
+        FATAL("error: {:s}".format( str(x) ))
     
+    except SystemExit as x:
+        info("exit.")
+   
+    except BrokenPipeError:
+        error("broken pipe, disable preview")
 
-        except KeyboardInterrupt as x:
-            info("user interrupt")  
-            break
-    
-        except SystemExit as x:
-            info("exit.")
-            break
-   
-        except BrokenPipeError:
-            error("broken pipe, disable preview")
-            preview = False
-   
 #       except Exception as x:
 #            FATAL("unexpected: " + repr(x) )
             
 
-def fps(prev):
-    (frame, time) = prev
-    return float( (FRAME() - frame) /  ((NOW() - time)/1000.) )
-
-
-def send(dmx,framebuffer):
-    try:
-        frame = framebuffer.bytes()
-        dmx.send(frame)
-    except DMXError as x:
-        error("fail send {:d} byte: {}".format(len(frame),x))
         
 
 def quit(sig,frame):
@@ -165,6 +105,22 @@ def quit(sig,frame):
 
 
 
+def printBuffer(buf):
+    height = int(math.ceil(FRAMEHEIGHT/2))
+    width  = int(math.ceil(FRAMEWIDTH/2))
+    Y = 1
+    columns,lines = os.get_terminal_size()
+    up   = "\u001b[{:d}A".format( height  + 1 + Y )
+    down   = "\u001b[1E"
+    right = "\u001b[{:d}C".format( columns - (width+3)  )
+#    up,down,right = "","\n",""
+    sys.stdout.write(up)
+    for i in range(Y):
+        sys.stdout.write( right + (1+width)*" " + down)
+    for s in buf.split("\n"):
+        sys.stdout.write(right + s + down)
+    sys.stdout.write( right + (1+width)*" " + down)
+    sys.stdout.flush()
 
 
 
@@ -177,20 +133,22 @@ def quit(sig,frame):
 
 FLAGS = [
     # short long param default help func #             
-    ("S:", "serial=",           "device",              "",                      "serial device",                                              None ),
-    ("v",  "verbose",           None,                  None,                    "increase verbosity",                                         None ),
-    ("P", "preview",            "preview",             False,                   "preview on stdout",                                          None ),                  
-    ("V",  "version",           None,                  None,                    "display version",                                            None ),
-    ("h",  "help",              None,                  None,                    "display help",                                               None ),
+    ("v",  "verbose",      None,                None,    "increase verbosity", None ),
+    ("P", "preview",       "preview",          False,    "preview on stdout",  None ),                  
+    ("V",  "version",      None,                None,    "display version",    None ),
+    ("h",  "help",         None,                None,    "display help",       None ),
+    ("H:", "host=",         "host",      DEFAULT_HOST,   "fluepdot host",      None ),
 ]
 
 MODEFLAGS = [
     # short long param default help func #             
-    ("", "",                   "modename",             DEFAULT_MODE.name,      "mode",          None ),
-    ("b:", "blend=",            "blend",               dotlife.Blend.Jump.value,  "blend style {}".format(",".join([ b.value for b in Blend])), lambda x : dotlife.Blend(x) ),
-    ("s:", "step=",             "step",                1.0,                     "step speed",                                                 lambda x : float(x) ),
-    ("",   "inv",               "invert",              False,                   "invert brightness",                                          None ),
-    ("",   "gain=",             "gain",                1.0,                     "gain brightness",                                            lambda x: float(x) ),
+    ("", "",                   "modename",             DEFAULT_MODE.name,      "mode",                         lambda x: fliplife.mode.Mode(x) ),
+    ("",   "",                 "msg",                  "",                     "message",                                                 None ),
+    ("s:", "step=",            "step",                 1.0,                    "step speed [s]",                           lambda x : float(x) ),
+    ("f:", "font=",            "font",                 "fixed_5x8",            "font",                                                    None ),
+    ("x:", "",                 "xoff",                 0,                      "x offset",                                   lambda x : int(x) ),
+    ("y:", "",                 "yoff",                 0,                      "y offset",                                   lambda x : int(x) ),
+    ("R", "random",            "randomize",            False,                  "randomize",                                               None ),
 ]
 
 PARAMS = FLAGS + MODEFLAGS
@@ -206,9 +164,9 @@ def usage():
         
     log("""## Usage
 
-{} [-{}] {} <MODE>
+{} [-{}] {} <mode> <msg..>
 """.format(
-        "oledlife",
+        "fliplife",
         "".join([s[0] if len(s) >= 1 else "" for (s,_,_,_,_,_) in FLAGS]),
         " ".join(["[--{:s}]".format(l) if len(l) >= 1 else "" for (_,l,_,_,_,_) in MODEFLAGS]),
         )
@@ -230,6 +188,11 @@ def usage():
     log("## Modes")
     for k in MODE:
         log("  {:8} {:15}    {}".format(k.name,"",""))
+    log("")
+
+    log("## Fonts")
+    log("  DejaVuSans12bw_bwfont fixed_10x20 fixed_7x14 fixed_5x8")
+    log("  DejaVuSerif32 DejaVuSerif16 DejaVuSans12bw DejaVuSans12")    
     log("")
 
     exit(-1)
@@ -319,6 +282,8 @@ if __name__ == "__main__":
     if len(args) >= 1:
         params['modename'] = args[0]
     
+    if len(args) > 1:
+        params['msg'] = args[1:] 
 
 
 #    dump(params)
