@@ -6,6 +6,9 @@ TAU = 2. * math.pi
 
 def cos(x):
     return math.cos(x)
+
+def sin(x):
+    return math.sin(x)
     
 def ease(x):
     return - 0.5 * math.cos( x ) + 0.5 

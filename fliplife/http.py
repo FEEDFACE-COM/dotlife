@@ -58,8 +58,9 @@ def post(host,path,params,data):
         error("fail post to {:s}".format(url))
         error("{:s}".format(str(x)))
 
-    if rsp != None:        
-        debug("response {:d}".format(rsp.status))
+    if rsp != None:
+        if rsp.status != 200:
+            debug("response {:d} {:s}".format(rsp.status,path))
         return rsp
     return None
 

@@ -49,8 +49,8 @@ class Mask(dotMask):
     }
 
 
-    def __init__(self,val=False,size=DefaultSize):
-        super().__init__(size=size)
+    def __init__(self,mask=None,val=False,size=DefaultSize):
+        super().__init__(mask=mask,val=val,size=size)
     
     def __str__(self):
         ret = ""
@@ -137,4 +137,20 @@ class Mask(dotMask):
             row += "\n"
             ret += row 
         return ret
+
+    def deltaBright(self,msk2):
+        ret = []
+        for y in range(0,self.h):
+            for x in range(0,self.w):
+                if self[x,y] == True and msk2[x,y] == False:
+                    ret += [(x,y)]
+        return ret
         
+    def deltaDark(self,msk2):
+        ret = []
+        for y in range(0,self.h):
+            for x in range(0,self.w):
+                if self[x,y] == False and msk2[x,y] == True:
+                    ret += [(x,y)]
+        return ret
+                

@@ -21,6 +21,7 @@ class MODE(Enum):
     exec      = "exec"
     grow      = "grow"
     pixel     = "pixel"
+    dots      = "dots"
 
 
 import dotlife.clock as clock
@@ -38,6 +39,7 @@ class Mode(dotMode):
         from fliplife.mode import exec
         from fliplife.mode import grow
         from fliplife.mode import pixel
+        from fliplife.mode import dots
         
         try:
             mod = __import__("fliplife.mode."+str(mode), fromlist=[''])

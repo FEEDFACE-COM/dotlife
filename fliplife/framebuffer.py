@@ -25,8 +25,7 @@ def Text(address,x,y,font,msg):
         'y': y,
         'font': font
     }
-    data = " ".join(msg)
-    rsp = http.post(address,"framebuffer/text",params,data=data)
+    rsp = http.post(address,"framebuffer/text",params,data=msg)
     ret = Mask.MaskFromResponse(rsp)
     return ret
         

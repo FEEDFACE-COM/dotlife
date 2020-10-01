@@ -19,7 +19,7 @@ class Grow(fliplife.mode.Mode):
         
         rendering.Get(self.address)
         
-#        rendering.Put(self.address,rendering.Differential)
+        rendering.Put(self.address,rendering.Differential)
 #        return False
         
         return True

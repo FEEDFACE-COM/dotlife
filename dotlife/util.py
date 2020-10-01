@@ -1,6 +1,6 @@
 
 import logging, subprocess, pprint, re
-
+from subprocess import PIPE
 
 from enum import Enum
 

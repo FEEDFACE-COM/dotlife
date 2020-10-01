@@ -24,11 +24,15 @@ class Mask:
     
     
     
-    def __init__(self,val=False,size=DefaultSize):
-        self.w, self.h = size
-        if self.w <= 0 or self.h <= 0:
-            raise dotlife.Error("invalid mask dimensions {}x{}".format(self.w,self.h)) 
-        self.pixel = [ [ val for y in range(self.h) ] for x in range(self.w) ]
+    def __init__(self,mask=None,val=False,size=DefaultSize):
+        if mask:
+            self.w,self.h = mask.w,mask.h
+            self.pixel = [ [ mask[x,y] for y in range(self.h) ] for x in range(self.w) ]
+        else:
+            self.w, self.h = size
+            if self.w <= 0 or self.h <= 0:
+                raise dotlife.Error("invalid mask dimensions {}x{}".format(self.w,self.h)) 
+            self.pixel = [ [ val for y in range(self.h) ] for x in range(self.w) ]
         
     
     def __getitem__(self,pos):

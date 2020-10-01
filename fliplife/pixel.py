@@ -1,10 +1,15 @@
 
 from dotlife.util import *
 
+from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
+
 from fliplife import http
 
 
 def Get(address,x,y):
+    if x >= FRAMEWIDTH or y >= FRAMEHEIGHT:
+        debug("invalid get pixel {:d}/{:d}".format(x,y))
+        return None
     params = { 'x': x, 'y': y }
     rsp = http.get(address,"pixel",params)
     if rsp == None:
@@ -16,6 +21,9 @@ def Get(address,x,y):
 
     
 def Post(address,x,y):
+    if x >= FRAMEWIDTH or y >= FRAMEHEIGHT:
+        debug("invalid post pixel {:d}/{:d}".format(x,y))
+        return None
     params = { 'x': x, 'y': y }
     rsp = http.post(address,"pixel",params,data=None)
     if rsp == None:
@@ -27,6 +35,9 @@ def Post(address,x,y):
     
 
 def Delete(address,x,y):
+    if x >= FRAMEWIDTH or y >= FRAMEHEIGHT:
+        debug("invalid delete pixel {:d}/{:d}".format(x,y))
+        return None
     params = { 'x': x, 'y': y }
     rsp = http.delete(address,"pixel",params)
     if rsp == None:
