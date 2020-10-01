@@ -17,12 +17,12 @@ class Dots(fliplife.mode.Mode):
     def run(self,**params):
         info("start dots")
         self.count = 0
-        self.mask = mask.Mask()
-        rendering.Put(self.address,rendering.Full)
-
-        framebuffer.Post(self.address,self.mask)
+        
+        
+        
+        self.mask = framebuffer.Get(self.address)
+        rendering.PutMode(self.address,rendering.Differential)
         log(str(self.mask))        
-        rendering.Put(self.address,rendering.Differential)
         return True
         
     

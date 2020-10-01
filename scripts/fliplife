@@ -23,6 +23,7 @@ from dotlife.clock import Clock, FRAME, NOW
 from fliplife.mode import *
 from fliplife import FRAMEWIDTH,FRAMEHEIGHT
 from fliplife.mask import Mask
+from fliplife import framebuffer
 
 
 
@@ -36,7 +37,7 @@ DEFAULT_HOST = "87.193.3.53"
 
 
 
-def main(modename, host, preview, step, **params):
+def main(modename, host, preview, step, clear, **params):
 
 
     info( "\n" * 2 + str(PATTERN.DOTLIFE.value)[1:-1] + "\n" * 2) 
@@ -65,6 +66,11 @@ def main(modename, host, preview, step, **params):
         mode = Mode.Init(modename,address,printBuffer,step)
     except Error as x:
         FATAL("fail init mode {:s}: {:s}".format(modename,str(x)))
+
+
+    if clear:
+        info("clear display")
+        framebuffer.Post(address,Mask())
 
     try:
         run = mode.run(**params)
@@ -144,6 +150,7 @@ MODEFLAGS = [
     # short long param default help func #             
     ("", "",                   "modename",             DEFAULT_MODE.name,      "mode",                         lambda x: fliplife.mode.Mode(x) ),
     ("",   "",                 "msg",                  "",                     "message",                                                 None ),
+    ("c",  "clear",            "clear",                False,                  "clear display?",                                          None ),
     ("i",  "invert",           "invert",               False,                  "invert pattern?",                                         None ),
     ("s:", "step=",            "step",                 1.0,                    "step speed [s]",                           lambda x : float(x) ),
     ("f:", "font=",            "font",                 "fixed_5x8",            "font",                                                    None ),

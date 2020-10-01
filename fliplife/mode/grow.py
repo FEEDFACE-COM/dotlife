@@ -17,9 +17,9 @@ class Grow(fliplife.mode.Mode):
         info("start grow")
         mask = self.draw(**params)
         
-        rendering.Get(self.address)
+        rendering.GetMode(self.address)
         
-        rendering.Put(self.address,rendering.Differential)
+        rendering.PutMode(self.address,rendering.Differential)
 #        return False
         
         return True
