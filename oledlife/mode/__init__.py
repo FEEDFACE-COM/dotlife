@@ -61,7 +61,6 @@ class Mode(dlMode):
         
         timer = clock.Clock.Timer(step,repeat=True)
         ret = cls.Init(timer)
-        ret.last = ret.draw()
         return ret
     
 

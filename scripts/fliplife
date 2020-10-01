@@ -39,8 +39,6 @@ DEFAULT_HOST = "87.193.3.53"
 def main(modename, host, preview, step, **params):
 
 
-    step = step * 1000.
-
     info( "\n" * 2 + str(PATTERN.DOTLIFE.value)[1:-1] + "\n" * 2) 
     info("fliplife mode {:s}".format(modename))
 
@@ -73,7 +71,9 @@ def main(modename, host, preview, step, **params):
         while run:
             Clock.Tick()
             buf = mode.draw(**params)
+            debug("{:s} {:s}".format(Clock.Str(),str(mode)))
             printBuffer(str(buf))
+            debug("sleep {:f}".format(step))
             Clock.Sleep( step )
             
     except KeyboardInterrupt as x:
@@ -101,11 +101,11 @@ def quit(sig,frame):
 
 
 
-    
 
 
 
 def printBuffer(buf):
+    return
     height = int(math.ceil(FRAMEHEIGHT/2))
     width  = int(math.ceil(FRAMEWIDTH/2))
     Y = 1
@@ -144,10 +144,11 @@ MODEFLAGS = [
     # short long param default help func #             
     ("", "",                   "modename",             DEFAULT_MODE.name,      "mode",                         lambda x: fliplife.mode.Mode(x) ),
     ("",   "",                 "msg",                  "",                     "message",                                                 None ),
+    ("i",  "invert",           "invert",               False,                  "invert pattern?",                                         None ),
     ("s:", "step=",            "step",                 1.0,                    "step speed [s]",                           lambda x : float(x) ),
     ("f:", "font=",            "font",                 "fixed_5x8",            "font",                                                    None ),
-    ("x:", "",                 "xoff",                 0,                      "x offset",                                   lambda x : int(x) ),
-    ("y:", "",                 "yoff",                 0,                      "y offset",                                   lambda x : int(x) ),
+    ("x:", "",                 "x",                    0,                      "x offset",                                   lambda x : int(x) ),
+    ("y:", "",                 "y",                    0,                      "y offset",                                   lambda x : int(x) ),
     ("R", "random",            "randomize",            False,                  "randomize",                                               None ),
 ]
 

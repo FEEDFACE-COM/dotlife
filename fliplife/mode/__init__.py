@@ -18,6 +18,9 @@ class MODE(Enum):
     clear     = "clear"
     gauss     = "gauss"
     echo      = "echo"
+    exec      = "exec"
+    grow      = "grow"
+    pixel     = "pixel"
 
 
 import dotlife.clock as clock
@@ -28,10 +31,13 @@ class Mode(dotMode):
     
         # static import for run time checking
         from fliplife.mode import test
-#        from fliplife.mode import ping
-#        from fliplife.mode import clear
-#        from fliplife.mode import gauss
-#        from fliplife.mode import echo
+        from fliplife.mode import ping
+        from fliplife.mode import clear
+        from fliplife.mode import gauss
+        from fliplife.mode import echo
+        from fliplife.mode import exec
+        from fliplife.mode import grow
+        from fliplife.mode import pixel
         
         try:
             mod = __import__("fliplife.mode."+str(mode), fromlist=[''])
