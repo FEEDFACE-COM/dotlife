@@ -79,7 +79,7 @@ def main(modename, host, preview, step, clear, **params):
             buf = mode.draw(**params)
             debug("{:s} {:s}".format(Clock.Str(),str(mode)))
             printBuffer(str(buf))
-            debug("sleep {:f}".format(step))
+            #debug("sleep {:f}".format(step))
             Clock.Sleep( step )
             
     except KeyboardInterrupt as x:
@@ -154,6 +154,7 @@ MODEFLAGS = [
     ("i",  "invert",           "invert",               False,                  "invert pattern?",                                         None ),
     ("s:", "step=",            "step",                 1.0,                    "step speed [s]",                           lambda x : float(x) ),
     ("f:", "font=",            "font",                 "fixed_5x8",            "font",                                                    None ),
+    ("p:", "pattern=",         "pattern",              "",                     "pattern",                                                 None ),
     ("x:", "",                 "x",                    0,                      "x offset",                                   lambda x : int(x) ),
     ("y:", "",                 "y",                    0,                      "y offset",                                   lambda x : int(x) ),
     ("R", "random",            "randomize",            False,                  "randomize",                                               None ),

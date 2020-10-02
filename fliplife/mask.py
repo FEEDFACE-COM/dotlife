@@ -80,17 +80,17 @@ class Mask(dotMask):
 
         return ret[:-1]
     
-    def __getitem__(self,pos):
-        posx,posy = pos
-        x  = (self.w + posx) % self.w
-        y =  (self.h + posy) % self.h
-        return self.pixel[x][y]
-
-    def __setitem__(self,pos,val):
-        posx,posy = pos
-        x  = (self.w + posx) % self.w
-        y =  (self.h + posy) % self.h
-        self.pixel[x][y] = val
+#    def __getitem__(self,pos):
+#        posx,posy = pos
+#        x  = (self.w + posx) % self.w
+#        y =  (self.h + posy) % self.h
+#        return self.pixel[x][y]
+#
+#    def __setitem__(self,pos,val):
+#        posx,posy = pos
+#        x  = (self.w + posx) % self.w
+#        y =  (self.h + posy) % self.h
+#        self.pixel[x][y] = val
 
     @classmethod 
     def FromMask(self,mask):

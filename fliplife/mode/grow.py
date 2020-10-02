@@ -17,10 +17,8 @@ class Grow(fliplife.mode.Mode):
         info("start grow")
         mask = self.draw(**params)
         
-        rendering.GetMode(self.address)
-        
-        rendering.PutMode(self.address,rendering.Differential)
-#        return False
+#        rendering.GetMode(self.address)
+        rendering.SetMode(self.address,rendering.Differential)
         
         return True
         
@@ -36,14 +34,14 @@ class Grow(fliplife.mode.Mode):
         y = cy + int(r1*(cy/4.))
 
 
-        pxl = pixel.Get(self.address,x,y)
+        pxl = pixel.Read(self.address,x,y)
         
         mask = fliplife.mask.Mask()
         if invert:
 
             if pxl:
-                pixel.Delete(self.address,x,y)
-                mask = framebuffer.Get(self.address)
+                pixel.Flip(self.address,x,y,False)
+                mask = framebuffer.Read(self.address)
                 log("pixel {:d}/{:d} flip ⬜︎ off".format(x,y))
                 log(str(mask))
 
@@ -51,8 +49,8 @@ class Grow(fliplife.mode.Mode):
         else:
                 
             if not pxl:
-                pixel.Post(self.address,x,y)
-                mask = framebuffer.Get(self.address)
+                pixel.Flip(self.address,x,y,True)
+                mask = framebuffer.Read(self.address)
                 log("pixel {:d}/{:d} flip ⬛︎ on".format(x,y))
                 log(str(mask))
         

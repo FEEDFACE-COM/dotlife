@@ -20,8 +20,8 @@ class Dots(fliplife.mode.Mode):
         
         
         
-        self.mask = framebuffer.Get(self.address)
-        rendering.PutMode(self.address,rendering.Differential)
+        self.mask = framebuffer.Read(self.address)
+        rendering.SetMode(self.address,rendering.Differential)
         log(str(self.mask))        
         return True
         
@@ -51,12 +51,12 @@ class Dots(fliplife.mode.Mode):
         
         for (x,y) in brights:
             log("dot {:d}/{:d} flip on: ⬛︎".format(x,y))
-            pixel.Post(self.address,x,y)
+            pixel.Flip(self.address,x,y,True)
 
 
         for (x,y) in darks:
             log("dot {:d}/{:d} flip off: ⬜︎".format(x,y))
-            pixel.Delete(self.address,x,y)
+            pixel.Flip(self.address,x,y,False)
 
 
         log(str(prev))

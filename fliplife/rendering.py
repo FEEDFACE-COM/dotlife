@@ -13,7 +13,6 @@ def GetMode(address):
     if rsp == None:
         return None
     val = rsp.read()
-    log("got rendering mode " + str(val))
     if val == b"0\n\x00":
         return Full
     if val == b"1\n\x00":
@@ -21,7 +20,7 @@ def GetMode(address):
     return None
 
 
-def PutMode(address,data):
+def SetMode(address,data):
     
     data = "{:d}".format(data).encode()
 
@@ -29,7 +28,6 @@ def PutMode(address,data):
     if rsp == None:
         return None
     val = rsp.read()
-    log("sot rendering mode " + str(val))
     return 0
 
 
@@ -39,7 +37,6 @@ def GetTimings(address):
     if rsp == None:
         return None
     val = rsp.read()
-    log("got rendering timings " + str(val))
     # todo
     return None
 

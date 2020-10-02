@@ -14,15 +14,18 @@ def get(host,path,params):
     rsp = None
     try:
         req = request.Request(url,method="GET")
-        debug("get {:s}".format(path))
+        debug("get {:s}/{:s}".format(host,path))
         rsp = request.urlopen(req)
     except Exception as x: 
         error("fail get from {:s}".format(url))
         error("{:s}".format(str(x)))
-    if rsp != None:        
-        debug("response {:d}".format(rsp.status))
-        return rsp
-    return None
+    if rsp == None:
+        error("get {:s}/{:s}: no response".format(host,path))
+        return None
+    if rsp.status != 200:
+        error("get {:s}/{:s}: {:d} response".format(host,path,rsp.status))
+        return None
+    return rsp
 
 
 def put(host,path,params,data):
@@ -32,15 +35,18 @@ def put(host,path,params,data):
     rsp = None
     try:
         req = request.Request(url, data=data, method="PUT")
-        debug("put {:s}".format(path))
+        debug("put {:s}/{:s}".format(host,path))
         rsp = request.urlopen(req)
     except Exception as x: 
         error("fail put to {:s}".format(url))
         error("{:s}".format(str(x)))
-    if rsp != None:        
-        debug("response {:d}".format(rsp.status))
-        return rsp
-    return None
+    if rsp == None:
+        error("put {:s}/{:s}: no response".format(host,path))
+        return None
+    if rsp.status != 200:
+        error("put {:s}/{:s}: {:d} response".format(host,path,rsp.status))
+        return None
+    return rsp
 
 
 def post(host,path,params,data):
@@ -52,17 +58,19 @@ def post(host,path,params,data):
         data = data.encode()
     try:
         req = request.Request(url, data=data, method="POST")
-        debug("post {:s}".format(path))
+        debug("post {:s}/{:s}".format(host,path))
         rsp = request.urlopen(req)
     except Exception as x: 
         error("fail post to {:s}".format(url))
         error("{:s}".format(str(x)))
+    if rsp == None:
+        error("post {:s}/{:s}: no response".format(host,path))
+        return None
+    if rsp.status != 200:
+        error("post {:s}/{:s}: {:d} response".format(host,path,rsp.status))
+        return None
+    return rsp
 
-    if rsp != None:
-        if rsp.status != 200:
-            debug("response {:d} {:s}".format(rsp.status,path))
-        return rsp
-    return None
 
 def delete(host,path,params):
     url = "http://" + host + "/" + path
@@ -71,12 +79,15 @@ def delete(host,path,params):
     rsp = None
     try:
         req = request.Request(url,method="DELETE")
-        debug("delete {:s}".format(path))
+        debug("delete {:s}/{:s}".format(host,path))
         rsp = request.urlopen(req)
     except Exception as x: 
         error("fail delete {:s}".format(url))
         error("{:s}".format(str(x)))
-    if rsp != None:        
-        debug("response {:d}".format(rsp.status))
-        return rsp
-    return None
+    if rsp == None:
+        error("delete {:s}/{:s}: no response".format(host,path))
+        return None
+    if rsp.status != 200:
+        error("delete {:s}/{:s}: {:d} response".format(host,path,rsp.status))
+        return None
+    return rsp

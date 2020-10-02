@@ -13,22 +13,39 @@ from fliplife import pixel,framebuffer
 class Test(fliplife.mode.Mode):
     
     def run(self,**params):
-        c = int(self.timer.count)
-        self.mask = Mask(size=FRAMESIZE)
-        for y in range(self.mask.h):
-            for x in range(self.mask.w):
-                if y%2 == x%2:
-                    self.mask[x,y] = True
-                else:
-                    self.mask[x,y] = False
-        return True
+        info("start test")
+        prev = framebuffer.Read(self.address)
+        mask = self.draw(params)
+        
+        bright = mask.deltaBright(prev)
+        dark = mask.deltaDark(prev)
+        for (x,y) in bright:
+            pixel.Flip(self.address,x,y,True)
+        for (x,y) in dark:
+            pixel.Flip(self.address,x,y,False)
+        
+        return False
 
 
     
-    def draw(self,**params):
-        x = random.randint(0,FRAMEWIDTH-1)
-        y = random.randint(0,FRAMEHEIGHT-1)
-        val = pixel.Pixel.Get(self.address,x,y)
-        buf = framebuffer.Framebuffer.Get(self.address)
-        log("got val: "+str(val))
-        return self.mask
+    def draw(self,invert,**params):
+        
+        def dot(mask,x,y):
+            mask[x,y-1] = True
+            mask[x-1,y] = True
+            mask[x,y] = True
+            mask[x+1,y] = True
+            mask[x,y+1] = True
+            return mask
+        
+        
+        mask = Mask()
+        
+        mask = dot(mask,int(FRAMEWIDTH/2),int(FRAMEHEIGHT/2))
+        mask = dot(mask,0,0)
+        mask = dot(mask,0,FRAMEHEIGHT-1)
+        mask = dot(mask,FRAMEWIDTH-1,0)
+        mask = dot(mask,FRAMEWIDTH-1,FRAMEHEIGHT-1)
+
+        log(str(mask))
+        return mask

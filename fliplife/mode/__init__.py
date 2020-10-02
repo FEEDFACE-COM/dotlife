@@ -14,14 +14,16 @@ from dotlife.mode import Mode as dotMode
 
 class MODE(Enum):
     test      = "test"
-    ping      = "ping"
+    ping      = "read"
     clear     = "clear"
+    fill      = "fill"
     gauss     = "gauss"
     echo      = "echo"
     exec      = "exec"
     grow      = "grow"
     pixel     = "pixel"
     dots      = "dots"
+    life      = "life"
 
 
 import dotlife.clock as clock
@@ -32,14 +34,16 @@ class Mode(dotMode):
     
         # static import for run time checking
         from fliplife.mode import test
-        from fliplife.mode import ping
+        from fliplife.mode import read
         from fliplife.mode import clear
+        from fliplife.mode import fill
         from fliplife.mode import gauss
         from fliplife.mode import echo
         from fliplife.mode import exec
         from fliplife.mode import grow
         from fliplife.mode import pixel
         from fliplife.mode import dots
+        from fliplife.mode import life
         
         try:
             mod = __import__("fliplife.mode."+str(mode), fromlist=[''])
@@ -62,4 +66,6 @@ class Mode(dotMode):
         self.address = address
         self.printFun = printFun
 
-
+        
+    
+    
