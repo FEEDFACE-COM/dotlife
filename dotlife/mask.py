@@ -132,7 +132,20 @@ class Mask:
             for x in range(self.w):
                 self.pixel[x][y] = not self.pixel[x][y]
         return self
+
+    def flip(self,axis):
+        w,h = self.w,self.h
+        tmp = Mask(mask=self)
         
+        for y in range(self.h):
+            for x in range(self.w):
+                if axis == Axis.Horizontal:
+                    self.pixel[x][y] = tmp[x,h-1-y]
+                elif axis == Axis.Vertical:
+                    self.pixel[x][y] = tmp[w-1-x,y]
+
+        return self
+                
 
     def add(self,val):
         if type(val) == type( Mask() ):
@@ -147,15 +160,14 @@ class Mask:
 
 
     def mask(self,mask,pos=(0,0),wrap=False):
-        dx,dy = pos
         for y in range(mask.h):
-            if not wrap and not 0 <= y+dy < self.h:
+            if not wrap and not 0 <= y+pos.y < self.h:
                 continue
             for x in range(mask.w):
-                if not wrap and not 0 <= x+dx < self.w:
+                if not wrap and not 0 <= x+pos.x < self.w:
                     continue
                 if mask[x,y]:
-                    self[x+dx,y+dy] = mask[x,y]
+                    self[x+pos.x,y+pos.y] = mask[x,y]
         
         
     def Checkers(size=(4,4)):

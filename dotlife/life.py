@@ -40,8 +40,45 @@ class Life:
 """
     
     ]
+    
+    
+    
+    GUN = [
+"""
+                                                                            
+                                                []                          
+                                            []  []                          
+                          []              []  []                      [][]  
+                        [][]            []    []                      [][]  
+  [][]                [][]        [][]    []  []                            
+  [][]              [][][]        [][]      []  []                          
+                      [][]        [][]          []                          
+                        [][]                                                
+                          []                                                
+                                                                            
+""",
+"""
+                                                      []                
+                                                    []  []              
+                  [][]                              [][]  []            
+                  []  []                            [][]  [][]      [][]
+        [][]            []                          [][]  []        [][]
+[][]  []    []    []    []                          []  []              
+[][]    [][]            []                []          []                
+                  []  []              []  []                            
+                  [][]                  [][]                            
+""",
+    ]
 
 
+    EATER = [
+"""
+[][]    
+[]  []  
+    []  
+    [][]
+""",
+    ]
 
     def __str__(self):
         return "gen#{}\n".format(self.gen) + str(self.board)
@@ -52,10 +89,14 @@ class Life:
         ret.mask( self.board, light=alive )
         return ret
     
-    def __init__(self,size=(8,8),gen=0):
+    def __init__(self,size=(8,8),gen=0,mask=None):
         self.gen = gen
-        self.board = Mask( size=size )
+        if mask == None:
+            self.board = Mask( size=size )
+        else:
+            self.board = Mask(mask=mask)
         
+
     def step(self):
         tmp = Mask(size=(self.board.w,self.board.h) )
         for x in range(self.board.w):
@@ -66,7 +107,7 @@ class Life:
 
         self.gen = self.gen+1
         self.board = tmp
-        info(str(self))
+#        info(str(self))
 
 
 
@@ -85,9 +126,15 @@ class Life:
         return False
 
 
+    def addEater(self,pos=Position(0,0)):
+        eater = Mask.Load( Life.EATER[0] )
+        self.board.mask(eater,pos=pos,wrap=True )
 
+    def addGun(self,pos=Position(10,0)):
+        gun = Mask.Load( Life.GUN[1] )
+        self.board.mask( gun, pos=pos, wrap=True )
 
-    def addGlider(self,pos=(2,2),step=0,direction=Direction.SouthEast):
+    def addGlider(self,pos=Position(2,2),step=0,direction=Direction.SouthEast):
         glider = Mask.Load( Life.GLIDER[step%4] )
         self.board.mask( glider, pos=pos, wrap=True )
         

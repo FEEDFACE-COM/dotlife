@@ -2,6 +2,7 @@ from importlib import reload
 from bdb import BdbQuit
 
 import sys, os, re, pprint, datetime, time
+import random
 
 import dotlife
 import oledlife, fliplife

@@ -16,6 +16,10 @@ class Operation(Enum):
 	Sub = "sub" #auto()
 	
 
+class Axis(Enum):
+    Horizontal = 0
+    Vertical   = 1
+
 class Direction(Enum): 
     NorthWest= (-1,-1)
     North=     ( 0,-1)
@@ -44,3 +48,17 @@ def Clamp(p):
     return int(p)
 
 
+class Position():
+
+    def __init__(self,x=0,y=0):
+        self.x,self.y = x,y
+        
+    def __str__(self):
+        return "{:d}/{:d}".format(self.x,self.y)
+        
+    def __add__(self,b):
+        return Position(x=self.x+b.x, y=self.y+b.y)
+        
+    def __sub__(self,b):
+        return Position(x=self.x-b.x, y=self.y-b.y)
+    

@@ -15,47 +15,49 @@ from fliplife import rendering
 class Life(fliplife.mode.Mode):
     
     
-    def run(self,**params):
+    def run(self,count,**params):
         info("start life")
         rendering.SetMode(self.address,rendering.Differential)
 
-        self.life = life.Life(size=FRAMESIZE)
+        mask = framebuffer.Read(self.address)
+
+        self.life = life.Life(mask=mask)
         
-        self.prev = Mask(mask=self.life.board)
-
-        
-        
-        self.life.addGlider()
-        self.life.addGlider(pos=(40,4),step=2,direction=Direction.NorthEast)
-        self.life.addGlider(pos=(100,8),step=3,direction=Direction.SouthEast)
-
-
-
+        self.draw(**params)
         
         return True
         
     
     def draw(self,invert,**params):
-
         
+        prev = Mask(mask=self.life.board)
         self.life.step()
-        
         mask = Mask(mask=self.life.board)
 
-        brights = mask.deltaBright(self.prev)
-        darks = mask.deltaDark(self.prev)
+
+        if True:
+            framebuffer.Write(self.address,mask)
+            log(str(mask))
+            return mask
+
+        if False:
+            log(str(self.life))
+            return mask
+            
+        if False:
+            pixel.WriteDelta(self.address,prev,mask)
+            log(str(mask))
+            return mask
         
-        for (x,y) in brights:
-            log("dot {:d}/{:d} flip on: ⬛︎".format(x,y))
-            pixel.Flip(self.address,x,y,True)
-
-
-        for (x,y) in darks:
-            log("dot {:d}/{:d} flip off: ⬜︎".format(x,y))
-            pixel.Flip(self.address,x,y,True)
-
-
-        log(str(mask))
-        self.prev = mask
+        
+        for y in range(FRAMEHEIGHT):
+            for x in range(FRAMEWIDTH):
+                if mask[x,y] and not prev[x,y]:
+                    pixel.Flip(self.address,x,y,True)
+                if not mask[x,y] and prev[x,y]:
+                    log("dot {:d}/{:d} flip off: ⬜︎".format(x,y))
+                    pixel.Flip(self.address,x,y,False)
+        
+        info(str(mask))
         return mask
     

@@ -37,7 +37,7 @@ DEFAULT_HOST = "87.193.3.53"
 
 
 
-def main(modename, host, preview, step, clear, **params):
+def main(modename, host, preview, step, clear, endless, **params):
 
 
     info( "\n" * 2 + str(PATTERN.DOTLIFE.value)[1:-1] + "\n" * 2) 
@@ -70,11 +70,11 @@ def main(modename, host, preview, step, clear, **params):
 
     if clear:
         info("clear display")
-        framebuffer.Post(address,Mask())
+        framebuffer.Write(address,Mask())
 
     try:
         run = mode.run(**params)
-        while run:
+        while run and endless:
             Clock.Tick()
             buf = mode.draw(**params)
             debug("{:s} {:s}".format(Clock.Str(),str(mode)))
@@ -150,14 +150,16 @@ MODEFLAGS = [
     # short long param default help func #             
     ("", "",                   "modename",             DEFAULT_MODE.name,      "mode",                         lambda x: fliplife.mode.Mode(x) ),
     ("",   "",                 "msg",                  "",                     "message",                                                 None ),
-    ("c",  "clear",            "clear",                False,                  "clear display?",                                          None ),
+    ("C",  "clear",            "clear",                False,                  "clear display?",                                          None ),
+    ("R",  "run",              "endless",              False,                  "run continuously?",                                       None ),
     ("i",  "invert",           "invert",               False,                  "invert pattern?",                                         None ),
     ("s:", "step=",            "step",                 1.0,                    "step speed [s]",                           lambda x : float(x) ),
+    ("c:", "count=",           "count",                1,                      "count",                                      lambda x : int(x) ),
     ("f:", "font=",            "font",                 "fixed_5x8",            "font",                                                    None ),
-    ("p:", "pattern=",         "pattern",              "",                     "pattern",                                                 None ),
+    ("p:", "pattern=",         "pattern",              "default",              "pattern",                                                 None ),
     ("x:", "",                 "x",                    0,                      "x offset",                                   lambda x : int(x) ),
     ("y:", "",                 "y",                    0,                      "y offset",                                   lambda x : int(x) ),
-    ("R", "random",            "randomize",            False,                  "randomize",                                               None ),
+    ("r", "random",            "randomize",            False,                  "randomize",                                               None ),
 ]
 
 PARAMS = FLAGS + MODEFLAGS

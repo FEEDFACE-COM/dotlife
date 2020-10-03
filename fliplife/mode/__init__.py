@@ -14,7 +14,7 @@ from dotlife.mode import Mode as dotMode
 
 class MODE(Enum):
     test      = "test"
-    ping      = "read"
+    read      = "read"
     clear     = "clear"
     fill      = "fill"
     gauss     = "gauss"
@@ -24,6 +24,9 @@ class MODE(Enum):
     pixel     = "pixel"
     dots      = "dots"
     life      = "life"
+    glider    = "glider"
+    gun       = "gun"
+    spawn     = "spawn"
 
 
 import dotlife.clock as clock
@@ -44,6 +47,9 @@ class Mode(dotMode):
         from fliplife.mode import pixel
         from fliplife.mode import dots
         from fliplife.mode import life
+        from fliplife.mode import glider
+        from fliplife.mode import gun
+        from fliplife.mode import spawn
         
         try:
             mod = __import__("fliplife.mode."+str(mode), fromlist=[''])

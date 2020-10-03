@@ -43,7 +43,7 @@ def Flip(address,x,y,val=None):
     if val == None: # get current pixel value
         rsp = http.get(address,"pixel",params)    
         if rsp == None:
-            debug("fail flip pixel {:d}/{:d}".format(x,y))
+            error("fail flip pixel {:d}/{:d}".format(x,y))
             return None
         if rsp.read() == b'X\x00':
             val = True
@@ -51,8 +51,10 @@ def Flip(address,x,y,val=None):
             val = False
     
     if val:
+        debug("dot {:d}/{:d} flip on: ⬛︎".format(x,y))
         rsp = http.post(address,"pixel",params,data=None)
     else:
+        debug("dot {:d}/{:d} flip off: ⬜︎".format(x,y))
         rsp = http.delete(address,"pixel",params)
     if rsp == None:
         raise Error("fail write pixel {:d}/{:d}".format(x,y))
@@ -62,3 +64,11 @@ def Flip(address,x,y,val=None):
     return False
 
 
+def WriteDelta(address,prev,mask):
+    for y in range(FRAMEHEIGHT):
+        for x in range(FRAMEWIDTH):
+            if mask[x,y] and not prev[x,y]:
+                Flip(address,x,y,True)
+            if not mask[x,y] and prev[x,y]:
+                Flip(address,x,y,False)
+    return
