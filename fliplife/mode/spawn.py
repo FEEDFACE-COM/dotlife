@@ -59,7 +59,7 @@ class Spawn(fliplife.mode.Mode):
         self.life.step()
         mask = Mask(mask=self.life.board)
 
-#        framebuffer.Write(self.address,mask)
+        framebuffer.Write(self.address,mask)
         
         log(str(mask))
         return mask
