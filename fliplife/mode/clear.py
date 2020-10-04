@@ -17,8 +17,7 @@ class Clear(fliplife.mode.Mode):
         mask = Mask()
         if invert: 
             mask.inv()
-        log(str(mask))
-        mask = framebuffer.Write(self.address,mask)
+        mask = self.framebuffer.write(mask)
         log(str(mask))
         return False
     

@@ -9,7 +9,7 @@ import fliplife
 from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
 from fliplife import mask,framebuffer, pixel
 
-from fliplife import rendering
+from fliplife.rendering import Rendering
 
 class Dots(fliplife.mode.Mode):
     
@@ -19,10 +19,11 @@ class Dots(fliplife.mode.Mode):
         self.count = 0
         
         
+        self.framebuffer.rendering.setMode(Rendering.Mode.Diff)
         
-        self.mask = framebuffer.Read(self.address)
-        rendering.SetMode(self.address,rendering.Differential)
-        log(str(self.mask))        
+        self.mask = self.framebuffer.read()
+        self.mask= self.draw(**params)
+        
         return True
         
     
@@ -46,20 +47,9 @@ class Dots(fliplife.mode.Mode):
         self.mask[x+1,y] ^= True
         self.mask[x,y+1] ^= True
 
-        brights = self.mask.deltaBright(prev)
-        darks = self.mask.deltaDark(prev)
-        
-        for (x,y) in brights:
-            log("dot {:d}/{:d} flip on: ⬛︎".format(x,y))
-            pixel.Flip(self.address,x,y,True)
 
+        self.framebuffer.pixel.flipDelta(prev, self.mask)
 
-        for (x,y) in darks:
-            log("dot {:d}/{:d} flip off: ⬜︎".format(x,y))
-            pixel.Flip(self.address,x,y,False)
-
-
-        log(str(prev))
         log(str(self.mask))
         return self.mask
     

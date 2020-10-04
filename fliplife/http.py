@@ -14,7 +14,7 @@ def get(host,path,params):
     rsp = None
     try:
         req = request.Request(url,method="GET")
-        debug("get {:s}/{:s}".format(host,path))
+#        debug("get {:s}/{:s}".format(host,path))
         rsp = request.urlopen(req)
     except Exception as x: 
         error("fail get from {:s}".format(url))
@@ -35,7 +35,7 @@ def put(host,path,params,data):
     rsp = None
     try:
         req = request.Request(url, data=data, method="PUT")
-        debug("put {:s}/{:s}".format(host,path))
+#        debug("put {:s}/{:s}".format(host,path))
         rsp = request.urlopen(req)
     except Exception as x: 
         error("fail put to {:s}".format(url))
@@ -58,7 +58,7 @@ def post(host,path,params,data):
         data = data.encode()
     try:
         req = request.Request(url, data=data, method="POST")
-        debug("post {:s}/{:s}".format(host,path))
+#        debug("post {:s}/{:s}".format(host,path))
         rsp = request.urlopen(req)
     except Exception as x: 
         error("fail post to {:s}".format(url))
@@ -79,7 +79,7 @@ def delete(host,path,params):
     rsp = None
     try:
         req = request.Request(url,method="DELETE")
-        debug("delete {:s}/{:s}".format(host,path))
+#        debug("delete {:s}/{:s}".format(host,path))
         rsp = request.urlopen(req)
     except Exception as x: 
         error("fail delete {:s}".format(url))

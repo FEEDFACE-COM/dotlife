@@ -174,9 +174,8 @@ class Life:
         return False
 
 
-    def addGlider(self,pos=(2,2),step=0,direction=Direction.SouthEast):
-        x,y = pos
-        return self.add(Pattern.Glider,pos=Position(x,y),step=step)
+    def addGlider(self,pos=Position(2,2),step=0,direction=Direction.SouthEast):
+        return self.spawn(Pattern.Glider,pos=pos,step=step)
 
 
 #    def addEater(self,pos=Position(0,0)):

@@ -15,24 +15,24 @@ class Pixel(fliplife.mode.Mode):
     def run(self,x,y,invert,**params):
         info("start pixel {:d}/{:d}".format(x,y))
 
-        mask = framebuffer.Read(self.address)
+        mask = self.framebuffer.read()
         
-        pxl = pixel.Read(self.address,x,y)
+        pxl = self.framebuffer.pixel.read(x,y)
         if pxl:
-            log("pixel {:d}/{:d} ⬛︎ on".format(x,y))
+            log("pixel {:d}/{:d} ⬛︎ bright".format(x,y))
         else:
-            log("pixel {:d}/{:d} ⬜︎ off".format(x,y))
+            log("pixel {:d}/{:d} ⬜︎ dark".format(x,y))
         
         
         if not invert and not pxl:
-            log("pixel {:d}/{:d} flip ⬛︎ on".format(x,y))
-            pixel.Flip(self.address,x,y,True)
+            log("pixel {:d}/{:d} flip bright: ⬛︎".format(x,y))
+            self.framebuffer.pixel.flip(x,y,True)
             
         if invert and pxl:
-            log("pixel {:d}/{:d} flip ⬜︎ off".format(x,y))
-            pixel.Flip(self.address,x,y,True)
+            log("pixel {:d}/{:d} flip dark: ⬜︎".format(x,y))
+            self.framebuffer.pixel.flip(x,y,False)
 
-        mask = framebuffer.Read(self.address)
+        mask = self.framebuffer.read()
         log(str(mask))        
         return False
         

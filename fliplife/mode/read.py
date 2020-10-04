@@ -13,7 +13,7 @@ class Read(fliplife.mode.Mode):
     def run(self,**params):
         info("start read")
         
-        self.mask = framebuffer.Read(self.address)
+        self.mask = self.framebuffer.read()
         log(str(self.mask))
         return False
     

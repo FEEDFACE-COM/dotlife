@@ -10,17 +10,17 @@ import fliplife
 from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
 from fliplife import framebuffer, pixel
 from fliplife.mask import Mask
-from fliplife import rendering
+from fliplife.rendering import Rendering
 
 class Glider(fliplife.mode.Mode):
     
     
     def run(self,count,randomize,**params):
         info("start life")
-        rendering.SetMode(self.address,rendering.Differential)
+        self.framebuffer.rendering.setMode(Rendering.Mode.Diff)
 
 
-        mask = framebuffer.Read(self.address)        
+        mask = self.framebuffer.read()        
         
         self.life = life.Life(mask=mask)
         
@@ -62,9 +62,9 @@ class Glider(fliplife.mode.Mode):
     
     def draw(self,invert,**params):
         
-        prev = framebuffer.Read(self.address)
+        prev = self.framebuffer.read()
         mask = Mask(mask=self.life.board)
-        framebuffer.Write(self.address,mask)
+        self.framebuffer.write(mask)
         
         debug(str(mask))
         return mask

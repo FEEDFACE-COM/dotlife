@@ -14,15 +14,19 @@ from fliplife import mask,framebuffer
 class Exec(fliplife.mode.Mode):
         
     
-    def run(self,randomize,x,y,font,msg,**params):
+    def run(self,randomize,x,y,font,rem=None,**params):
         
-        info("start exec {:s}".format(" ".join(msg)))
         self.randomize = randomize
-        self.cmd = "echo hello"
-        if type(msg) == type([]):
-            self.cmd = " ".join(msg)
-        elif type(msg) == type(""):
-            self.cmd = msg
+        self.cmd = 'date "+%F %T%z"'
+        if type(rem) == type([]):
+            self.cmd = " ".join(rem)
+        elif type(rem) == type("") and rem != "":
+            self.cmd = rem
+
+        info("start exec: {:s}".format(self.cmd))
+
+        self.draw(x,y,font,**params)
+
         return True
     
 
@@ -31,8 +35,7 @@ class Exec(fliplife.mode.Mode):
         try:
             txt,err,ret = shell(self.cmd)
         except OSError as ex:
-            error("fail run {:s}: {:s}".format(self.cmd,str(ex)))
-            return
+            raise Error("fail run {:s}: {:s}".format(self.cmd,str(ex)))
         txt = txt.decode()
         log("ran {:s}: {:s}".format(self.cmd,str(txt)))
 #        txt = " ".join(txt)
@@ -45,6 +48,6 @@ class Exec(fliplife.mode.Mode):
             y = int(random.random() * float(h))
         
         debug("render text {:d}/{:d}: {:s}".format(x,y,txt))
-        self.mask = framebuffer.Text(self.address,x,y,font,txt)
+        self.mask = self.framebuffer.text(x,y,font,txt)
         log(str(self.mask))
         return self.mask

@@ -23,7 +23,7 @@ class Gauss(fliplife.mode.Mode):
         
         
         log(str(self.mask))
-        self.mask = framebuffer.Write(self.address,self.mask)
+        self.mask = self.framebuffer.write(self.mask)
         log(str(self.mask))
         
         return False

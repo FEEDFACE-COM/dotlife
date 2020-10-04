@@ -8,25 +8,41 @@ from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
 from fliplife import framebuffer
 from fliplife.mask import Mask
 
+from enum import Enum, auto
+
+class Pattern(Enum):
+    Check = auto()
+
 
 class Fill(fliplife.mode.Mode):
+    
+    DefaultPattern = Pattern.Check
     
     
     def run(self,invert,pattern,**params):
         log("start fill{:s}".format(" [invert]" if invert else ""))
-        mask = framebuffer.Read(self.address)
+        mask = self.framebuffer.read()
         log(str(mask))
 
+        if pattern == "default":
+            pattern = Fill.DefaultPattern
+        else:
+            try:
+                pattern = getattr(Pattern,pattern.capitalize())
+            except AttributeError as x:
+                raise Error("unknown pattern {:s}".format(pattern))
+
+
         mask = Mask()
-        if pattern == "check":
-            for y in range(FRAMEHEIGHT):
-                for x in range(FRAMEWIDTH):
+        for y in range(FRAMEHEIGHT):
+            for x in range(FRAMEWIDTH):
+                if pattern == Pattern.Check:
                     if x%2 == y%2:
                         mask[x,y] = True
         
         if invert: 
             mask.inv()
-        mask = framebuffer.Write(self.address,mask)
+        mask = self.framebuffer.write(mask)
         log(str(mask))
         return False
     

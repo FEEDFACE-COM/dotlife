@@ -10,7 +10,7 @@ import fliplife
 from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
 from fliplife import framebuffer, pixel
 from fliplife.mask import Mask
-from fliplife import rendering
+from fliplife.rendering import Rendering
 
 
 class Spawn(fliplife.mode.Mode):
@@ -25,7 +25,7 @@ class Spawn(fliplife.mode.Mode):
     def run(self,x,y,randomize,pattern,step,count,**params):
     
         if pattern == "default":
-            pattern = DefaultPattern
+            pattern = Spawn.DefaultPattern
         else:
             try:
                 pattern = getattr(life.Pattern,pattern.capitalize())
@@ -33,9 +33,9 @@ class Spawn(fliplife.mode.Mode):
                 raise Error("unknown pattern {:s}".format(pattern))
         
         info("start spawn {:s}".format(pattern))
-        rendering.SetMode(self.address,rendering.Differential)
+        self.framebuffer.rendering.setMode(Rendering.Mode.Diff)
 
-        mask = framebuffer.Read(self.address)        
+        mask = self.framebuffer.read()        
         self.life = life.Life(mask=mask)
 
 
@@ -55,12 +55,12 @@ class Spawn(fliplife.mode.Mode):
     
     def draw(self,**params):
         
-        prev = framebuffer.Read(self.address)
+        prev = self.framebuffer.read()
         self.life.step()
         mask = Mask(mask=self.life.board)
 
-        framebuffer.Write(self.address,mask)
+        self.framebuffer.write(mask)
         
-        log(str(mask))
+        info(str(mask))
         return mask
     

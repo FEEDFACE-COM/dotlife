@@ -1,31 +1,64 @@
 
 from dotlife.util import *
 
-from fliplife.mask import Mask
+import fliplife
 from fliplife import http
+
+from fliplife.mask import Mask
+from fliplife.rendering import Rendering    
+from fliplife.pixel import Pixel
+
+
+
+
+
+
+class Framebuffer(fliplife.mask.Mask):
     
+    def __init__(self,address,nowrite,noread):
+        super().__init__()
+        self.address = address
+        self.nowrite, self.noread = nowrite,noread
+        if self.noread:
+            self.nowrite = True
+        self.pixel = Pixel(self.address,self.nowrite,self.noread)
+        self.rendering = Rendering(self.address,self.nowrite,self.noread)
 
 
-def Read(address):
-    rsp = http.get(address,"framebuffer",None)
-    ret = Mask.MaskFromResponse(rsp)
-    return ret
-
-
-def Write(address,mask):
-    data = mask.toData()
-    rsp = http.post(address,"framebuffer",None,data)
-    ret = Mask.MaskFromResponse(rsp)
-    return ret
+    def write(self,mask):
+        data = mask.toData()
+        ret = mask
+        debug("framebuffer write {:s}".format(self.address))
+        if not self.nowrite:
+            rsp = http.post(self.address,"framebuffer",None,data)
+            ret = Mask.MaskFromResponse(rsp)
+        return ret
+        
     
+    def read(self):
+        ret = Mask()
+        debug("framebuffer read {:s}".format(self.address))
+        if not self.noread:
+            rsp = http.get(self.address,"framebuffer",None)
+            ret = Mask.MaskFromResponse(rsp)
+        return ret
 
-def Text(address,x,y,font,msg):
-    params = {
-        'x': x,
-        'y': y,
-        'font': font
-    }
-    rsp = http.post(address,"framebuffer/text",params,data=msg)
-    ret = Mask.MaskFromResponse(rsp)
-    return ret
+        
+    
+    def text(self,x,y,font,msg):
+        params = {
+            'x': x,
+            'y': y,
+            'font': font
+        }
+        ret = Mask()
+        debug("framebuffer text {:s}".format(self.address))
+        if not self.nowrite:
+            rsp = http.post(self.address,"framebuffer/text",params,data=msg)
+            ret = Mask.MaskFromResponse(rsp)
+            
+        return ret            
 
+
+
+    

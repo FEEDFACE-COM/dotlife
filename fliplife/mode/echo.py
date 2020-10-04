@@ -7,23 +7,27 @@ from dotlife.buffer import Buffer
 
 import fliplife
 from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
-from fliplife import mask,framebuffer
+from fliplife.mask import Mask
 
 
 
 class Echo(fliplife.mode.Mode):
         
     
-    def run(self,randomize,msg,font,x,y,**params):
+    def run(self,randomize,font,x,y,rem=None,**params):
         self.randomize = randomize
         self.msg = ""
-        if type(msg) == type([]):
-            self.msg = " ".join(msg)
+        if type(rem) == type([]):
+            self.msg = " ".join(rem)
         elif type(msg) == type(""):
-            self.msg = msg
+            self.msg = rem
 
-        info("start echo '{:s}'".format(self.msg))
-        return True
+        info("start echo: {:s}".format(self.msg))
+        
+        self.mask = Mask()
+        self.mask = self.draw(x,y,font,**params)
+        log(str(self.mask))
+        return False
     
 
     def draw(self,x,y,font,**params):
@@ -34,7 +38,5 @@ class Echo(fliplife.mode.Mode):
             x = int(random.random() * float(w))
             y = int(random.random() * float(h))
         
-        
-        self.mask = framebuffer.Text(self.address,x,y,font,self.msg)
-        log(str(self.mask))
-        return self.mask
+        mask = self.framebuffer.text(x,y,font,self.msg)
+        return mask

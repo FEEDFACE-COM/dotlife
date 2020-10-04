@@ -11,6 +11,7 @@ from dotlife.mode import Mode as dotMode
 #
 
 
+from enum import Enum, auto
 
 class MODE(Enum):
     test      = "test"
@@ -25,7 +26,7 @@ class MODE(Enum):
     dots      = "dots"
     life      = "life"
     glider    = "glider"
-    gun       = "gun"
+    guns      = "guns"
     spawn     = "spawn"
 
 
@@ -33,7 +34,7 @@ import dotlife.clock as clock
 
 class Mode(dotMode):
 
-    def Init(mode,address,printFun,speed):
+    def Init(mode,framebuffer,speed):
     
         # static import for run time checking
         from fliplife.mode import test
@@ -48,7 +49,7 @@ class Mode(dotMode):
         from fliplife.mode import dots
         from fliplife.mode import life
         from fliplife.mode import glider
-        from fliplife.mode import gun
+        from fliplife.mode import guns
         from fliplife.mode import spawn
         
         try:
@@ -63,14 +64,13 @@ class Mode(dotMode):
             raise Error("mode {} imported exception: {}".format(mode,str(x)))
         
         timer = clock.Clock.Timer(speed,repeat=True)
-        ret = cls(address,printFun,timer)
+        ret = cls(framebuffer,timer)
         return ret
     
 
-    def __init__(self,address,printFun,timer):
+    def __init__(self,framebuffer,timer):
         super().__init__(timer)
-        self.address = address
-        self.printFun = printFun
+        self.framebuffer = framebuffer
 
         
     

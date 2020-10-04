@@ -14,16 +14,9 @@ class Test(fliplife.mode.Mode):
     
     def run(self,**params):
         info("start test")
-        prev = framebuffer.Read(self.address)
-        mask = self.draw(params)
-        
-        bright = mask.deltaBright(prev)
-        dark = mask.deltaDark(prev)
-        for (x,y) in bright:
-            pixel.Flip(self.address,x,y,True)
-        for (x,y) in dark:
-            pixel.Flip(self.address,x,y,False)
-        
+        prev = self.framebuffer.read()
+        self.mask = Mask()
+        self.mask = self.draw(params)
         return False
 
 
@@ -49,5 +42,5 @@ class Test(fliplife.mode.Mode):
 
 
 
-        log(str(mask))
-        return mask
+        log(str(self.mask))
+        return self.mask

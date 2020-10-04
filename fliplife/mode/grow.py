@@ -8,18 +8,16 @@ import fliplife
 from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
 from fliplife import mask,framebuffer, pixel
 
-from fliplife import rendering
+from fliplife.rendering import Rendering
 
 class Grow(fliplife.mode.Mode):
     
     
     def run(self,**params):
         info("start grow")
+
+        self.framebuffer.rendering.setMode(Rendering.Mode.Diff)
         mask = self.draw(**params)
-        
-#        rendering.GetMode(self.address)
-        rendering.SetMode(self.address,rendering.Differential)
-        
         return True
         
     
@@ -34,14 +32,14 @@ class Grow(fliplife.mode.Mode):
         y = cy + int(r1*(cy/4.))
 
 
-        pxl = pixel.Read(self.address,x,y)
+        pxl = self.framebuffer.pixel.read(x,y)
         
         mask = fliplife.mask.Mask()
         if invert:
 
             if pxl:
-                pixel.Flip(self.address,x,y,False)
-                mask = framebuffer.Read(self.address)
+                self.framebuffer.pixel.flip(x,y,False)
+                mask = self.framebuffer.read()
                 log("pixel {:d}/{:d} flip ⬜︎ off".format(x,y))
                 log(str(mask))
 
@@ -49,8 +47,8 @@ class Grow(fliplife.mode.Mode):
         else:
                 
             if not pxl:
-                pixel.Flip(self.address,x,y,True)
-                mask = framebuffer.Read(self.address)
+                self.framebuffer.pixel.flip(x,y,True)
+                mask = self.framebuffer.read()
                 log("pixel {:d}/{:d} flip ⬛︎ on".format(x,y))
                 log(str(mask))
         

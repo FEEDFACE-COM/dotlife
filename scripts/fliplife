@@ -23,7 +23,7 @@ from dotlife.clock import Clock, FRAME, NOW
 from fliplife.mode import *
 from fliplife import FRAMEWIDTH,FRAMEHEIGHT
 from fliplife.mask import Mask
-from fliplife import framebuffer
+from fliplife.framebuffer import Framebuffer
 
 
 
@@ -37,10 +37,10 @@ DEFAULT_HOST = "87.193.3.53"
 
 
 
-def main(modename, host, preview, speed, clear, endless, **params):
+def main(modename, host, preview, speed, clear, forever, nowrite, noread, **params):
 
 
-    info( "\n" * 2 + str(PATTERN.DOTLIFE.value)[1:-1] + "\n" * 2) 
+    info( "\n" * 2 + str(PATTERN.FLIPLIFE.value)[1:-1] + "\n" * 2) 
     info("fliplife mode {:s}".format(modename))
 
 
@@ -56,6 +56,8 @@ def main(modename, host, preview, speed, clear, endless, **params):
         FATAL("fail to get address for {:s}: {:s}".format(host,str(x)))
     
     
+    framebuffer = Framebuffer(address,nowrite,noread)
+    
     Clock.Init()
     try:
         _ = MODE(modename)
@@ -63,23 +65,22 @@ def main(modename, host, preview, speed, clear, endless, **params):
         usage()
     
     try:
-        mode = Mode.Init(modename,address,printBuffer,speed)
+        mode = Mode.Init(modename,framebuffer,speed)
     except Error as x:
         FATAL("fail init mode {:s}: {:s}".format(modename,str(x)))
 
 
     if clear:
         info("clear display")
-        framebuffer.Write(address,Mask())
+        framebuffer.write(address,Mask())
 
     try:
         run = mode.run(**params)
-        while run and endless:
+        while run and forever:
             Clock.Tick()
             buf = mode.draw(**params)
             debug("{:s} {:s}".format(Clock.Str(),str(mode)))
             printBuffer(str(buf))
-            #debug("sleep {:f}".format(step))
             Clock.Sleep( speed )
             
     except KeyboardInterrupt as x:
@@ -132,7 +133,7 @@ def printBuffer(buf):
 
 
 
-## PARAMS ######################################################################
+## FLAGS #######################################################################
     
     
     
@@ -149,9 +150,11 @@ FLAGS = [
 MODEFLAGS = [
     # short long param default help func #             
     ("", "",                   "modename",             DEFAULT_MODE.name,      "mode",                         lambda x: fliplife.mode.Mode(x) ),
-    ("",   "",                 "msg",                  "",                     "message",                                                 None ),
+    ("",   "",                 "rem",                  "",                     "remainder"        ,                                       None ),
+    ("W",  "nowrite",          "nowrite",              False,                  "no write to flipdot?",                                    None ),
+    ("R",  "noread",           "noread",               False,                  "no read from flipdot?",                                   None ),
     ("C",  "clear",            "clear",                False,                  "clear display?",                                          None ),
-    ("R",  "run",              "endless",              False,                  "run continuously?",                                       None ),
+    ("F",  "forever",          "forever",              False,                  "run continuously?",                                       None ),
     ("i",  "invert",           "invert",               False,                  "invert pattern?",                                         None ),
     ("s:", "speed=",           "speed",                 1.0,                   "step speed [s]",                           lambda x : float(x) ),
     ("c:", "count=",           "count",                1,                      "count",                                      lambda x : int(x) ),
@@ -163,7 +166,7 @@ MODEFLAGS = [
     ("r", "random",            "randomize",            False,                  "randomize",                                               None ),
 ]
 
-PARAMS = FLAGS + MODEFLAGS
+ALLFLAGS = FLAGS + MODEFLAGS
 
 
 
@@ -176,7 +179,7 @@ def usage():
         
     log("""## Usage
 
-{} [-{}] {} <mode> <msg..>
+{} [-{}] {} <mode> <msg/cmd/...>
 """.format(
         "fliplife",
         "".join([s[0] if len(s) >= 1 else "" for (s,_,_,_,_,_) in FLAGS]),
@@ -244,9 +247,9 @@ if __name__ == "__main__":
     logger.addHandler(handler)
     
     
-    short = "".join( [s for (s,_,_,_,_,_) in PARAMS if s is not None] )
-    long = [l for (_,l,_,_,_,_) in PARAMS if l is not None] 
-    params = dict( [(n,d) for (_,_,n,d,_,_) in PARAMS if n is not None] )
+    short = "".join( [s for (s,_,_,_,_,_) in ALLFLAGS if s is not None] )
+    long = [l for (_,l,_,_,_,_) in ALLFLAGS if l is not None] 
+    params = dict( [(n,d) for (_,_,n,d,_,_) in ALLFLAGS if n is not None] )
     
     try:
         opts, args = getopt.getopt(sys.argv[1:],short,long)
@@ -273,7 +276,7 @@ if __name__ == "__main__":
         elif opt in ("-P", "--preview"):
             params["preview"] = True
         else:
-            for (s,l,p,_,h,f) in PARAMS:
+            for (s,l,p,_,h,f) in ALLFLAGS:
                 if s is None and l is None:
                     continue
                 if opt in ["-"+s.rstrip(":"),"--"+l.rstrip("=")]:
@@ -291,7 +294,7 @@ if __name__ == "__main__":
                 error("internal error: option {} not implemented.".format(opt))
                 usage()            
 
-    for (s,l,n,_,_,_) in PARAMS:
+    for (s,l,n,_,_,_) in ALLFLAGS:
         if n and params[n] is None:
             error("mandatory parameter {}/{} missing.".format("-"+s.rstrip(":") if s else "","--"+l.rstrip("=") if l else ""))
             usage()
@@ -302,7 +305,7 @@ if __name__ == "__main__":
     if len(args) > 1:
         if args[1] == "-h":
             usage()
-        params['msg'] = args[1:] 
+        params['rem'] = args[1:] 
 
 
 #    dump(params)
