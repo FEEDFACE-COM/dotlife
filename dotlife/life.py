@@ -61,6 +61,25 @@ class Pattern(Enum):
     []
 """
 
+    Block = \
+"""
+[][]
+[][]
+"""
+
+    Shuttle = \
+"""
+                  []                        
+              []  []                        
+            []  []                          
+[][]      []    []                          
+[][]        []  []                          
+              []  []                [][]    
+                  []                []  []  
+                                        []  
+                                        [][]
+"""
+
     def __init__(self,name):
         super().__init__()
         return self
