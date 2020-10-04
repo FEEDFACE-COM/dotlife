@@ -57,7 +57,7 @@ class Spawn(fliplife.mode.Mode):
         
         prev = self.fluepdot.buffer.read()
         self.life.step()
-        mask = Mask(mask=self.life.board)
+        mask = Mask(mask=self.life)
 
         self.fluepdot.buffer.write(mask)
         

@@ -63,7 +63,7 @@ class Glider(fliplife.mode.Mode):
     def draw(self,invert,**params):
         
         prev = self.fluepdot.buffer.read()
-        mask = Mask(mask=self.life.board)
+        mask = Mask(mask=self.life)
         self.fluepdot.buffer.write(mask)
         
         debug(str(mask))

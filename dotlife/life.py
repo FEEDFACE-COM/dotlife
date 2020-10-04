@@ -101,47 +101,47 @@ class Life(Mask):
     DEAD = 0x00
 
     def __str__(self):
-        return "gen#{}\n".format(self.gen) + str(self.board)
+        return "gen#{}\n".format(self.gen) + super.str()
 
 
     def buffer(self,alive=ALIVE,dead=DEAD):
         ret = Buffer()
-        ret.mask( self.board, light=alive )
+        ret.mask( self, light=alive )
         return ret
     
     def __init__(self,size=Size(8,8),gen=0,mask=None):
         if mask == None:
             super().__init__(size=size)
-            self.board = Mask(size=size)
         else:
             super().__init__(mask=mask)
-            self.board = Mask(mask=mask)
         self.gen = gen
         
 
     def step(self):
-        tmp = Mask(size=self.size())
-        for x in range(self.board.w):
-            for y in range(self.board.h):
-                if self.alive(x,y):
-                    tmp[x,y] = True
+        prev = Life(mask=self)
+        for x in range(self.w):
+            for y in range(self.h):
+                if prev.alive(x,y):
+                    self[x,y] = True
+                else:
+                    self[x,y] = False
+                
                 
 
         self.gen = self.gen+1
-        self.board = tmp
 #        info(str(self))
 
 
     def spawn(self,pattern,pos=Position(0,0),step=0,flip=Flip.NoFlip):
         pat = pattern.Mask(step,flip)
-        self.board.mask( pat, pos=pos, wrap=True )
+        self.mask( pat, pos=pos, wrap=True )
         return
 
     def minimal(self):
-        p0,p1 = Position(self.board.w,self.board.h),Position(0,0)
-        for y in range(self.board.h):
-            for x in range(self.board.w):
-                if self.board[x,y]:
+        p0,p1 = Position(self.w,self.h),Position(0,0)
+        for y in range(self.h):
+            for x in range(self.w):
+                if self[x,y]:
                     if x < p0.x:
                         p0.x = x
                     if x > p1.x:
@@ -155,7 +155,7 @@ class Life(Mask):
         ret = Mask(size=(size.x,size.y))
         for y in range(p0.y,p1.y):
             for x in range(p0.x,p1.x):
-                ret[x-p0.x,y-p0.y] = self.board[x,y]
+                ret[x-p0.x,y-p0.y] = self[x,y]
         
         log("minimal board {:s}:\n{:s}".format(str(size),str(ret)))
         return ret
@@ -167,11 +167,11 @@ class Life(Mask):
             for c in [-1,0,1]:
                 if r == 0 == c:
                     continue
-                if self.board[x+c,y+r]:
+                if self[x+c,y+r]:
                     neighbours += 1
-        if self.board[x,y] and neighbours in [2,3]:
+        if self[x,y] and neighbours in [2,3]:
             return True
-        if not self.board[x,y] and neighbours == 3:
+        if not self[x,y] and neighbours == 3:
             return True
         return False
 
@@ -180,15 +180,4 @@ class Life(Mask):
         return self.spawn(Pattern.Glider,pos=pos,step=step)
 
 
-#    def addEater(self,pos=Position(0,0)):
-#        eater = Mask.Load( Life.EATER[0] )
-#        self.board.mask(eater,pos=pos,wrap=True )
-#
-#    def addGun(self,pos=Position(10,0)):
-#        gun = Mask.Load( Life.GUN[1] )
-#        self.board.mask( gun, pos=pos, wrap=True )
-#
-#    def addGlider(self,pos=Position(2,2),step=0,direction=Direction.SouthEast):
-#        glider = Mask.Load( Life.GLIDER[step%4] )
-#        self.board.mask( glider, pos=pos, wrap=True )
         

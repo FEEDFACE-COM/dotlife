@@ -30,9 +30,9 @@ class Life(fliplife.mode.Mode):
     
     def draw(self,invert,**params):
 
-        prev = Mask(mask=self.life.board)
+        prev = Mask(mask=self.life)
         self.life.step()
-        mask = Mask(mask=self.life.board)
+        mask = Mask(mask=self.life)
 
 
         if True:

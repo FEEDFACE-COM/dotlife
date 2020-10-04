@@ -36,7 +36,7 @@ class Guns(fliplife.mode.Mode):
         self.life.spawn(life.Pattern.Gun,pos=pos2,flip=Flip.Horizontal)
         self.life.spawn(life.Pattern.Eater,pos=pos2+off2,flip=Flip.Horizontal)
 
-        self.mask = Mask(self.life.board)
+        self.mask = Mask(self.life)
 
         self.draw(**params)
 
@@ -46,7 +46,7 @@ class Guns(fliplife.mode.Mode):
     def draw(self,invert,**params):
 
         self.life.step()
-        self.mask = Mask(mask=self.life.board)
+        self.mask = Mask(mask=self.life)
         
 
         self.fluepdot.buffer.write(self.mask)
