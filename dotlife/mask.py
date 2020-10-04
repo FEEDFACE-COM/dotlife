@@ -159,7 +159,7 @@ class Mask:
                     self.pixel[x][y] = val[x,y]
 
 
-    def mask(self,mask,pos=(0,0),wrap=False):
+    def mask(self,mask,pos=Position(0,0),wrap=False):
         for y in range(mask.h):
             if not wrap and not 0 <= y+pos.y < self.h:
                 continue

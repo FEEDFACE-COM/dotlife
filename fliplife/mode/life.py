@@ -35,7 +35,7 @@ class Life(fliplife.mode.Mode):
         mask = Mask(mask=self.life.board)
 
 
-        if True:
+        if False:
             framebuffer.Write(self.address,mask)
             log(str(mask))
             return mask
@@ -44,7 +44,7 @@ class Life(fliplife.mode.Mode):
             log(str(self.life))
             return mask
             
-        if False:
+        if True:
             pixel.WriteDelta(self.address,prev,mask)
             log(str(mask))
             return mask

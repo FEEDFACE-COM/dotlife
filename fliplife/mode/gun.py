@@ -23,8 +23,6 @@ class Gun(fliplife.mode.Mode):
 
         self.mask = framebuffer.Read(self.address)        
         
-#        self.life = life.Life(mask=mask)
-
         pos1 = Position(10,2)
         pos2 = Position(60,7)        
         off = Position(x=24,y=10)
@@ -38,18 +36,11 @@ class Gun(fliplife.mode.Mode):
 
         gun = gun.flip(Axis.Horizontal)
         eat = eat.flip(Axis.Horizontal)
-        log("add gun at {:s}:\n{:s}".format(str(pos1),str(gun)))
+        log("add gun at {:s}:\n{:s}".format(str(pos2),str(gun)))
         self.mask.mask(gun, pos=pos2, wrap=True)
         self.mask.mask(eat, pos=pos2+Position(x=24,y=-5), wrap=True)
 
 
-#        eat = eat.flip(Axis.Horizontal)
-#        gun = gun.flip(Axis.Vertical)
-#        log("add gun at {:s}".format(str(pos2)))
-#        self.mask.mask(gun, pos=pos1, wrap=True)
-#        self.mask.mask(eat, pos=pos1+off, wrap=True)
-
-                
         self.draw(**params)
         return False
         
