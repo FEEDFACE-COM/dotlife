@@ -48,7 +48,7 @@ class Rendering():
 
 
 
-    def GetTimings(self):
+    def GetTiming(self):
         debug("rendering timings get {:s}".format(self.address))
         if self.noread:
             return None

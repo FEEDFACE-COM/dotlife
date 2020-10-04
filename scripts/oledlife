@@ -187,7 +187,7 @@ FLAGS = [
 MODEFLAGS = [
     # short long param default help func #             
     ("", "",                   "modename",             DEFAULT_MODE.name,      "mode",          None ),
-    ("b:", "blend=",            "blend",               dotlife.Blend.Jump.value,  "blend style {}".format(",".join([ b.value for b in Blend])), lambda x : dotlife.Blend(x) ),
+    ("b:", "blend=",            "blend",               dotlife.Blend.Jump.name,"blend style {}".format(",".join([ b.name for b in Blend])), lambda x : dotlife.Blend(x) ),
     ("s:", "step=",             "step",                1.0,                     "step speed",                                                 lambda x : float(x) ),
     ("",   "inv",               "invert",              False,                   "invert brightness",                                          None ),
     ("",   "gain=",             "gain",                1.0,                     "gain brightness",                                            lambda x: float(x) ),
@@ -228,9 +228,17 @@ def usage():
     log("")
 
     log("## Modes")
+    modes = ""
     for k in MODE:
-        log("  {:8} {:15}    {}".format(k.name,"",""))
+        modes += " " + k.name
+        if len(modes) > 40:
+            log("{:s}".format(modes))
+            modes = ""
+    log("{:s}".format(modes))
     log("")
+#    for k in MODE:
+#        log("  {:8} {:15}    {}".format(k.name,"",""))
+#    log("")
 
     exit(-1)
 
@@ -319,6 +327,9 @@ if __name__ == "__main__":
     if len(args) >= 1:
         params['modename'] = args[0]
     
+    if len(args) > 1:
+        if args[1] == "-h":
+            usage()
 
 
 #    dump(params)

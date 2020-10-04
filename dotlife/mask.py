@@ -101,7 +101,7 @@ class Mask:
             self.w,self.h = mask.w,mask.h
             self.pixel = [ [ mask[x,y] for y in range(self.h) ] for x in range(self.w) ]
         else:
-            self.w, self.h = size
+            self.w, self.h = size.w,size.h
             if self.w <= 0 or self.h <= 0:
                 raise dotlife.Error("invalid mask dimensions {}x{}".format(self.w,self.h)) 
             self.pixel = [ [ val for y in range(self.h) ] for x in range(self.w) ]
@@ -119,8 +119,11 @@ class Mask:
         y =  (self.h + posy) % self.h
         self.pixel[x][y] = val
 
+    def size(self):
+        return Size(self.w,self.h)
+
     def inverse(self):
-        ret = Mask(size=(self.w,self.h))
+        ret = Mask(size=Size(self.w,self.h))
         for y in range(self.h):
             for x in range(self.w):
                 ret.pixel[x][y] = not self.pixel[x][y]
@@ -199,7 +202,7 @@ class Mask:
         if w <= 0 or h <= 0:
             raise Error("invalid mask pattern: {}x{}\n{}".format(w,h,lines))
         
-        ret = Mask(size=(w,h))
+        ret = Mask(size=Size(w,h))
 
         # read and fill
         x,y = 0,0

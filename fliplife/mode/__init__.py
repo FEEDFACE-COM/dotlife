@@ -34,7 +34,7 @@ import dotlife.clock as clock
 
 class Mode(dotMode):
 
-    def Init(mode,framebuffer,speed):
+    def Init(mode,fluepdot,speed):
     
         # static import for run time checking
         from fliplife.mode import test
@@ -64,13 +64,13 @@ class Mode(dotMode):
             raise Error("mode {} imported exception: {}".format(mode,str(x)))
         
         timer = clock.Clock.Timer(speed,repeat=True)
-        ret = cls(framebuffer,timer)
+        ret = cls(fluepdot,timer)
         return ret
     
 
-    def __init__(self,framebuffer,timer):
+    def __init__(self,fluepdot,timer):
         super().__init__(timer)
-        self.framebuffer = framebuffer
+        self.fluepdot = fluepdot
 
         
     

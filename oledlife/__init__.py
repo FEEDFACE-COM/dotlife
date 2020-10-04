@@ -1,10 +1,11 @@
 
+import dotlife
 from dotlife.util import *
 from enum import Enum
 
 FRAMEWIDTH = 8
 FRAMEHEIGHT = 8
-FRAMESIZE = (FRAMEWIDTH,FRAMEHEIGHT)
+FRAMESIZE = dotlife.Size(FRAMEWIDTH,FRAMEHEIGHT)
 
 
 LIGHT = 0x1

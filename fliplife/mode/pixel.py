@@ -15,9 +15,9 @@ class Pixel(fliplife.mode.Mode):
     def run(self,x,y,invert,**params):
         info("start pixel {:d}/{:d}".format(x,y))
 
-        mask = self.framebuffer.read()
+        mask = self.fluepdot.buffer.read()
         
-        pxl = self.framebuffer.pixel.read(x,y)
+        pxl = self.fluepdot.pixel.read(x,y)
         if pxl:
             log("pixel {:d}/{:d} ⬛︎ bright".format(x,y))
         else:
@@ -26,13 +26,13 @@ class Pixel(fliplife.mode.Mode):
         
         if not invert and not pxl:
             log("pixel {:d}/{:d} flip bright: ⬛︎".format(x,y))
-            self.framebuffer.pixel.flip(x,y,True)
+            self.fluepdot.pixel.flip(x,y,True)
             
         if invert and pxl:
             log("pixel {:d}/{:d} flip dark: ⬜︎".format(x,y))
-            self.framebuffer.pixel.flip(x,y,False)
+            self.fluepdot.pixel.flip(x,y,False)
 
-        mask = self.framebuffer.read()
+        mask = self.fluepdot.buffer.read()
         log(str(mask))        
         return False
         

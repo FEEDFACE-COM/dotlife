@@ -19,10 +19,9 @@ class FYI(Mode):
         super().__init__(timer)
         self.plasma = Plasma()
         pattern = dotlife.pattern.PATTERN.FYI.value
-        self.mask = dotlife.mask.Mask(False,(8,8))
-        self.mask.mask( dotlife.mask.Mask.Load(pattern), (0,2) )
-        
-        log("mask\n"+str(self.mask))
+        self.mask = dotlife.mask.Mask(size=Size(8,8))
+        self.mask.mask( dotlife.mask.Mask.Load(pattern), pos=Position(0,2) )
+        info(str(self.mask))
         self.timers = [
             Timer(1.*timer.duration*2.),
             Timer(1.*timer.duration*3.),

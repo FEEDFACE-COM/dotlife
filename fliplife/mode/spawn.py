@@ -33,9 +33,9 @@ class Spawn(fliplife.mode.Mode):
                 raise Error("unknown pattern {:s}".format(pattern))
         
         info("start spawn {:s}".format(pattern))
-        self.framebuffer.rendering.setMode(Rendering.Mode.Diff)
+        self.fluepdot.rendering.setMode(Rendering.Mode.Diff)
 
-        mask = self.framebuffer.read()        
+        mask = self.fluepdot.buffer.read()        
         self.life = life.Life(mask=mask)
 
 
@@ -55,11 +55,11 @@ class Spawn(fliplife.mode.Mode):
     
     def draw(self,**params):
         
-        prev = self.framebuffer.read()
+        prev = self.fluepdot.buffer.read()
         self.life.step()
         mask = Mask(mask=self.life.board)
 
-        self.framebuffer.write(mask)
+        self.fluepdot.buffer.write(mask)
         
         info(str(mask))
         return mask

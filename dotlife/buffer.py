@@ -6,7 +6,7 @@ from dotlife.util import *
 
 class Buffer:
 
-    DefaultSize = (8,8)
+    DefaultSize = Size(8,8)
     
     def __str__(self):
         ret = ""
@@ -53,7 +53,7 @@ class Buffer:
         
 
     def __init__(self,val=0x00,size=DefaultSize):
-        self.w, self.h = size
+        self.w, self.h = size.w,size.h
         if self.w <= 0 or self.h <= 0:
             raise dotlife.Error("invalid buffer dimensions {}x{}".format(self.w,self.h)) 
         val = Clamp(val)
@@ -75,6 +75,9 @@ class Buffer:
         if val > 0xff: p = 0xff
         self.pixel[x][y] = Clamp(p)
 
+
+    def size(self):
+        return Size(self.w,self.h)
 
     def palette(self,palette):
         ret = Buffer(size=(self.w,self.h))
@@ -137,7 +140,7 @@ class Buffer:
 
 
     def buffer(self,size=DefaultSize,pos=(0,0)):
-        w,h = size
+        w,h = size.w,size.h
         dx,dy = pos
         ret = Buffer(size=size)
         for y in range(h):

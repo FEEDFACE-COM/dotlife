@@ -14,7 +14,7 @@ class Test(fliplife.mode.Mode):
     
     def run(self,**params):
         info("start test")
-        prev = self.framebuffer.read()
+        prev = self.fluepdot.buffer.read()
         self.mask = Mask()
         self.mask = self.draw(params)
         return False

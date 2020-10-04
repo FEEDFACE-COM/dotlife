@@ -48,6 +48,6 @@ class Exec(fliplife.mode.Mode):
             y = int(random.random() * float(h))
         
         debug("render text {:d}/{:d}: {:s}".format(x,y,txt))
-        self.mask = self.framebuffer.text(x,y,font,txt)
+        self.mask = self.fluepdot.buffer.text(x,y,font,txt)
         log(str(self.mask))
         return self.mask

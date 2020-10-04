@@ -8,6 +8,7 @@ from dotlife.buffer import Buffer
 import fliplife
 from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
 from fliplife.mask import Mask
+from fliplife.rendering import Rendering
 
 
 
@@ -15,11 +16,16 @@ class Echo(fliplife.mode.Mode):
         
     
     def run(self,randomize,font,x,y,rem=None,**params):
+        self.fluepdot.rendering.setMode(Rendering.Mode.Full)
+
+#        self.fluepdot.rendering.setMode(Rendering.Mode.Diff)
         self.randomize = randomize
-        self.msg = ""
+        self.msg = "hello"
         if type(rem) == type([]):
             self.msg = " ".join(rem)
-        elif type(msg) == type(""):
+        elif rem == "":
+            self.msg = "hello"
+        elif type(rem) == type(""):
             self.msg = rem
 
         info("start echo: {:s}".format(self.msg))
@@ -38,5 +44,5 @@ class Echo(fliplife.mode.Mode):
             x = int(random.random() * float(w))
             y = int(random.random() * float(h))
         
-        mask = self.framebuffer.text(x,y,font,self.msg)
+        mask = self.fluepdot.buffer.text(x,y,font,self.msg)
         return mask

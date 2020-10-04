@@ -18,10 +18,10 @@ class Guns(fliplife.mode.Mode):
     
     def run(self,count,randomize,**params):
         info("start life")
-        self.framebuffer.rendering.setMode(Rendering.Mode.Diff)
+        self.fluepdot.rendering.setMode(Rendering.Mode.Diff)
     
 
-        self.mask = self.framebuffer.read()        
+        self.mask = self.fluepdot.buffer.read()        
         self.life = life.Life(mask=self.mask)
         
         pos1 = Position(10,2)
@@ -49,7 +49,7 @@ class Guns(fliplife.mode.Mode):
         self.mask = Mask(mask=self.life.board)
         
 
-        self.framebuffer.write(self.mask)
+        self.fluepdot.buffer.write(self.mask)
         info(str(self.mask))
         return self.mask
     

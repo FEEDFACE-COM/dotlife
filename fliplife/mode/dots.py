@@ -19,9 +19,9 @@ class Dots(fliplife.mode.Mode):
         self.count = 0
         
         
-        self.framebuffer.rendering.setMode(Rendering.Mode.Diff)
+        self.fluepdot.rendering.setMode(Rendering.Mode.Diff)
         
-        self.mask = self.framebuffer.read()
+        self.mask = self.fluepdot.buffer.read()
         self.mask= self.draw(**params)
         
         return True
@@ -48,7 +48,7 @@ class Dots(fliplife.mode.Mode):
         self.mask[x,y+1] ^= True
 
 
-        self.framebuffer.pixel.flipDelta(prev, self.mask)
+        self.fluepdot.pixel.flipDelta(prev, self.mask)
 
         log(str(self.mask))
         return self.mask

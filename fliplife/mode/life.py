@@ -17,9 +17,9 @@ class Life(fliplife.mode.Mode):
     
     def run(self,count,**params):
         info("start life")
-        self.framebuffer.rendering.setMode(Rendering.Mode.Diff)
+        self.fluepdot.rendering.setMode(Rendering.Mode.Diff)
 
-        mask = self.framebuffer.read()
+        mask = self.fluepdot.buffer.read()
 
         self.life = life.Life(mask=mask)
         
@@ -36,10 +36,10 @@ class Life(fliplife.mode.Mode):
 
 
         if True:
-            self.framebuffer.write(mask)
+            self.fluepdot.buffer.write(mask)
 
         else:
-            self.framebuffer.pixel.flipDelta(prev,mask)
+            self.fluepdot.pixel.flipDelta(prev,mask)
         
         info(str(mask))
         return mask

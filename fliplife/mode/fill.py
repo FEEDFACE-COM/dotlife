@@ -21,7 +21,7 @@ class Fill(fliplife.mode.Mode):
     
     def run(self,invert,pattern,**params):
         log("start fill{:s}".format(" [invert]" if invert else ""))
-        mask = self.framebuffer.read()
+        mask = self.fluepdot.buffer.read()
         log(str(mask))
 
         if pattern == "default":
@@ -42,7 +42,7 @@ class Fill(fliplife.mode.Mode):
         
         if invert: 
             mask.inv()
-        mask = self.framebuffer.write(mask)
+        mask = self.fluepdot.buffer.write(mask)
         log(str(mask))
         return False
     

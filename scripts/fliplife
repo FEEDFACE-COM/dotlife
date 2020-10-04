@@ -23,7 +23,7 @@ from dotlife.clock import Clock, FRAME, NOW
 from fliplife.mode import *
 from fliplife import FRAMEWIDTH,FRAMEHEIGHT
 from fliplife.mask import Mask
-from fliplife.framebuffer import Framebuffer
+from fliplife.fluepdot import Fluepdot
 
 
 
@@ -56,7 +56,7 @@ def main(modename, host, preview, speed, clear, forever, nowrite, noread, **para
         FATAL("fail to get address for {:s}: {:s}".format(host,str(x)))
     
     
-    framebuffer = Framebuffer(address,nowrite,noread)
+    fluepdot = Fluepdot(address,nowrite,noread)
     
     Clock.Init()
     try:
@@ -65,14 +65,14 @@ def main(modename, host, preview, speed, clear, forever, nowrite, noread, **para
         usage()
     
     try:
-        mode = Mode.Init(modename,framebuffer,speed)
+        mode = Mode.Init(modename,fluepdot,speed)
     except Error as x:
         FATAL("fail init mode {:s}: {:s}".format(modename,str(x)))
 
 
     if clear:
         info("clear display")
-        framebuffer.write(address,Mask())
+        fluepdot.buffer.write(address,Mask())
 
     try:
         run = mode.run(**params)

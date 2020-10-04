@@ -17,10 +17,10 @@ class Glider(fliplife.mode.Mode):
     
     def run(self,count,randomize,**params):
         info("start life")
-        self.framebuffer.rendering.setMode(Rendering.Mode.Diff)
+        self.fluepdot.rendering.setMode(Rendering.Mode.Diff)
 
 
-        mask = self.framebuffer.read()        
+        mask = self.fluepdot.buffer.read()        
         
         self.life = life.Life(mask=mask)
         
@@ -62,9 +62,9 @@ class Glider(fliplife.mode.Mode):
     
     def draw(self,invert,**params):
         
-        prev = self.framebuffer.read()
+        prev = self.fluepdot.buffer.read()
         mask = Mask(mask=self.life.board)
-        self.framebuffer.write(mask)
+        self.fluepdot.buffer.write(mask)
         
         debug(str(mask))
         return mask

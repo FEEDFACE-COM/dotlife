@@ -93,7 +93,7 @@ class Pattern(Enum):
 
 
 
-class Life:
+class Life(Mask):
 
 
     
@@ -110,15 +110,17 @@ class Life:
         return ret
     
     def __init__(self,size=Size(8,8),gen=0,mask=None):
-        self.gen = gen
         if mask == None:
+            super().__init__(size=size)
             self.board = Mask(size=size)
         else:
+            super().__init__(mask=mask)
             self.board = Mask(mask=mask)
+        self.gen = gen
         
 
     def step(self):
-        tmp = Mask(size=(self.board.w,self.board.h) )
+        tmp = Mask(size=self.size())
         for x in range(self.board.w):
             for y in range(self.board.h):
                 if self.alive(x,y):
