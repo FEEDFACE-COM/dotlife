@@ -1,20 +1,25 @@
 
+import dotlife
 from dotlife.util import *
 
 
 from urllib import request, parse
 
 
+def debug(s): pass
+    
+    
 
 
 def get(host,path,params):
-    url = "http://" + host + "/" + path
+    proto = "http"
+    url = proto + "://" + host + "/" + path
     if params != None:
         url += "?" + parse.urlencode(params)
     rsp = None
     try:
         req = request.Request(url,method="GET")
-#        debug("get {:s}/{:s}".format(host,path))
+        debug("get {:s}".format(url))
         rsp = request.urlopen(req)
     except Exception as x: 
         error("fail get from {:s}".format(url))
@@ -29,13 +34,14 @@ def get(host,path,params):
 
 
 def put(host,path,params,data):
-    url = "http://" + host + "/" + path
+    proto = "http"
+    url = proto + "://" + host + "/" + path
     if params != None:
         url += "?" + parse.urlencode(params)
     rsp = None
     try:
         req = request.Request(url, data=data, method="PUT")
-#        debug("put {:s}/{:s}".format(host,path))
+        debug("put {:s}".format(url))
         rsp = request.urlopen(req)
     except Exception as x: 
         error("fail put to {:s}".format(url))
@@ -50,7 +56,8 @@ def put(host,path,params,data):
 
 
 def post(host,path,params,data):
-    url = "http://" + host + "/" + path
+    proto = "http"
+    url = proto + "://" + host + "/" + path
     if params != None:
         url += "?" + parse.urlencode(params)
     rsp = None
@@ -58,7 +65,7 @@ def post(host,path,params,data):
         data = data.encode()
     try:
         req = request.Request(url, data=data, method="POST")
-#        debug("post {:s}/{:s}".format(host,path))
+        debug("post {:s}".format(url))
         rsp = request.urlopen(req)
     except Exception as x: 
         error("fail post to {:s}".format(url))
@@ -73,13 +80,14 @@ def post(host,path,params,data):
 
 
 def delete(host,path,params):
-    url = "http://" + host + "/" + path
+    proto = "http"
+    url = proto + "://" + host + "/" + path
     if params != None:
         url += "?" + parse.urlencode(params)
     rsp = None
     try:
         req = request.Request(url,method="DELETE")
-#        debug("delete {:s}/{:s}".format(host,path))
+        debug("delete {:s}".format(url))
         rsp = request.urlopen(req)
     except Exception as x: 
         error("fail delete {:s}".format(url))

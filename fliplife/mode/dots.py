@@ -41,14 +41,20 @@ class Dots(fliplife.mode.Mode):
 
         prev = mask.Mask(mask=self.mask)
         
-        self.mask[x,y-1] ^= True
-        self.mask[x-1,y] ^= True
         self.mask[x,y] ^= True
+        self.mask[x,y-1] ^= True
         self.mask[x+1,y] ^= True
         self.mask[x,y+1] ^= True
+        self.mask[x-1,y] ^= True
 
 
-        self.fluepdot.pixel.flipDelta(prev, self.mask)
+        self.fluepdot.pixel.flip(x,y,    self.mask[x,y])
+        self.fluepdot.pixel.flip(x,y-1,  self.mask[x,y-1])
+        self.fluepdot.pixel.flip(x-1,y,  self.mask[x-1,y])
+        self.fluepdot.pixel.flip(x+1,y,  self.mask[x+1,y])
+        self.fluepdot.pixel.flip(x,y+1,  self.mask[x,y+1])
+
+#        self.fluepdot.pixel.flipDelta(prev, self.mask)
 
         log(str(self.mask))
         return self.mask

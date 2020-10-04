@@ -36,7 +36,8 @@ class Pixel:
     
         y = FRAMEHEIGHT - y - 1 
         if x >= FRAMEWIDTH or y >= FRAMEHEIGHT:
-            raise Error("invalid write pixel {:d}/{:d}".format(x,y))
+            error("invalid write pixel {:d}/{:d}".format(x,y))
+            return False
     
         params = { 'x': x, 'y': y }
         rsp = None
@@ -46,9 +47,11 @@ class Pixel:
             if not self.noread:
                 rsp = http.get(self.address,"pixel",params)    
                 if rsp == None:
-                    raise Error("fail flip pixel {:d}/{:d}".format(x,y))
+                    error("fail flip pixel {:d}/{:d}".format(x,y))
+                    return False
                 if rsp.read() == b'X\x00':
                     val = True
+
         ret = False
         if val == True:
             debug("dot {:d}/{:d} flip bright: ⬛︎".format(x,y))
@@ -56,7 +59,8 @@ class Pixel:
                 return True
             rsp = http.post(self.address,"pixel",params,data=None)
             if rsp == None:
-                raise Error("fail bright pixel {:d}/{:d}".format(x,y))
+                error("fail bright pixel {:d}/{:d}".format(x,y))
+                return False
             ret = rsp.read()
 
         elif val == False:
@@ -65,7 +69,8 @@ class Pixel:
                 return False
             rsp = http.delete(self.address,"pixel",params)
             if rsp == None:
-                raise Error("fail dark pixel {:d}/{:d}".format(x,y))
+                error("fail dark pixel {:d}/{:d}".format(x,y))
+                return False                
             ret = rsp.read()
 
                 
