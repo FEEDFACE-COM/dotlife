@@ -37,7 +37,7 @@ DEFAULT_HOST = "87.193.3.53"
 
 
 
-def main(modename, host, preview, step, clear, endless, **params):
+def main(modename, host, preview, speed, clear, endless, **params):
 
 
     info( "\n" * 2 + str(PATTERN.DOTLIFE.value)[1:-1] + "\n" * 2) 
@@ -63,7 +63,7 @@ def main(modename, host, preview, step, clear, endless, **params):
         usage()
     
     try:
-        mode = Mode.Init(modename,address,printBuffer,step)
+        mode = Mode.Init(modename,address,printBuffer,speed)
     except Error as x:
         FATAL("fail init mode {:s}: {:s}".format(modename,str(x)))
 
@@ -80,7 +80,7 @@ def main(modename, host, preview, step, clear, endless, **params):
             debug("{:s} {:s}".format(Clock.Str(),str(mode)))
             printBuffer(str(buf))
             #debug("sleep {:f}".format(step))
-            Clock.Sleep( step )
+            Clock.Sleep( speed )
             
     except KeyboardInterrupt as x:
         info("user interrupt") 
@@ -153,10 +153,11 @@ MODEFLAGS = [
     ("C",  "clear",            "clear",                False,                  "clear display?",                                          None ),
     ("R",  "run",              "endless",              False,                  "run continuously?",                                       None ),
     ("i",  "invert",           "invert",               False,                  "invert pattern?",                                         None ),
-    ("s:", "step=",            "step",                 1.0,                    "step speed [s]",                           lambda x : float(x) ),
+    ("s:", "speed=",           "speed",                 1.0,                   "step speed [s]",                           lambda x : float(x) ),
     ("c:", "count=",           "count",                1,                      "count",                                      lambda x : int(x) ),
     ("f:", "font=",            "font",                 "fixed_5x8",            "font",                                                    None ),
     ("p:", "pattern=",         "pattern",              "default",              "pattern",                                                 None ),
+    ("q:", "step=",            "step",                 0,                      "pattern step",                               lambda x : int(x) ),
     ("x:", "",                 "x",                    0,                      "x offset",                                   lambda x : int(x) ),
     ("y:", "",                 "y",                    0,                      "y offset",                                   lambda x : int(x) ),
     ("r", "random",            "randomize",            False,                  "randomize",                                               None ),
@@ -197,8 +198,13 @@ def usage():
     log("")
 
     log("## Modes")
+    modes = ""
     for k in MODE:
-        log("  {:8} {:15}    {}".format(k.name,"",""))
+        modes += " " + k.name
+        if len(modes) > 40:
+            log("{:s}".format(modes))
+            modes = ""
+    log("{:s}".format(modes))
     log("")
 
     log("## Fonts")
@@ -294,6 +300,8 @@ if __name__ == "__main__":
         params['modename'] = args[0]
     
     if len(args) > 1:
+        if args[1] == "-h":
+            usage()
         params['msg'] = args[1:] 
 
 

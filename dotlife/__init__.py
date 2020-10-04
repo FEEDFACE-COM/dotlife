@@ -16,9 +16,12 @@ class Operation(Enum):
 	Sub = auto()
 	
 
-class Axis(Enum):
+class Flip(Enum):
+    NoFlip     = auto()
     Horizontal = auto()
     Vertical   = auto()
+    Point      = auto()
+
 
 class Direction(Enum): 
     NorthWest= (-1,-1)

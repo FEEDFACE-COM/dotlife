@@ -8,7 +8,7 @@ from dotlife.util import *
 
 class Mask:
 
-    DefaultSize = (8,8)
+    DefaultSize = Size(8,8)
 
 
     MAP = {
@@ -133,16 +133,18 @@ class Mask:
                 self.pixel[x][y] = not self.pixel[x][y]
         return self
 
-    def flip(self,axis):
+    def flip(self,flip):
         w,h = self.w,self.h
         tmp = Mask(mask=self)
         
         for y in range(self.h):
             for x in range(self.w):
-                if axis == Axis.Horizontal:
+                if flip == Flip.Horizontal:
                     self.pixel[x][y] = tmp[x,h-1-y]
-                elif axis == Axis.Vertical:
+                elif flip == Flip.Vertical:
                     self.pixel[x][y] = tmp[w-1-x,y]
+                elif flip == Flip.Point:
+                    self.pixel[x][y] = tmp[w-1-x,h-1-y]
 
         return self
                 

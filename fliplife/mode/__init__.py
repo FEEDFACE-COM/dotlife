@@ -33,7 +33,7 @@ import dotlife.clock as clock
 
 class Mode(dotMode):
 
-    def Init(mode,address,printFun,step):
+    def Init(mode,address,printFun,speed):
     
         # static import for run time checking
         from fliplife.mode import test
@@ -62,7 +62,7 @@ class Mode(dotMode):
         except Exception as x:
             raise Error("mode {} imported exception: {}".format(mode,str(x)))
         
-        timer = clock.Clock.Timer(step,repeat=True)
+        timer = clock.Clock.Timer(speed,repeat=True)
         ret = cls(address,printFun,timer)
         return ret
     

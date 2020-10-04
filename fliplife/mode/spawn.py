@@ -22,7 +22,7 @@ class Spawn(fliplife.mode.Mode):
     
 
     
-    def run(self,x,y,randomize,pattern,**params):
+    def run(self,x,y,randomize,pattern,step,count,**params):
     
         if pattern == "default":
             pattern = DefaultPattern
@@ -38,8 +38,16 @@ class Spawn(fliplife.mode.Mode):
         mask = framebuffer.Read(self.address)        
         self.life = life.Life(mask=mask)
 
-        pos = Position(x,y)
-        self.life.add(pattern,pos)            
+
+        if randomize:
+            for c in range(count):
+                pos = Position(random.randint(0,FRAMEWIDTH-1),random.randint(0,FRAMEHEIGHT-1))
+                flip = random.choice( list(Flip) )
+                self.life.spawn(pattern,pos,step,flip)
+
+        else:
+            pos = Position(x,y)
+            self.life.spawn(pattern,pos,step,Flip.NoFlip)            
         
         self.draw(**params)
         return True

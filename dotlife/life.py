@@ -36,15 +36,41 @@ class Pattern(Enum):
       []
 """
 
+    Copperhead = \
+"""
+      [][]  [][][]      
+[]  []        [][][]    
+[]    []        []  [][]
+[]    []        []  [][]
+[]  []        [][][]    
+      [][]  [][][]      
+"""
+
+    Rpentomino = \
+"""
+  [][]
+[][]  
+  []  
+"""
+
+    Herschel = \
+"""
+[]    
+[]  []
+[][][]
+    []
+"""
 
     def __init__(self,name):
         super().__init__()
         return self
 
-    def Spawn(self,step=0):
-        log("spawn " + str(self.name))
-        return Mask.Load(self.value)
 
+    def Mask(self,step=0,flip=Flip.NoFlip):
+        log("spawn " + str(self.name))
+        ret = Mask.Load(self.value)
+        ret.flip(flip)
+        return ret
 
 
 
@@ -55,72 +81,6 @@ class Life:
     ALIVE = 0x80
     DEAD = 0x00
 
-#
-#    GLIDER = [ 
-#    
-#    
-#"""
-#""",
-#
-#"""
-#[]  []
-#  [][]
-#  []  
-#""",
-#
-#"""
-#    []
-#[]  []
-#  [][]
-#""",
-#
-#"""
-#[]    
-#  [][]
-#[][]  
-#"""
-#    
-#    ]
-#    
-#    
-#    
-#    GUN = [
-#"""
-#                                                                            
-#                                                []                          
-#                                            []  []                          
-#                          []              []  []                      [][]  
-#                        [][]            []    []                      [][]  
-#  [][]                [][]        [][]    []  []                            
-#  [][]              [][][]        [][]      []  []                          
-#                      [][]        [][]          []                          
-#                        [][]                                                
-#                          []                                                
-#                                                                            
-#""",
-#"""
-#                                                      []                
-#                                                    []  []              
-#                  [][]                              [][]  []            
-#                  []  []                            [][]  [][]      [][]
-#        [][]            []                          [][]  []        [][]
-#[][]  []    []    []    []                          []  []              
-#[][]    [][]            []                []          []                
-#                  []  []              []  []                            
-#                  [][]                  [][]                            
-#""",
-#    ]
-#
-#
-#    EATER = [
-#"""
-#[][]    
-#[]  []  
-#    []  
-#    [][]
-#""",
-#    ]
-#
     def __str__(self):
         return "gen#{}\n".format(self.gen) + str(self.board)
 
@@ -130,10 +90,10 @@ class Life:
         ret.mask( self.board, light=alive )
         return ret
     
-    def __init__(self,size=(8,8),gen=0,mask=None):
+    def __init__(self,size=Size(8,8),gen=0,mask=None):
         self.gen = gen
         if mask == None:
-            self.board = Mask( size=size )
+            self.board = Mask(size=size)
         else:
             self.board = Mask(mask=mask)
         
@@ -151,9 +111,9 @@ class Life:
 #        info(str(self))
 
 
-    def add(self,pattern,pos=Position(0,0),step=0):
-        pat = pattern.Spawn(step)
-        self.board.mask( pat, pos=pos )
+    def spawn(self,pattern,pos=Position(0,0),step=0,flip=Flip.NoFlip):
+        pat = pattern.Mask(step,flip)
+        self.board.mask( pat, pos=pos, wrap=True )
         return
 
     def minimal(self):
@@ -171,7 +131,6 @@ class Life:
                         p1.y = y
         
         size = Size( p1.x - p0.x, p1.y - p0.y )
-        
         ret = Mask(size=(size.x,size.y))
         for y in range(p0.y,p1.y):
             for x in range(p0.x,p1.x):
