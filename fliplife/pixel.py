@@ -54,22 +54,22 @@ class Pixel:
 
         ret = False
         if val == True:
-            debug("dot {:d}/{:d} flip bright: ⬛︎".format(x,y))
+            debug("pixel {:d}/{:d} flip bright: ⬛︎".format(x,y))
             if self.nowrite:
                 return True
             rsp = http.post(self.address,"pixel",params,data=None)
             if rsp == None:
-                error("fail bright pixel {:d}/{:d}".format(x,y))
+                error("fail flip bright pixel {:d}/{:d}".format(x,y))
                 return False
             ret = rsp.read()
 
         elif val == False:
-            debug("dot {:d}/{:d} flip dark: ⬜︎".format(x,y))
+            debug("pixel {:d}/{:d} flip dark: ⬜︎".format(x,y))
             if self.nowrite:
                 return False
             rsp = http.delete(self.address,"pixel",params)
             if rsp == None:
-                error("fail dark pixel {:d}/{:d}".format(x,y))
+                error("fail flip dark pixel {:d}/{:d}".format(x,y))
                 return False                
             ret = rsp.read()
 

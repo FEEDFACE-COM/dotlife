@@ -20,7 +20,7 @@ class Guns(fliplife.mode.Mode):
         info("start life")
         self.fluepdot.rendering.setMode(Rendering.Mode.Diff)
     
-
+        self.mask = Mask()
         self.mask = self.fluepdot.buffer.read()        
         self.life = life.Life(mask=self.mask)
         

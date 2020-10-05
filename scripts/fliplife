@@ -72,7 +72,7 @@ def main(modename, host, preview, speed, clear, forever, nowrite, noread, **para
 
     if clear:
         info("clear display")
-        fluepdot.buffer.write(address,Mask())
+        fluepdot.buffer.write(Mask())
 
     try:
         run = mode.run(**params)

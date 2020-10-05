@@ -21,7 +21,7 @@ class Framebuffer(fliplife.mask.Mask):
     def write(self,mask):
         data = mask.toData()
         ret = mask
-        debug("framebuffer write {:s}".format(self.address))
+        debug("framebuffer write")
         if not self.nowrite:
             rsp = http.post(self.address,"framebuffer",None,data)
             ret = Mask.MaskFromResponse(rsp)
@@ -30,7 +30,7 @@ class Framebuffer(fliplife.mask.Mask):
     
     def read(self):
         ret = Mask()
-        debug("framebuffer read {:s}".format(self.address))
+        debug("framebuffer read")
         if not self.noread:
             rsp = http.get(self.address,"framebuffer",None)
             ret = Mask.MaskFromResponse(rsp)
@@ -45,7 +45,7 @@ class Framebuffer(fliplife.mask.Mask):
             'font': font
         }
         ret = Mask()
-        debug("framebuffer text {:s}".format(self.address))
+        debug("framebuffer text {:s}".format(msg))
         if not self.nowrite:
             rsp = http.post(self.address,"framebuffer/text",params,data=msg)
             ret = Mask.MaskFromResponse(rsp)
