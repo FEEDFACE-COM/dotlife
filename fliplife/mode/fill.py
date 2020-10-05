@@ -1,7 +1,7 @@
 
 from dotlife.util import *
 
-from dotlife.buffer import Buffer
+from dotlife.font import Font
 
 import fliplife
 from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
@@ -12,6 +12,7 @@ from enum import Enum, auto
 
 class Pattern(Enum):
     Check = auto()
+    Font = auto()
 
 
 class Fill(fliplife.mode.Mode):
@@ -34,11 +35,17 @@ class Fill(fliplife.mode.Mode):
 
 
         mask = Mask()
-        for y in range(FRAMEHEIGHT):
-            for x in range(FRAMEWIDTH):
-                if pattern == Pattern.Check:
-                    if x%2 == y%2:
-                        mask[x,y] = True
+        if pattern in [Pattern.Check]:
+            for y in range(FRAMEHEIGHT):
+                for x in range(FRAMEWIDTH):
+                    if pattern == Pattern.Check:
+                        if x%2 == y%2:
+                            mask[x,y] = True
+        elif pattern == Pattern.Font:
+            mask = Mask()
+            font = Font.Font3x5()
+            msk = font.repertoire(size=mask.size())
+            mask.mask(msk)
         
         if invert: 
             mask.inv()

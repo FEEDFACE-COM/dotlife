@@ -1,20 +1,24 @@
 
 import random
 
+import dotlife
+from dotlife import *
 from dotlife.util import *
 
-from dotlife.buffer import Buffer
+from dotlife.font import Font
 
 import fliplife
 from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
-from fliplife import mask,framebuffer
-
+from fliplife.mask import Mask
+from fliplife.rendering import Rendering
 
 
 class Exec(fliplife.mode.Mode):
         
     
     def run(self,randomize,x,y,font,rem=None,**params):
+
+        self.fluepdot.rendering.setMode(Rendering.Mode.Diff)
         
         self.randomize = randomize
         self.cmd = 'date "+%F %T%z"'
@@ -24,6 +28,9 @@ class Exec(fliplife.mode.Mode):
             self.cmd = rem
 
         info("start exec: {:s}".format(self.cmd))
+
+        self.font = Font.Font3x5()
+        log(str(self.font))
 
         self.draw(x,y,font,**params)
 
@@ -37,17 +44,24 @@ class Exec(fliplife.mode.Mode):
         except OSError as ex:
             raise Error("fail run {:s}: {:s}".format(self.cmd,str(ex)))
         txt = txt.decode()
-        log("ran {:s}: {:s}".format(self.cmd,str(txt)))
-#        txt = " ".join(txt)
-        log("txt is {:d}".format(len(txt)))
+        txt = txt.rstrip()
+        log("exec {:s}: {:s}".format(self.cmd,str(txt)))
+
+        msk = self.font.render(txt)
+
         if self.randomize:
-            font = 'fixed_5x8'
-            w = FRAMEWIDTH - (6*len(txt))
-            h = FRAMEHEIGHT - (8*1)
-            x = int(random.random() * float(w))
-            y = int(random.random() * float(h))
+            w = FRAMEWIDTH - msk.size().w
+            h = FRAMEHEIGHT - msk.size().h
+            x = random.randint(0,w-1)
+            y = random.randint(0,h-1)
         
         debug("render text {:d}/{:d}: {:s}".format(x,y,txt))
-        self.mask = self.fluepdot.buffer.text(x,y,font,txt)
+
+#        self.mask = self.fluepdot.buffer.text(x,y,font,txt)
+        
+        self.mask = Mask()
+        self.mask.mask(msk,pos=Position(x,y))
+        self.mask = self.fluepdot.buffer.write(self.mask)
+        
         log(str(self.mask))
         return self.mask

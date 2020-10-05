@@ -103,7 +103,7 @@ class Mask:
         else:
             self.w, self.h = size.w,size.h
             if self.w <= 0 or self.h <= 0:
-                raise dotlife.Error("invalid mask dimensions {}x{}".format(self.w,self.h)) 
+                raise Error("invalid mask dimensions {}x{}".format(self.w,self.h)) 
             self.pixel = [ [ val for y in range(self.h) ] for x in range(self.w) ]
         
     
