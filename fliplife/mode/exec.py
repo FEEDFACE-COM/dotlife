@@ -19,7 +19,7 @@ class Exec(fliplife.mode.Mode):
         self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
         
         self.randomize = randomize
-        self.cmd = 'date "+%F %T%z"'
+        self.cmd = 'date "+%F %T %z"'
         if type(rem) == type([]):
             self.cmd = " ".join(rem)
         elif type(rem) == type("") and rem != "":

@@ -70,13 +70,13 @@ def main(runmode, host, preview, speed, clear, forever, nowrite, noread, **param
         run = mode.run(**params)
         while run and forever:
             Clock.Tick()
+            Clock.Sleep( speed )
             buf = mode.draw(**params)
             debug("{:s} {:s}".format(Clock.Str(),str(mode)))
             printBuffer(str(buf))
-            Clock.Sleep( speed )
             
     except KeyboardInterrupt as x:
-        info("user interrupt") 
+        info("user interrupt.") 
         
     except Error as x:
         FATAL("error: {:s}".format( str(x) ))
