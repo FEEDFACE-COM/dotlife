@@ -1,17 +1,19 @@
 
+
+import dotlife
 from dotlife.util import *
 
-import fliplife
 from fliplife import http
 
-from fliplife.mask import Mask
+from fliplife import Mask, FRAMESIZE
 
 
 
 
 
 
-class Framebuffer(fliplife.mask.Mask):
+
+class Framebuffer(dotlife.mask.Mask):
     
     def __init__(self,address,nowrite,noread):
         super().__init__()
@@ -19,12 +21,12 @@ class Framebuffer(fliplife.mask.Mask):
 
 
     def write(self,mask):
-        data = mask.toData()
+        data = Framebuffer.dataFromMask(mask)
         ret = mask
         debug("framebuffer write")
         if not self.nowrite:
             rsp = http.post(self.address,"framebuffer",None,data)
-            ret = Mask.MaskFromResponse(rsp)
+            ret = Framebuffer.MaskFromResponse(rsp)
         return ret
         
     
@@ -33,25 +35,45 @@ class Framebuffer(fliplife.mask.Mask):
         debug("framebuffer read")
         if not self.noread:
             rsp = http.get(self.address,"framebuffer",None)
-            ret = Mask.MaskFromResponse(rsp)
+            ret = Framebuffer.MaskFromResponse(rsp)
         return ret
 
-        
     
-    def text(self,x,y,font,msg):
-        params = {
-            'x': x,
-            'y': y,
-            'font': font
-        }
-        ret = Mask()
-        debug("framebuffer text {:s}".format(msg))
-        if not self.nowrite:
-            rsp = http.post(self.address,"framebuffer/text",params,data=msg)
-            ret = Mask.MaskFromResponse(rsp)
-            
-        return ret            
+
+    @classmethod
+    def dataFromMask(self,mask):
+        ret = ""
+        for y in range(0,mask.h):
+            row = ""
+            for x in range(0,mask.w):
+                if mask[x,y]:
+                    row += "X"
+                else:
+                    row += " "
+            row += "\n"
+            ret += row 
+        return ret
 
 
-
-    
+    @classmethod
+    def MaskFromResponse(self,rsp):
+        ret = Mask(size=FRAMESIZE)
+        x,y = 0,0
+        if rsp == None:
+            return
+        for row in rsp:
+            if y >= FRAMESIZE.h:
+                raise Error("invalid response: line count {} > {}".format(y,FRAMESIZE.h))                 
+            x = 0
+            for col in row:
+                if x > FRAMESIZE.w:
+                    raise Error("invalid response: column count {} > {}".format(x,FRAMESIZE.w))                 
+                if col == 0x0A:
+                    pass
+                elif col == 0x20:
+                    ret[x,y] = False
+                else:
+                    ret[x,y] = True
+                x+=1
+            y+=1
+        return ret

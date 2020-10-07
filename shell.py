@@ -15,10 +15,12 @@ from dotlife.mode import *
 from dotlife.pattern import *
 from dotlife.plasma import *
 from dotlife.life import *
+from dotlife.font import *
 
-from fliplife.mask import *
+from fliplife import *
 from fliplife.pixel import *
 from fliplife.framebuffer import *
+
 from oledlife.framebuffer import *
 
 from fliplife import mode as flipmode

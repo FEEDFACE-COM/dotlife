@@ -15,20 +15,19 @@ from dotlife.util import *
 from dotlife.about import VERSION, NAME
 
 
-from dotlife.life import Life
-from dotlife.buffer import Buffer
-from dotlife.pattern import *
+from dotlife.pattern import PATTERN
+from dotlife.font import Font, FONT
 from dotlife.clock import Clock, FRAME, NOW
 
+import fliplife
 from fliplife.mode import *
-from fliplife import FRAMEWIDTH,FRAMEHEIGHT
-from fliplife.mask import Mask
+from fliplife import Mask, FRAMESIZE
 from fliplife.fluepdot import Fluepdot
 
 
 
-DEFAULT_MODE = MODE.test
-
+DEFAULT_MODE = MODE.read
+DEFAULT_FONT = FONT.font3x5
 DEFAULT_HOST = "87.193.3.53"
 
 ## MAIN ########################################################################
@@ -37,13 +36,10 @@ DEFAULT_HOST = "87.193.3.53"
 
 
 
-def main(modename, host, preview, speed, clear, forever, nowrite, noread, **params):
+def main(runmode, host, preview, speed, clear, forever, nowrite, noread, **params):
 
-
-    info( "\n" * 2 + str(PATTERN.FLIPLIFE.value)[1:-1] + "\n" * 2) 
-    info("fliplife mode {:s}".format(modename))
-
-
+    info( "\n" * 2 + str(PATTERN.FLIPLIFE.value)[1:-1] + "\n" * 2)
+    info("fliplife mode {:s}".format(runmode.name))
 
     # register signals
     signal.signal(signal.SIGQUIT, quit)
@@ -59,15 +55,11 @@ def main(modename, host, preview, speed, clear, forever, nowrite, noread, **para
     fluepdot = Fluepdot(address,nowrite,noread)
     
     Clock.Init()
-    try:
-        _ = MODE(modename)
-    except ValueError as x:
-        usage()
     
     try:
-        mode = Mode.Init(modename,fluepdot,speed)
+        mode = Mode.Init(runmode,fluepdot,speed)
     except Error as x:
-        FATAL("fail init mode {:s}: {:s}".format(modename,str(x)))
+        FATAL("fail init mode {:s}: {:s}".format(runmode.name,str(x)))
 
 
     if clear:
@@ -113,8 +105,8 @@ def quit(sig,frame):
 
 def printBuffer(buf):
     return
-    height = int(math.ceil(FRAMEHEIGHT/2))
-    width  = int(math.ceil(FRAMEWIDTH/2))
+    height = int(math.ceil(FRAMESIZE.h/2))
+    width  = int(math.ceil(FRAMESIZE.w/2))
     Y = 1
     columns,lines = os.get_terminal_size()
     up   = "\u001b[{:d}A".format( height  + 1 + Y )
@@ -140,30 +132,30 @@ def printBuffer(buf):
 
 FLAGS = [
     # short long param default help func #             
-    ("v",  "verbose",      None,                None,    "increase verbosity", None ),
-    ("P", "preview",       "preview",          False,    "preview on stdout",  None ),                  
-    ("V",  "version",      None,                None,    "display version",    None ),
-    ("h",  "help",         None,                None,    "display help",       None ),
-    ("H:", "host=",         "host",      DEFAULT_HOST,   "fluepdot host",      None ),
+    ("v",  "verbose",      None,                None,    "increase verbosity",     None ),
+    ("P", "preview",       "preview",          False,    "preview on stdout",      None ),                  
+    ("V",  "version",      None,                None,    "display version",        None ),
+    ("h",  "help",         None,                None,    "display help",           None ),
+    ("H:", "host=",        "host",      DEFAULT_HOST,    "fluepdot host",          None ),
+    ("W",  "nowrite",      "nowrite",          False,    "no writes to flupdot?",  None ),
+    ("R",  "noread",       "noread",           False,    "no reads from fluepdot?",None ),
 ]
 
 MODEFLAGS = [
     # short long param default help func #             
-    ("", "",                   "modename",             DEFAULT_MODE.name,      "mode",                         lambda x: fliplife.mode.Mode(x) ),
+    ("",   "",                 "runmode",              DEFAULT_MODE,           "mode",                                 lambda x: MODE.named(x) ),
     ("",   "",                 "rem",                  "",                     "remainder"        ,                                       None ),
-    ("W",  "nowrite",          "nowrite",              False,                  "no write to flipdot?",                                    None ),
-    ("R",  "noread",           "noread",               False,                  "no read from flipdot?",                                   None ),
     ("C",  "clear",            "clear",                False,                  "clear display?",                                          None ),
     ("F",  "forever",          "forever",              False,                  "run continuously?",                                       None ),
     ("i",  "invert",           "invert",               False,                  "invert pattern?",                                         None ),
     ("s:", "speed=",           "speed",                 1.0,                   "step speed [s]",                           lambda x : float(x) ),
     ("c:", "count=",           "count",                1,                      "count",                                      lambda x : int(x) ),
-    ("f:", "font=",            "font",                 "fixed_5x8",            "font",                                                    None ),
+    ("f:", "font=",            "font",                 DEFAULT_FONT,           "font",                                 lambda x: FONT.named(x) ),
     ("p:", "pattern=",         "pattern",              "default",              "pattern",                                                 None ),
     ("q:", "step=",            "step",                 0,                      "pattern step",                               lambda x : int(x) ),
     ("x:", "",                 "x",                    0,                      "x offset",                                   lambda x : int(x) ),
     ("y:", "",                 "y",                    0,                      "y offset",                                   lambda x : int(x) ),
-    ("r", "random",            "randomize",            False,                  "randomize",                                               None ),
+    ("r", "random",            "randomize",            False,                  "randomize?",                                              None ),
 ]
 
 ALLFLAGS = FLAGS + MODEFLAGS
@@ -182,8 +174,8 @@ def usage():
 {} [-{}] {} <mode> <msg/cmd/...>
 """.format(
         "fliplife",
-        "".join([s[0] if len(s) >= 1 else "" for (s,_,_,_,_,_) in FLAGS]),
-        " ".join(["[--{:s}]".format(l) if len(l) >= 1 else "" for (_,l,_,_,_,_) in MODEFLAGS]),
+        "".join([s[0] if s else "" for (s,_,_,_,_,_) in FLAGS]),
+        "".join(["[--{:s}] ".format(l) if not s and l else "" for (s,l,_,_,_,_) in MODEFLAGS]),
         )
     )
 
@@ -191,13 +183,13 @@ def usage():
     for (s,l,p,d,h,_) in FLAGS:
         if not s and not l:
             continue
-        log("  {:3} {:20}    {}{}".format( "-"+s.rstrip(":")+"," if s else "","--"+l.rstrip("=") if l else "",h,("" if d is None else ", default "+str(d).lower()) ))
+        log("  {:3} {:20}    {}{}".format( "-"+s.rstrip(":")+"," if s else "","--"+l.rstrip("=") if l else "",h,("" if d in [None,False] else ", default "+str(d).lower()) ))
     log("")
 
     for (s,l,p,d,h,_) in MODEFLAGS:
         if not s and not l:
             continue
-        log("  {:3} {:20}    {}{}".format( "-"+s.rstrip(":")+"," if s else "","--"+l.rstrip("=") if l else "",h,("" if d is None else ", default "+str(d).lower()) ))
+        log("  {:3} {:20}    {}{}".format( "-"+s.rstrip(":")+"," if s else "","--"+l.rstrip("=") if l else "",h,("" if d in [None,False] else ", default "+str(d).lower()) ))
     log("")
 
     log("## Modes")
@@ -286,6 +278,7 @@ if __name__ == "__main__":
                             params[p] = fun(arg)
                         except Exception as x:
                             error("invalid argument: {} {}".format(opt,arg))
+                            error(str(x))
                             usage()
                     else:
                         params[p] = True
@@ -300,7 +293,11 @@ if __name__ == "__main__":
             usage()
 
     if len(args) >= 1:
-        params['modename'] = args[0]
+        try:
+            params['runmode'] = fliplife.mode.MODE(args[0])
+        except ValueError:
+            error("invalid mode {:s}".format(args[0]))
+            usage()
     
     if len(args) > 1:
         if args[1] == "-h":

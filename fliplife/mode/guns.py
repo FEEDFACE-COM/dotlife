@@ -7,10 +7,8 @@ from dotlife import math
 from dotlife import life
 
 import fliplife
-from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
-from fliplife import framebuffer, pixel
-from fliplife.mask import Mask
-from fliplife.rendering import Rendering
+from fliplife import Mask, FRAMESIZE
+from fliplife.fluepdot import Fluepdot
 
 
 class Guns(fliplife.mode.Mode):
@@ -18,7 +16,7 @@ class Guns(fliplife.mode.Mode):
     
     def run(self,count,randomize,**params):
         info("start life")
-        self.fluepdot.rendering.setMode(Rendering.Mode.Diff)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
     
         self.mask = Mask()
         self.mask = self.fluepdot.buffer.read()        

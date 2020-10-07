@@ -7,22 +7,18 @@ from dotlife import math
 from dotlife import life
 
 import fliplife
-from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
-from fliplife import framebuffer, pixel
-from fliplife.mask import Mask
-from fliplife.rendering import Rendering
+from fliplife import Mask, FRAMESIZE
+from fliplife.fluepdot import Fluepdot
 
 class Life(fliplife.mode.Mode):
     
     
     def run(self,count,**params):
         info("start life")
-        self.fluepdot.rendering.setMode(Rendering.Mode.Diff)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
 
         mask = self.fluepdot.buffer.read()
-
         self.life = life.Life(mask=mask)
-        
         self.draw(**params)
         
         return True
@@ -38,8 +34,8 @@ class Life(fliplife.mode.Mode):
         if True:
             self.fluepdot.buffer.write(mask)
 
-        else:
-            self.fluepdot.pixel.flipDelta(prev,mask)
+#        else:
+#            self.fluepdot.pixel.flipDelta(prev,mask)
         
         info(str(mask))
         return mask

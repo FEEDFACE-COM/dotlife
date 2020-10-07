@@ -3,8 +3,7 @@ from dotlife.util import *
 
 
 import fliplife
-from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
-from fliplife import framebuffer, mask
+from fliplife import FRAMESIZE
 
 
 class Read(fliplife.mode.Mode):

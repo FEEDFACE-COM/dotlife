@@ -5,10 +5,9 @@ from dotlife.util import *
 
 
 import fliplife
-from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
-from fliplife import mask,framebuffer, pixel
+from fliplife import Mask, FRAMESIZE
 
-from fliplife.rendering import Rendering
+from fliplife.fluepdot import Fluepdot
 
 class Grow(fliplife.mode.Mode):
     
@@ -16,14 +15,14 @@ class Grow(fliplife.mode.Mode):
     def run(self,**params):
         info("start grow")
 
-        self.fluepdot.rendering.setMode(Rendering.Mode.Diff)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
         mask = self.draw(**params)
         return True
         
     
     def draw(self,invert,**params):
-        cx = int(FRAMEWIDTH/2)
-        cy = int(FRAMEHEIGHT/2)
+        cx = int(FRAMESIZE.w/2)
+        cy = int(FRAMESIZE.h/2)
         
         r0 = random.gauss(0.,1.)
         r1 = random.gauss(0.,1.)
@@ -34,13 +33,12 @@ class Grow(fliplife.mode.Mode):
 
         pxl = self.fluepdot.pixel.read(x,y)
         
-        mask = fliplife.mask.Mask()
+        mask = Mask()
         if invert:
 
             if pxl:
                 self.fluepdot.pixel.flip(x,y,False)
                 mask = self.fluepdot.buffer.read()
-                log("pixel {:d}/{:d} flip ⬜︎ off".format(x,y))
                 log(str(mask))
 
 
@@ -49,7 +47,6 @@ class Grow(fliplife.mode.Mode):
             if not pxl:
                 self.fluepdot.pixel.flip(x,y,True)
                 mask = self.fluepdot.buffer.read()
-                log("pixel {:d}/{:d} flip ⬛︎ on".format(x,y))
                 log(str(mask))
         
 

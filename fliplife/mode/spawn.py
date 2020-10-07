@@ -7,10 +7,8 @@ from dotlife import math
 from dotlife import life
 
 import fliplife
-from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
-from fliplife import framebuffer, pixel
-from fliplife.mask import Mask
-from fliplife.rendering import Rendering
+from fliplife import Mask, FRAMESIZE
+from fliplife.fluepdot import Fluepdot
 
 
 class Spawn(fliplife.mode.Mode):
@@ -33,7 +31,7 @@ class Spawn(fliplife.mode.Mode):
                 raise Error("unknown pattern {:s}".format(pattern))
         
         info("start spawn {:s}".format(pattern))
-        self.fluepdot.rendering.setMode(Rendering.Mode.Diff)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
 
         mask = self.fluepdot.buffer.read()        
         self.life = life.Life(mask=mask)
@@ -41,7 +39,7 @@ class Spawn(fliplife.mode.Mode):
 
         if randomize:
             for c in range(count):
-                pos = Position(random.randint(0,FRAMEWIDTH-1),random.randint(0,FRAMEHEIGHT-1))
+                pos = Position(random.randint(0,FRAMESIZE.w-1),random.randint(0,FRAMESIZE.h-1))
                 flip = random.choice( list(Flip) )
                 self.life.spawn(pattern,pos,step,flip)
 

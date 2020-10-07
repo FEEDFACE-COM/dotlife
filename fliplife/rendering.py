@@ -1,16 +1,10 @@
 
 from dotlife.util import *
-
-from fliplife.mask import Mask
 from fliplife import http
 
-from enum import Enum, auto    
 
 class Rendering():
 
-    class Mode(Enum):
-        Full = b"0\n\x00"
-        Diff = b"1\n\x00"
 
 
     def __init__(self,address,nowrite,noread):
@@ -48,7 +42,7 @@ class Rendering():
 
 
 
-    def GetTiming(self):
+    def GetTiming(self): #TODO
         debug("rendering timings get {:s}".format(self.address))
         if self.noread:
             return None

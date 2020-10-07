@@ -7,17 +7,15 @@ from dotlife import math
 from dotlife import life
 
 import fliplife
-from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
-from fliplife import framebuffer, pixel
-from fliplife.mask import Mask
-from fliplife.rendering import Rendering
+from fliplife import Mask, FRAMESIZE
+from fliplife.fluepdot import Fluepdot
 
 class Glider(fliplife.mode.Mode):
     
     
     def run(self,count,randomize,**params):
         info("start life")
-        self.fluepdot.rendering.setMode(Rendering.Mode.Diff)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
 
 
         mask = self.fluepdot.buffer.read()        
@@ -31,20 +29,20 @@ class Glider(fliplife.mode.Mode):
                 log("got random {:d},{:d}".format(a,b))
                 direction = Direction( (a,b)  )
                 log("got direction {:s}".format(str(direction)))
-                pos = Position( random.randint(0,FRAMEWIDTH-1), random.randint(0,FRAMEHEIGHT-1) )
+                pos = Position( random.randint(0,FRAMESIZE.w-1), random.randint(0,FRAMESIZE.h-1) )
                 step = random.randint(0,3)
                 log("add glider #{:d} at {:d}/{:d} course {:s}".format(c,pos.x,pos.y,str(direction)))
                 self.life.addGlider(pos=pos,step=step,direction=direction)
 
         else:
-            d = int(FRAMEWIDTH / count)
+            d = int(FRAMESIZE.w / count)
             direction = Direction.SouthEast
             step = 0
-            pos = Position( int(FRAMEWIDTH/2) , int(FRAMEHEIGHT/2) )
+            pos = Position( int(FRAMESIZE.w/2) , int(FRAMESIZE.h/2) )
             for c in range(count):
                 log("add glider #{:d} at {:d}/{:d} course {:s}".format(c,pos.x,pos.y,str(direction)))
                 self.life.addGlider(pos=pos,step=step,direction=direction)
-                pos = Position( (pos.x+d)%FRAMEWIDTH, pos.y )
+                pos = Position( (pos.x+d)%FRAMESIZE.w, pos.y )
                 lon,lat = direction.value
                 direction = Direction( (lon*-1, lat*-1) )
                 step = (step+1)%5

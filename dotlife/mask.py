@@ -11,88 +11,66 @@ class Mask:
     DefaultSize = Size(8,8)
 
 
-    MAP = {
-        ((False,False),
-         (False,False)): " ",#"⨯",
-        ((False,False),
-         (False,True )): "▗",
-        ((False,False),
-         (True, True )): "▄",
-        ((False,False),
-         (True, False)): "▖",
-        ((False,True ),
-         (False,False)): "▝",
-        ((False,True ),
-         (False,True )): "▐",
-        ((False,True ),
-         (True, False)): "▞",
-        ((False,True ),
-         (True, True )): "▟",
-        ((True, False),
-         (False,False)): "▘",
-        ((True, False),
-         (False,True )): "▚",
-        ((True, False),
-         (True, False)): "▌",
-        ((True, False),
-         (True, True )): "▙",
-        ((True, True ),
-         (False,False)): "▀",
-        ((True, True ),
-         (False,True )): "▜",
-        ((True, True ),
-         (True, False)): "▛",
-        ((True, True ),
-         (True, True )): "█",
-        ((None, None ),
-         (None, None )): "#",
-    }
-
 
     def __str__(self):
-        if self.h > 8 or self.w > 32:
-            return self.str1()
-        return self.str0()
-    
-    
-    def str0(self):
+        MAP = {
+            (False,False,False,False): " ",
+            (False,False,False,True ): "▗",
+            (False,False,True, True ): "▄",
+            (False,False,True, False): "▖",
+            (False,True ,False,False): "▝",
+            (False,True ,False,True ): "▐",
+            (False,True ,True, False): "▞",
+            (False,True ,True, True ): "▟",
+            (True, False,False,False): "▘",
+            (True, False,False,True ): "▚",
+            (True, False,True, False): "▌",
+            (True, False,True, True ): "▙",
+            (True, True ,False,False): "▀",
+            (True, True ,False,True ): "▜",
+            (True, True ,True, False): "▛",
+            (True, True ,True, True ): "█",
+            (None, None ,None, None ): "#",
+        }
+
         ret = ""
-        for y in range(self.h):
-            for x in range(self.w):
-                p = self.pixel[x][y]
-                if p:
-                    ret += "[]"
-                else:
-                    ret += " ·"
-            ret += "\n"
-        return ret[:-1]
-    
-    def str1(self):
-        ret = ""
-        for y in range(0,self.h,2):
+
+        # large mask
+        if self.h > 8 or self.w > 24:
+
+            for y in range(0,self.h,2):
+                for x in range(0,self.w,2):
+                    a,b,c,d = False, False, False, False
+                    a = self.pixel[x  ][y  ]
+                    if x+1 < self.w: 
+                        b = self.pixel[x+1][y  ]
+                    if y+1 < self.h:
+                        c = self.pixel[x  ][y+1]
+                    if x+1 < self.w and y+1 < self.h: 
+                        d = self.pixel[x+1][y+1]
+                    ret += MAP[(a,b,c,d)] 
+                ret += "{:1d}\n".format(y%10)
             for x in range(0,self.w,2):
-                a,b,c,d = False, False, False, False
-                a = self.pixel[x  ][y  ]
-                if x+1 < self.w: 
-                    b = self.pixel[x+1][y  ]
-                if y+1 < self.h:
-                    c = self.pixel[x  ][y+1]
-                if x+1 < self.w and y+1 < self.h: 
-                    d = self.pixel[x+1][y+1]
-                ret += Mask.MAP[((a,b),(c,d))] 
-            ret += "{:1d}\n".format(y%10)
+                if x % 10 == 0:
+                    ret += "{:d}".format( (int((x%100)/10)) )
+                else:
+                    ret += " "
+            ret += "\n"
 
-#        for x in range(0,self.w,2):
-#            ret += "{:1d}".format(x%10)
-#        ret += "\n"
 
-        for x in range(0,self.w,2):
-            if x % 10 == 0:
-                ret += "{:d}".format( (int((x%100)/10)) )
-            else:
-                ret += " "
-        ret += "\n"
-
+        # small mask
+        else:
+            for y in range(self.h):
+                for x in range(self.w):
+                    p = self.pixel[x][y]
+                    if p:
+                        ret += "▐▌"
+                    else:
+                        ret += "· "
+                ret += " {:01d}\n".format(y)
+            for x in range(self.w):
+                ret += "{:01d} ".format(x)
+    
         return ret[:-1]
     
     

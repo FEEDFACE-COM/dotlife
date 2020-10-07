@@ -1,15 +1,7 @@
 
 import dotlife
-from dotlife.util import *
 
-from enum import Enum
+FRAMESIZE = dotlife.Size(115,16)
 
-FRAMEWIDTH = 115
-FRAMEHEIGHT = 16
-FRAMESIZE = dotlife.Size(FRAMEWIDTH,FRAMEHEIGHT)
-
-
-LIGHT = 0x1
-DARK  = 0x0
-
-
+def Mask(mask=None,size=FRAMESIZE):
+    return dotlife.mask.Mask(mask=mask,size=size)

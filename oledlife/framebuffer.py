@@ -2,15 +2,15 @@ from dotlife import *
 from dotlife.buffer import Buffer
 from dotlife.util import *
 
-from oledlife import FRAMEWIDTH, FRAMEHEIGHT, FRAMESIZE
+from oledlife import FRAMESIZE
 
 class FrameBuffer(Buffer):
 
 
     def __str__(self):
         ret = ""
-        for y in range(FRAMEHEIGHT):
-            for x in range(FRAMEWIDTH):
+        for y in range(FRAMESIZE.h):
+            for x in range(FRAMESIZE.w):
                 p = self.pixel[x][y]
                 if p < 0x00:
                     ret += "¿?"
@@ -34,7 +34,7 @@ class FrameBuffer(Buffer):
                     ret += "?¿"
             ret += " {:01d}\n".format(y)
 
-        for x in range(FRAMEWIDTH):
+        for x in range(FRAMESIZE.w):
             ret += " {:01d}".format(x)
         ret += "  \n"
         
@@ -47,10 +47,10 @@ class FrameBuffer(Buffer):
     
 
     def bytes(self):
-        ret = bytearray(FRAMEWIDTH * FRAMEHEIGHT)
+        ret = bytearray(FRAMESIZE.w * FRAMESIZE.h)
         i = 0
-        for y in range(FRAMEHEIGHT):
-            for x in range(FRAMEWIDTH):
+        for y in range(FRAMESIZE.h):
+            for x in range(FRAMESIZE.w):
                 if y % 2 == 0:
                     col = x
                     try:
@@ -58,7 +58,7 @@ class FrameBuffer(Buffer):
                     except ValueError:
                         continue
                 else: # fixup even rows
-                    col = (FRAMEWIDTH-1-x) % FRAMEWIDTH
+                    col = (FRAMESIZE.w-1-x) % FRAMESIZE.w
                     try:
                         ret[i] = self.pixel[col][y] 
                     except ValueError:
@@ -67,8 +67,8 @@ class FrameBuffer(Buffer):
 
 
         # fixup bum pixel
-        if ret[3*FRAMEWIDTH] in [0x1, 0x2, 0x3]:
-            ret[3*FRAMEWIDTH] += 1
+        if ret[3*FRAMESIZE.w] in [0x1, 0x2, 0x3]:
+            ret[3*FRAMESIZE.w] += 1
 
 
         return ret

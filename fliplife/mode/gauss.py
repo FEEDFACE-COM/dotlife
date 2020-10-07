@@ -5,8 +5,7 @@ from dotlife.util import *
 
 
 import fliplife
-from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
-from fliplife import mask,framebuffer
+from fliplife import Mask, FRAMESIZE
 
 
 
@@ -15,10 +14,10 @@ class Gauss(fliplife.mode.Mode):
     
     def run(self,**params):
         info("start gauss")
-        self.mask = mask.Mask(size=FRAMESIZE)
-        for y in range(FRAMEHEIGHT):
-            for x in range(FRAMEWIDTH):
-                if random.gauss(1.,3.) > 4.:
+        self.mask = Mask()
+        for y in range(FRAMESIZE.h):
+            for x in range(FRAMESIZE.w):
+                if random.gauss(1.,0.) > 1.:
                     self.mask[x,y] = True
         
         

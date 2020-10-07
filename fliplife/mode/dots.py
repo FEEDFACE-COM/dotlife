@@ -6,10 +6,9 @@ from dotlife import math
 
 
 import fliplife
-from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
-from fliplife import mask,framebuffer, pixel
+from fliplife import Mask, FRAMESIZE
 
-from fliplife.rendering import Rendering
+from fliplife.fluepdot import Fluepdot
 
 class Dots(fliplife.mode.Mode):
     
@@ -19,7 +18,7 @@ class Dots(fliplife.mode.Mode):
         self.count = 0
         
         
-        self.fluepdot.rendering.setMode(Rendering.Mode.Diff)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
         
         self.mask = self.fluepdot.buffer.read()
         self.mask= self.draw(**params)
@@ -29,8 +28,8 @@ class Dots(fliplife.mode.Mode):
     
     def draw(self,invert,**params):
     
-        cx = int(FRAMEWIDTH/2)
-        cy = int(FRAMEHEIGHT/2)
+        cx = int(FRAMESIZE.w/2)
+        cy = int(FRAMESIZE.h/2)
         
         r0 = random.gauss(0.,1.5)
         r1 = random.gauss(0.,2.)
@@ -39,7 +38,7 @@ class Dots(fliplife.mode.Mode):
         y = cy + int(r1*(cy/4.))
 
 
-        prev = mask.Mask(mask=self.mask)
+        prev = Mask(mask=self.mask)
         
         self.mask[x,y] ^= True
         self.mask[x,y-1] ^= True
@@ -54,7 +53,6 @@ class Dots(fliplife.mode.Mode):
         self.fluepdot.pixel.flip(x+1,y,  self.mask[x+1,y])
         self.fluepdot.pixel.flip(x,y+1,  self.mask[x,y+1])
 
-#        self.fluepdot.pixel.flipDelta(prev, self.mask)
 
         log(str(self.mask))
         return self.mask

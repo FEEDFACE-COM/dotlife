@@ -2,7 +2,6 @@
 from dotlife.util import *
 
 
-from fliplife.mask import Mask
 from dotlife.mode import Mode as dotMode
 #
 # to add a new mode 'foobar':
@@ -28,7 +27,14 @@ class MODE(Enum):
     glider    = "glider"
     guns      = "guns"
     spawn     = "spawn"
+    fluep     = "fluep"
 
+    @classmethod
+    def named(self,s):
+        for f in MODE:
+            if f.name == s:
+                return f
+        raise Error("unknown mode: "+s)
 
 import dotlife.clock as clock
 
@@ -53,15 +59,15 @@ class Mode(dotMode):
         from fliplife.mode import spawn
         
         try:
-            mod = __import__("fliplife.mode."+str(mode), fromlist=[''])
-            cls = getattr(mod,mode.capitalize())
+            mod = __import__("fliplife.mode."+str(mode.name), fromlist=[''])
+            cls = getattr(mod,mode.name.capitalize())
         except AttributeError as x:
             raise Error("class {} not found".format(mode.capitalize()))
         except ModuleNotFoundError as x:   # ??
 #            error("module {} not found: {}".format(mode,str(x)))
-            raise Error("module {} not found".format(mode))
+            raise Error("module {} not found".format(mode.name))
         except Exception as x:
-            raise Error("mode {} imported exception: {}".format(mode,str(x)))
+            raise Error("mode {} imported exception: {}".format(mode.name,str(x)))
         
         timer = clock.Clock.Timer(speed,repeat=True)
         ret = cls(fluepdot,timer)

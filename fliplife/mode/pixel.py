@@ -5,8 +5,7 @@ from dotlife.util import *
 
 
 import fliplife
-from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
-from fliplife import mask,framebuffer,pixel
+from fliplife import Mask, FRAMESIZE
 
 
 class Pixel(fliplife.mode.Mode):

@@ -4,9 +4,7 @@ from dotlife.util import *
 from dotlife.buffer import Buffer
 
 import fliplife
-from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
-from fliplife import framebuffer
-from fliplife.mask import Mask
+from fliplife import Mask, FRAMESIZE
 
 
 class Clear(fliplife.mode.Mode):

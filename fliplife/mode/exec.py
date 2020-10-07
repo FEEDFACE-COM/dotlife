@@ -4,13 +4,11 @@ import random
 import dotlife
 from dotlife import *
 from dotlife.util import *
-
 from dotlife.font import Font
 
 import fliplife
-from fliplife import FRAMEWIDTH,FRAMEHEIGHT, FRAMESIZE
-from fliplife.mask import Mask
-from fliplife.rendering import Rendering
+from fliplife import Mask, FRAMESIZE
+from fliplife.fluepdot import Fluepdot
 
 
 class Exec(fliplife.mode.Mode):
@@ -18,7 +16,7 @@ class Exec(fliplife.mode.Mode):
     
     def run(self,randomize,x,y,font,rem=None,**params):
 
-        self.fluepdot.rendering.setMode(Rendering.Mode.Diff)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
         
         self.randomize = randomize
         self.cmd = 'date "+%F %T%z"'
@@ -29,7 +27,7 @@ class Exec(fliplife.mode.Mode):
 
         info("start exec: {:s}".format(self.cmd))
 
-        self.font = Font.Font3x5()
+        self.font = Font.Font(font)
         log(str(self.font))
 
         self.draw(x,y,font,**params)
@@ -50,8 +48,8 @@ class Exec(fliplife.mode.Mode):
         msk = self.font.render(txt)
 
         if self.randomize:
-            w = FRAMEWIDTH - msk.size().w
-            h = FRAMEHEIGHT - msk.size().h
+            w = FRAMESIZE.w - msk.size().w
+            h = FRAMESIZE.h - msk.size().h
             x = random.randint(0,w-1)
             y = random.randint(0,h-1)
         
