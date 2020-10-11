@@ -12,7 +12,7 @@ from bdb import BdbQuit
 import dotlife
 from dotlife import *
 from dotlife.util import *
-from dotlife.about import VERSION, NAME
+from dotlife.about import NAME, VERSION
 
 
 from dotlife.pattern import PATTERN
@@ -23,8 +23,6 @@ import fliplife
 from fliplife.mode import *
 from fliplife import Mask, FRAMESIZE
 from fliplife.fluepdot import Fluepdot
-
-
 
 DEFAULT_MODE = MODE.read
 DEFAULT_FONT = FONT.font3x5
@@ -137,7 +135,7 @@ FLAGS = [
     ("V",  "version",      None,                None,    "display version",        None ),
     ("h",  "help",         None,                None,    "display help",           None ),
     ("H:", "host=",        "host",      DEFAULT_HOST,    "fluepdot host",          None ),
-    ("W",  "nowrite",      "nowrite",          False,    "no writes to flupdot?",  None ),
+    ("W",  "nowrite",      "nowrite",          False,    "no writes to fluepdot?", None ),
     ("R",  "noread",       "noread",           False,    "no reads from fluepdot?",None ),
 ]
 
@@ -148,7 +146,7 @@ MODEFLAGS = [
     ("C",  "clear",            "clear",                False,                  "clear display?",                                          None ),
     ("F",  "forever",          "forever",              False,                  "run continuously?",                                       None ),
     ("i",  "invert",           "invert",               False,                  "invert pattern?",                                         None ),
-    ("s:", "speed=",           "speed",                 1.0,                   "step speed [s]",                           lambda x : float(x) ),
+    ("s:", "speed=",           "speed",                1.0,                    "step speed [s]",                           lambda x : float(x) ),
     ("c:", "count=",           "count",                1,                      "count",                                      lambda x : int(x) ),
     ("f:", "font=",            "font",                 DEFAULT_FONT,           "font",                                 lambda x: FONT.named(x) ),
     ("p:", "pattern=",         "pattern",              "default",              "pattern",                                                 None ),
@@ -168,7 +166,8 @@ ALLFLAGS = FLAGS + MODEFLAGS
 def usage():
     if len(logging.getLogger(NAME).handlers) > 0:
         logging.getLogger(NAME).handlers[0].setFormatter( logging.Formatter( "%(message)s") )
-        
+    
+    log("")    
     log("""## Usage
 
 {} [-{}] {} <mode> <msg/cmd/...>
@@ -212,15 +211,14 @@ def usage():
     
 ## UTILITY #####################################################################
 
-#REM, raspbian utf8 trouble: https://unix.stackexchange.com/questions/347914/how-to-set-lc-all-en-gb-utf-8-in-raspbian
 
 def about():
     if len(logging.getLogger(NAME).handlers) > 0:
         logging.getLogger(NAME).handlers[0].setFormatter( logging.Formatter( "%(message)s") )
     log("""\
-{} {}
+fliplife {}
 ©2020 FEEDFACE.COM
-""".format(NAME,VERSION) )
+""".format(VERSION) )
     exit(0)
     
     
@@ -255,10 +253,7 @@ if __name__ == "__main__":
         elif opt in ("-V", "--version"):
             about()
         elif opt in ("-v", "--verbose"):
-            if verbosity == logging.WARNING:
-                verbosity = logging.INFO
-            elif verbosity == logging.INFO:
-                verbosity = logging.DEBUG
+            verbosity -= 10
             logger.setLevel(verbosity)
             handler.setLevel(verbosity)
         elif opt in ("-q", "--quiet"):
@@ -294,8 +289,8 @@ if __name__ == "__main__":
 
     if len(args) >= 1:
         try:
-            params['runmode'] = fliplife.mode.MODE(args[0])
-        except ValueError:
+            params['runmode'] = fliplife.mode.MODE.named(args[0])
+        except Error:
             error("invalid mode {:s}".format(args[0]))
             usage()
     

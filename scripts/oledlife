@@ -11,7 +11,7 @@ from bdb import BdbQuit
 import dotlife
 from dotlife import *
 from dotlife.util import *
-from dotlife.about import VERSION, NAME
+from dotlife.about import NAME, VERSION
 
 
 from dotlife.life import Life
@@ -23,7 +23,6 @@ from oledlife.mode import *
 from oledlife import FRAMESIZE
 from oledlife.framebuffer import FrameBuffer
 from oledlife.dmx import *
-
 
 
 DEFAULT_MODE = MODE.glider
@@ -251,9 +250,9 @@ def about():
     if len(logging.getLogger(NAME).handlers) > 0:
         logging.getLogger(NAME).handlers[0].setFormatter( logging.Formatter( "%(message)s") )
     log("""\
-{} {}
+oledlife {}
 ©2020 FEEDFACE.COM
-""".format(NAME,VERSION) )
+""".format(VERSION) )
     exit(0)
     
     
@@ -288,10 +287,7 @@ if __name__ == "__main__":
         elif opt in ("-V", "--version"):
             about()
         elif opt in ("-v", "--verbose"):
-            if verbosity == logging.WARNING:
-                verbosity = logging.INFO
-            elif verbosity == logging.INFO:
-                verbosity = logging.DEBUG
+            verbosity -= 10
             logger.setLevel(verbosity)
             handler.setLevel(verbosity)
         elif opt in ("-q", "--quiet"):
