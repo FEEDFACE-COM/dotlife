@@ -36,7 +36,7 @@ DEFAULT_HOST = "87.193.3.53"
 
 def main(runmode, host, preview, speed, clear, forever, nowrite, noread, **params):
 
-    info( "\n" * 2 + str(PATTERN.FLIPLIFE.value)[1:-1] + "\n" * 2)
+    info( "\n\n" + str(PATTERN.FLIPLIFE.value)[1:-1] + "\n\n")
     info("fliplife mode {:s}".format(runmode.name))
 
     # register signals
@@ -50,12 +50,15 @@ def main(runmode, host, preview, speed, clear, forever, nowrite, noread, **param
         FATAL("fail to get address for {:s}: {:s}".format(host,str(x)))
     
     
-    fluepdot = Fluepdot(address,nowrite,noread)
     
     Clock.Init()
+
+    fluepdot = Fluepdot(address,nowrite,noread)
+    timer = Clock.Timer(speed,repeat=True)
     
     try:
-        mode = Mode.Init(runmode,fluepdot,speed)
+        m = Class(runmode)
+        mode = m(fluepdot,timer)
     except Error as x:
         FATAL("fail init mode {:s}: {:s}".format(runmode.name,str(x)))
 
@@ -163,11 +166,10 @@ ALLFLAGS = FLAGS + MODEFLAGS
 
 
 
-def usage():
-    if len(logging.getLogger(NAME).handlers) > 0:
-        logging.getLogger(NAME).handlers[0].setFormatter( logging.Formatter( "%(message)s") )
+def usage(mode=None):
+#    if len(logging.getLogger(NAME).handlers) > 0:
+#        logging.getLogger(NAME).handlers[0].setFormatter( logging.Formatter( "%(message)s") )
     
-    log("")    
     log("""## Usage
 
 {} [-{}] {} <mode> <msg/cmd/...>
@@ -213,9 +215,7 @@ def usage():
 
 
 def about():
-    if len(logging.getLogger(NAME).handlers) > 0:
-        logging.getLogger(NAME).handlers[0].setFormatter( logging.Formatter( "%(message)s") )
-    log("""\
+    sys.stderr.write("""\
 fliplife {}
 ©2020 FEEDFACE.COM
 """.format(VERSION) )
@@ -289,15 +289,24 @@ if __name__ == "__main__":
 
     if len(args) >= 1:
         try:
-            params['runmode'] = fliplife.mode.MODE.named(args[0])
-        except Error:
+            params['runmode'] = fliplife.mode.MODE[ args[0] ]
+        except KeyError:
             error("invalid mode {:s}".format(args[0]))
             usage()
+
+    runmode = params['runmode']
+    m = fliplife.mode.Class(runmode)
     
-    if len(args) > 1:
-        if args[1] == "-h":
-            usage()
-        params['rem'] = args[1:] 
+    
+    
+    
+    
+
+    
+#    if len(args) > 1:
+#        if args[1] == "-h":
+#            usage()
+#        params['rem'] = args[1:] 
 
 
 #    dump(params)
