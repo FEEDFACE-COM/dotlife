@@ -64,12 +64,12 @@ class Mask:
                 for x in range(self.w):
                     p = self.pixel[x][y]
                     if p:
-                        ret += "▐▌"
+                        ret += "██"
                     else:
-                        ret += "· "
-                ret += " {:01d}\n".format(y)
+                        ret += " ̣ "
+                ret += " {:01d}\n".format(y%10)
             for x in range(self.w):
-                ret += "{:01d} ".format(x)
+                ret += " {:01d}".format(x%10)
     
         return ret[:-1]
     
