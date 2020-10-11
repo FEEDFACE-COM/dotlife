@@ -13,21 +13,22 @@ from dotlife.mode import Mode as dotMode
 from enum import Enum, auto
 
 class MODE(Enum):
-    test      = "test"
-    read      = "read"
-    clear     = "clear"
-    fill      = "fill"
-    gauss     = "gauss"
-    echo      = "echo"
-    exec      = "exec"
-    grow      = "grow"
-    pixel     = "pixel"
-    dots      = "dots"
-    life      = "life"
-    glider    = "glider"
-    guns      = "guns"
-    spawn     = "spawn"
-    fluep     = "fluep"
+    test      = auto()
+    read      = auto()
+    clear     = auto()
+    fill      = auto()
+    gauss     = auto()
+    echo      = auto()
+    exec      = auto()
+    grow      = auto()
+    pixel     = auto()
+    dots      = auto()
+    life      = auto()
+    glider    = auto()
+    guns      = auto()
+    spawn     = auto()
+    fluep     = auto()
+    pipe      = auto()
 
     @classmethod
     def named(self,s):
@@ -43,20 +44,8 @@ class Mode(dotMode):
     def Init(mode,fluepdot,speed):
     
         # static import for run time checking
-        from fliplife.mode import test
-        from fliplife.mode import read
-        from fliplife.mode import clear
-        from fliplife.mode import fill
-        from fliplife.mode import gauss
-        from fliplife.mode import echo
-        from fliplife.mode import exec
-        from fliplife.mode import grow
-        from fliplife.mode import pixel
-        from fliplife.mode import dots
-        from fliplife.mode import life
-        from fliplife.mode import glider
-        from fliplife.mode import guns
-        from fliplife.mode import spawn
+        from fliplife.mode import test,read,clear,fill,gauss,echo,exec
+        from fliplife.mode import grow,pixel,dots,life,glider,guns,spawn
         
         try:
             mod = __import__("fliplife.mode."+str(mode.name), fromlist=[''])
@@ -64,7 +53,6 @@ class Mode(dotMode):
         except AttributeError as x:
             raise Error("class {} not found".format(mode.capitalize()))
         except ModuleNotFoundError as x:   # ??
-#            error("module {} not found: {}".format(mode,str(x)))
             raise Error("module {} not found".format(mode.name))
         except Exception as x:
             raise Error("mode {} imported exception: {}".format(mode.name,str(x)))
