@@ -4,11 +4,9 @@ from enum import Enum, auto
 from dotlife import *
 from dotlife.util import *
 
-#from dotlife.fonts import font3x5
-#from dotlife.fonts import blinkenlights
-
 
 from dotlife.mask import Mask
+
 
 
 class FONT(Enum):
@@ -19,16 +17,8 @@ class FONT(Enum):
     def __str__(self):
         return self.name
 
-    @classmethod
-    def named(self,s):
-        for f in FONT:
-            if f.name == s:
-                return f
-        raise Error("unknown font: "+str(s))
-        
 
 class Font:
-
 
     def __init__(self,alphabet,size,empty):
         self.size = size

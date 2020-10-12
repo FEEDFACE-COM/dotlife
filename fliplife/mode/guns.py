@@ -41,7 +41,7 @@ class Guns(fliplife.mode.Mode):
         return True
         
     
-    def draw(self,invert,**params):
+    def draw(self,**params):
 
         self.life.step()
         self.mask = Mask(mask=self.life)
@@ -50,4 +50,9 @@ class Guns(fliplife.mode.Mode):
         self.fluepdot.buffer.write(self.mask)
         info(str(self.mask))
         return self.mask
+    
+    flags = [
+        ("c:", "count=",           "count",                1,                      "count",                                      lambda x : int(x) ),
+        ("r", "random",            "randomize",            False,                  "randomize?",                                              None ),
+    ]
     

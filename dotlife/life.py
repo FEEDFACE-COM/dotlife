@@ -8,14 +8,14 @@ from dotlife.mask import Mask
 from enum import Enum,auto
 
 class Pattern(Enum):
-    Glider = \
+    glider = \
 """
   []  
     []
 [][][]
 """
 
-    Gun = \
+    gun = \
 """
                                                 []                      
                                             []  []                      
@@ -28,7 +28,7 @@ class Pattern(Enum):
                         [][]                                            
 """ 
 
-    Eater = \
+    eater = \
 """
 [][]    
 []      
@@ -36,7 +36,7 @@ class Pattern(Enum):
       []
 """
 
-    Copperhead = \
+    copperhead = \
 """
       [][]  [][][]      
 []  []        [][][]    
@@ -46,14 +46,14 @@ class Pattern(Enum):
       [][]  [][][]      
 """
 
-    Rpentomino = \
+    rpentomino = \
 """
   [][]
 [][]  
   []  
 """
 
-    Herschel = \
+    herschel = \
 """
 []    
 []  []
@@ -61,13 +61,13 @@ class Pattern(Enum):
     []
 """
 
-    Block = \
+    block = \
 """
 [][]
 [][]
 """
 
-    Shuttle = \
+    shuttle = \
 """
                   []                        
               []  []                        
@@ -80,10 +80,13 @@ class Pattern(Enum):
                                         [][]
 """
 
-    def __init__(self,name):
-        super().__init__()
-        return self
+#    def __init__(self,name):
+#        super().__init__()
+#        return self
 
+    def __str__(self):
+        return self.name.lower()
+        
 
     def Mask(self,step=0,flip=Flip.NoFlip):
         log("spawn " + str(self.name))

@@ -7,10 +7,11 @@ from dotlife import math
 from dotlife import life
 
 import fliplife
+from fliplife.mode import Mode 
 from fliplife import Mask, FRAMESIZE
 from fliplife.fluepdot import Fluepdot
 
-class Life(fliplife.mode.Mode):
+class Life(Mode):
     
     
     def run(self,count,**params):
@@ -40,3 +41,7 @@ class Life(fliplife.mode.Mode):
         info(str(mask))
         return mask
     
+    flags = [
+        Mode.FLAGS["invert"],
+        Mode.FLAGS["count"],
+    ]

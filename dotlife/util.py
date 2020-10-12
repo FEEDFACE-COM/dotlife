@@ -21,6 +21,9 @@ def FATAL(s):
     exit(-2)
 def dump(x,s=None): logging.getLogger(NAME).debug( ((s + "\n")  if s else "") + pprint.pformat(x))
 
+def usage(s): 
+    for l in s.split("\n"): logging.getLogger(NAME).error(l)
+
 
 
 class Error(Exception):

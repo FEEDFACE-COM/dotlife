@@ -11,7 +11,7 @@ class Read(fliplife.mode.Mode):
     
     def run(self,**params):
         info("start read")
-        
+
         self.mask = self.fluepdot.buffer.read()
         log(str(self.mask))
         return False

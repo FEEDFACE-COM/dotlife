@@ -5,11 +5,12 @@ from dotlife.util import *
 
 
 import fliplife
+from fliplife.mode import Mode
 from fliplife import Mask, FRAMESIZE
 
 from fliplife.fluepdot import Fluepdot
 
-class Grow(fliplife.mode.Mode):
+class Grow(Mode):
     
     
     def run(self,**params):
@@ -51,3 +52,8 @@ class Grow(fliplife.mode.Mode):
         
 
         return mask
+
+
+    flags = [
+        Mode.FLAGS["invert"],
+    ]

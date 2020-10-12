@@ -19,3 +19,6 @@ class Clear(fliplife.mode.Mode):
         log(str(mask))
         return False
     
+    flags = [
+        ("i",  "invert",           "invert",               False,                  "invert pattern?",                                         None ),
+    ]

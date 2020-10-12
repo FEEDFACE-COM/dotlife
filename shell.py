@@ -26,7 +26,7 @@ from oledlife.framebuffer import *
 from fliplife import mode as flipmode
 from oledlife import mode as oledmode
 
-for m in flipmode.MODE:
+for m in fliplife.MODE:
     try:
         cls = __import__("fliplife.mode."+str(m.name), fromlist=[''])
 #    except ModuleNotFoundError as x:   # ??

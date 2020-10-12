@@ -8,15 +8,16 @@ from dotlife.util import *
 
 
 import fliplife
-from fliplife import Mask, FRAMESIZE
+from fliplife.mode import Mode
+from fliplife import Mask, FRAMESIZE, DEFAULT_FONT
 from fliplife.fluepdot import Fluepdot
 
 from dotlife.font import Font
 
-class Echo(fliplife.mode.Mode):
+class Echo(Mode):
         
     
-    def run(self,randomize,x,y,font,rem=None,**params):
+    def run(self,randomize,x,y,font,msg=None,**params):
 #        self.fluepdot.rendering.setMode(Fluepdot.Mode.Full)
         self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
         self.randomize = randomize
@@ -25,10 +26,8 @@ class Echo(fliplife.mode.Mode):
         log(str(self.font))
         
         self.msg = "hello, world."
-        if type(rem) == type([]):
-            self.msg = " ".join(rem)
-        elif type(rem) == type("") and rem != "":
-            self.msg = rem
+        if msg:
+            self.msg = msg
 
         info("start echo: {:s}".format(self.msg))
         
@@ -55,3 +54,12 @@ class Echo(fliplife.mode.Mode):
         info(str(self.mask))
         return ret 
         
+    flags = [
+        Mode.FLAG["font"],
+        Mode.FLAG["x"],
+        Mode.FLAG["y"],
+        Mode.FLAG["randomize"],
+        (None, None,            "msg",                 "hello, world.",           "message",                                 None),
+    ]
+    
+    

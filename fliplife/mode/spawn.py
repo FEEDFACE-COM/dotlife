@@ -7,34 +7,28 @@ from dotlife import math
 from dotlife import life
 
 import fliplife
+from fliplife.mode import Mode
 from fliplife import Mask, FRAMESIZE
 from fliplife.fluepdot import Fluepdot
 
 
-class Spawn(fliplife.mode.Mode):
+class Spawn(Mode):
     
 
     
-    DefaultPattern = life.Pattern.Glider
+    DefaultPattern = life.Pattern.glider
     DefaultPosition = Position(0,0)
     
 
     
     def run(self,x,y,randomize,pattern,step,count,**params):
     
-        if pattern == "default":
-            pattern = Spawn.DefaultPattern
-        else:
-            try:
-                pattern = getattr(life.Pattern,pattern.capitalize())
-            except AttributeError as x:
-                raise Error("unknown pattern {:s}".format(pattern))
         
-        info("start spawn {:s}".format(pattern))
+        info("start spawn {:s}".format(pattern.name.lower()))
         self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
 
-        mask = self.fluepdot.buffer.read()        
-        self.life = life.Life(mask=mask)
+        self.life = life.Life(mask=self.mask)
+
 
 
         if randomize:
@@ -49,7 +43,8 @@ class Spawn(fliplife.mode.Mode):
         
         self.draw(**params)
         return True
-        
+
+
     
     def draw(self,**params):
         
@@ -61,4 +56,18 @@ class Spawn(fliplife.mode.Mode):
         
         info(str(mask))
         return mask
+    
+    
+    
+    patterns = life.Pattern
+
+    flags = [
+        ("p:", "pattern=",     "pattern",    DefaultPattern, "pattern", lambda x: life.Pattern[x.lower()] ),
+#        Mode.FLAGS["pattern"],
+        Mode.FLAGS["step"],
+        Mode.FLAGS["count"],
+        Mode.FLAGS["randomize"],
+        Mode.FLAGS["x"],
+        Mode.FLAGS["y"],
+    ]
     
