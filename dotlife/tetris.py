@@ -16,7 +16,7 @@ class Tetris:
         
     def buffer(self,light=LIGHT,dark=DARK):
         ret = Buffer()
-        ret.mask( self.tile.mask, (self.tile.x,self.tile.y) )
+        ret.addMask( self.tile.mask, (self.tile.x,self.tile.y) )
         return ret
         
         

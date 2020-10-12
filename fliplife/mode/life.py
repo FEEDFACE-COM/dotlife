@@ -25,7 +25,7 @@ class Life(Mode):
         return True
         
     
-    def draw(self,invert,**params):
+    def draw(self,**params):
 
         prev = Mask(mask=self.life)
         self.life.step()
@@ -42,6 +42,5 @@ class Life(Mode):
         return mask
     
     flags = [
-        Mode.FLAGS["invert"],
-        Mode.FLAGS["count"],
+        Mode.FLAG["count"],
     ]

@@ -7,15 +7,16 @@ from dotlife import math
 from dotlife import life
 
 import fliplife
+from fliplife.mode import Mode
 from fliplife import Mask, FRAMESIZE
 from fliplife.fluepdot import Fluepdot
 
 
-class Guns(fliplife.mode.Mode):
+class Guns(Mode):
     
     
-    def run(self,count,randomize,**params):
-        info("start life")
+    def run(self,randomize,**params):
+        info("start guns")
         self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
     
         self.mask = Mask()
@@ -28,11 +29,11 @@ class Guns(fliplife.mode.Mode):
         off2 = Position(x=24,y=-5)
         
         
-        self.life.spawn(life.Pattern.Gun,pos=pos1)
-        self.life.spawn(life.Pattern.Eater,pos=pos1+off1)
+        self.life.spawn(life.Pattern.gun,pos=pos1)
+        self.life.spawn(life.Pattern.eater,pos=pos1+off1)
         
-        self.life.spawn(life.Pattern.Gun,pos=pos2,flip=Flip.Horizontal)
-        self.life.spawn(life.Pattern.Eater,pos=pos2+off2,flip=Flip.Horizontal)
+        self.life.spawn(life.Pattern.gun,pos=pos2,flip=Flip.Horizontal)
+        self.life.spawn(life.Pattern.eater,pos=pos2+off2,flip=Flip.Horizontal)
 
         self.mask = Mask(self.life)
 
@@ -52,7 +53,6 @@ class Guns(fliplife.mode.Mode):
         return self.mask
     
     flags = [
-        ("c:", "count=",           "count",                1,                      "count",                                      lambda x : int(x) ),
-        ("r", "random",            "randomize",            False,                  "randomize?",                                              None ),
+        Mode.FLAG["randomize"],
     ]
     

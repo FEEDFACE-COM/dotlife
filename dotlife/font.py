@@ -7,12 +7,16 @@ from dotlife.util import *
 
 from dotlife.mask import Mask
 
+from dotlife.fonts import font3x5, font5x7, blinkenlights
+
+
+#def debug(s): pass
 
 
 class FONT(Enum):
-    font3x5        = auto()
-    font5x7        = auto()
-    blinkenlights  = auto()
+    font3x5        = font3x5
+    font5x7        = font5x7
+    blinkenlights  = blinkenlights
 
     def __str__(self):
         return self.name
@@ -20,16 +24,18 @@ class FONT(Enum):
 
 class Font:
 
-    def __init__(self,alphabet,size,empty):
-        self.size = size
-        self.empty = Mask.Load(empty)
-        self.alphabet = {}
-        for key,val in alphabet.items():
-            try:
-                self.alphabet[key] = Mask.Load(val)
-            except Error as x:
-                pass
-        return
+    def __init__(self,font):
+        try:
+            self.alphabet = {}
+            self.size = font.value.Size
+            self.empty = Mask.Load(font.value.Empty)
+            for key,val in font.value.Alphabet.items():
+                try:
+                    self.alphabet[key] = Mask.Load(val)
+                except Error:
+                    pass
+        except Exception as x:
+            raise Error("font {} broken: {}".format(font.name,str(x)))
 
 
     def __str__(self):
@@ -46,7 +52,7 @@ class Font:
                 buf = self.glyph(key)
                 if fixed and buf.w < self.size.w:
                     pass # TODO: add columns to buf                            
-                ret.mask( buf, pos=pos )
+                ret.addMask( buf, pos=pos )
                 pos.x += buf.w + 1
                 k += 1
                 k %= len(keys)
@@ -61,19 +67,6 @@ class Font:
         return ret
 
 
-    @classmethod
-    def Font(self,font):
-        try:
-            mod = __import__("dotlife.fonts."+str(font.name), fromlist=[''])
-            alphabet = mod.Alphabet
-            size = mod.Size
-            empty = mod.Empty
-        except ModuleNotFoundError as x:
-            raise Error("module {} not found".format(font.name))
-        except AttributeError as x:
-            raise Error("font {} broken: {}".format(font.name,str(x)))
-        
-        return Font(alphabet=alphabet,size=size,empty=empty)
 
 
 
@@ -105,10 +98,11 @@ class Font:
                 buf = self.glyph(c)
             if fixed and buf.w < self.size.w:
                 pass # TODO: add columns to buf                            
-            ret.mask(buf,pos=pos)
+            ret.addMask(buf,pos=pos)
             if fixed:
                 pos.x += self.size.w + 1
             else:
                 pos.x += buf.w + 1
+        debug("rendered {:s}: {:s}".format(str(ret.size()),txt))
         return ret
 

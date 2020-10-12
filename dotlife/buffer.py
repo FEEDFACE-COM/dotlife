@@ -126,7 +126,7 @@ class Buffer:
                     self[x,y] = light
 
 
-    def mask(self,mask,pos=(0,0),wrap=False,light=LIGHT):
+    def addMask(self,mask,pos=(0,0),wrap=False,light=LIGHT):
         dx,dy = pos
         for y in range(mask.h):
             if not wrap and not 0 <= y+dy < self.h:

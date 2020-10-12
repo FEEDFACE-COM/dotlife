@@ -181,20 +181,12 @@ def usage(mode=None,msg=""):
         
         log("## Flags")
         f = None
-        for (s,l,p,d,h,_) in fliplife.mode.Mode.flags + mode.value.flags:
+        for (s,l,p,d,h,_) in fliplife.mode.Mode.FLAGS + mode.value.flags:
             if s or l:
                 log("  {:3} {:16}    {}{}".format( "-"+s.rstrip(":")+"," if s else "","--"+l.rstrip("=") if l else "",h,("" if d in [None,False] else ", default: "+str(d).lower()) ))
         log("")
     
 
-        a = None
-        for (s,l,p,d,h,_) in mode.value.flags:
-            if not s and not l:
-                a = "  {:20}    {}{}".format( p,h,("" if d in [None,False] else ", default: "+str(d).lower()) )
-        if a:
-            log("## Arguments")
-            log(a)
-            log("")
             
         fonts,patterns = [],[]
         for (_,_,p,_,_,_) in mode.value.flags:
@@ -227,6 +219,15 @@ def usage(mode=None,msg=""):
             log("  " + pat)
             log("")
         
+
+        args = None
+        for (s,l,p,d,h,_) in mode.value.flags:
+            if not s and not l:
+                args = "  {:20}    {}{}".format( p,h,("" if d in [None,False] else ", default: "+str(d).lower()) )
+        if args:
+            log("## Arguments")
+            log(args)
+            log("")
         
     exit(-1)
 
@@ -314,7 +315,7 @@ if __name__ == "__main__":
 
 
     ## read mode flags
-    modeflags = HELPFLAGS + fliplife.mode.Mode.flags + runmode.value.flags
+    modeflags = HELPFLAGS + fliplife.mode.Mode.FLAGS + runmode.value.flags
     short = "".join( [s for (s,_,_,_,_,_) in modeflags if s is not None] )
     long = [l for (_,l,_,_,_,_) in modeflags if l is not None] 
     modeparams = dict( [(n,d) for (_,_,n,d,_,_) in modeflags if n is not None] )

@@ -26,7 +26,7 @@ class Exec(Mode):
 
         info("start exec: {:s}".format(self.cmd))
 
-        self.font = Font.Font(font)
+        self.font = Font(font)
         log(str(self.font))
 
         self.draw(x,y,font,**params)
@@ -57,17 +57,17 @@ class Exec(Mode):
 #        self.mask = self.fluepdot.buffer.text(x,y,font,txt)
         
         self.mask = Mask()
-        self.mask.mask(msk,pos=Position(x,y))
+        self.mask.addMask(msk,pos=Position(x,y))
         self.mask = self.fluepdot.buffer.write(self.mask)
         
         log(str(self.mask))
         return self.mask
 
     flags = [
-        Mode.FLAGS["font"],
-        Mode.FLAGS["x"],
-        Mode.FLAGS["y"],
-        Mode.FLAGS["randomize"],
+        Mode.FLAG["font"],
+        Mode.FLAG["x"],
+        Mode.FLAG["y"],
+        Mode.FLAG["randomize"],
         (None, None,            "cmd",               'date "+%F %T %z"',           "command",                                 None),
     ]
         

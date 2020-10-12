@@ -32,7 +32,7 @@ class MODE(Enum):
     glider    = glider.Glider
     guns      = guns.Guns
     spawn     = spawn.Spawn
-    fluep     = fluep.Fluep
+    flueptext = fluep.Fluep
     pipe      = pipe.Pipe
 
     def __str__(self):

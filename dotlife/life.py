@@ -109,7 +109,7 @@ class Life(Mask):
 
     def buffer(self,alive=ALIVE,dead=DEAD):
         ret = Buffer()
-        ret.mask( self, light=alive )
+        ret.addMask( self, light=alive )
         return ret
     
     def __init__(self,size=Size(8,8),gen=0,mask=None):
@@ -137,7 +137,7 @@ class Life(Mask):
 
     def spawn(self,pattern,pos=Position(0,0),step=0,flip=Flip.NoFlip):
         pat = pattern.Mask(step,flip)
-        self.mask( pat, pos=pos, wrap=True )
+        self.addMask( pat, pos=pos, wrap=True )
         return
 
     def minimal(self):

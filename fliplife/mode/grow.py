@@ -55,5 +55,5 @@ class Grow(Mode):
 
 
     flags = [
-        Mode.FLAGS["invert"],
+        Mode.FLAG["invert"],
     ]

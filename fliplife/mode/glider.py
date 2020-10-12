@@ -6,11 +6,13 @@ from dotlife.util import *
 from dotlife import math
 from dotlife import life
 
+
 import fliplife
+from fliplife.mode import Mode
 from fliplife import Mask, FRAMESIZE
 from fliplife.fluepdot import Fluepdot
 
-class Glider(fliplife.mode.Mode):
+class Glider(Mode):
     
     
     def run(self,count,randomize,**params):
@@ -32,7 +34,7 @@ class Glider(fliplife.mode.Mode):
                 pos = Position( random.randint(0,FRAMESIZE.w-1), random.randint(0,FRAMESIZE.h-1) )
                 step = random.randint(0,3)
                 log("add glider #{:d} at {:d}/{:d} course {:s}".format(c,pos.x,pos.y,str(direction)))
-                self.life.addGlider(pos=pos,step=step,direction=direction)
+                self.life.spawn(life.Pattern.glider,pos=pos,step=step)
 
         else:
             d = int(FRAMESIZE.w / count)
@@ -41,7 +43,7 @@ class Glider(fliplife.mode.Mode):
             pos = Position( int(FRAMESIZE.w/2) , int(FRAMESIZE.h/2) )
             for c in range(count):
                 log("add glider #{:d} at {:d}/{:d} course {:s}".format(c,pos.x,pos.y,str(direction)))
-                self.life.addGlider(pos=pos,step=step,direction=direction)
+                self.life.spawn(life.Pattern.glider,pos=pos,step=step)
                 pos = Position( (pos.x+d)%FRAMESIZE.w, pos.y )
                 lon,lat = direction.value
                 direction = Direction( (lon*-1, lat*-1) )
@@ -54,16 +56,20 @@ class Glider(fliplife.mode.Mode):
 
         
         
-        self.draw(**params)
+        self.mask = self.draw(**params)
         return False
         
     
-    def draw(self,invert,**params):
+    def draw(self,**params):
         
         prev = self.fluepdot.buffer.read()
         mask = Mask(mask=self.life)
         self.fluepdot.buffer.write(mask)
         
-        debug(str(mask))
+        info(str(mask))
         return mask
     
+    flags = [
+        Mode.FLAG["count"],
+        Mode.FLAG["randomize"],
+    ]

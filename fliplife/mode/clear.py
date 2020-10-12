@@ -4,10 +4,11 @@ from dotlife.util import *
 from dotlife.buffer import Buffer
 
 import fliplife
+from fliplife.mode import Mode
 from fliplife import Mask, FRAMESIZE
 
 
-class Clear(fliplife.mode.Mode):
+class Clear(Mode):
     
     
     def run(self,invert,**params):
@@ -20,5 +21,5 @@ class Clear(fliplife.mode.Mode):
         return False
     
     flags = [
-        ("i",  "invert",           "invert",               False,                  "invert pattern?",                                         None ),
+        Mode.FLAG["invert"],
     ]

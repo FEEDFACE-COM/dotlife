@@ -22,7 +22,7 @@ class Echo(Mode):
         self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
         self.randomize = randomize
         
-        self.font = Font.Font(font)
+        self.font = Font(font)
         log(str(self.font))
         
         self.msg = "hello, world."
@@ -49,7 +49,7 @@ class Echo(Mode):
 
 
         self.mask = Mask() #self.fluepdot.buffer.read()
-        self.mask.mask(self.buf,pos=pos)
+        self.mask.addMask(self.buf,pos=pos)
         ret = self.fluepdot.buffer.write(self.mask)
         info(str(self.mask))
         return ret 

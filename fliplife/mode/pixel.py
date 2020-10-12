@@ -5,10 +5,11 @@ from dotlife.util import *
 
 
 import fliplife
+from fliplife.mode import Mode
 from fliplife import Mask, FRAMESIZE
 
 
-class Pixel(fliplife.mode.Mode):
+class Pixel(Mode):
     
     
     def run(self,x,y,invert,**params):
@@ -36,3 +37,8 @@ class Pixel(fliplife.mode.Mode):
         return False
         
     
+    flags = [
+        Mode.FLAG["x"],
+        Mode.FLAG["y"],
+        Mode.FLAG["invert"],
+    ]

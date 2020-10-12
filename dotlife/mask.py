@@ -130,19 +130,20 @@ class Mask:
         return self
                 
 
-    def add(self,val):
-        if type(val) == type( Mask() ):
-            return self.addMask(val)
-        raise Error("operation {} + {} -> {} not implemented".format(type(self).__name__,type(val).__name__,type(self).__name__) )
+#    def __add__(self,val):
+#        if type(val) == type( Mask() ):
+#            return self.addMask(val)
+#        raise Error("operation {} + {} -> {} not implemented".format(type(self).__name__,type(val).__name__,type(self).__name__) )
+#
+#    def addMask(self,val):
+#        for y in range(self.h):
+#            for x in range(self.w):
+#                if 0 <= x < val.w and 0 <= y < val.h:
+#                    self.pixel[x][y] = val[x,y]
+#        return self
+#
 
-    def addMask(self,val):
-        for y in range(self.h):
-            for x in range(self.w):
-                if 0 <= x < val.w and 0 <= y < val.h:
-                    self.pixel[x][y] = val[x,y]
-
-
-    def mask(self,mask,pos=Position(0,0),wrap=False):
+    def addMask(self,mask,pos=Position(0,0),wrap=False):
         for y in range(mask.h):
             if not wrap and not 0 <= y+pos.y < self.h:
                 continue
@@ -151,6 +152,8 @@ class Mask:
                     continue
                 if mask[x,y]:
                     self[x+pos.x,y+pos.y] = mask[x,y]
+        return self
+        
         
         
     def Checkers(size=(4,4)):

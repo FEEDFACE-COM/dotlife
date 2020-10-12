@@ -5,12 +5,13 @@ from dotlife.util import *
 from dotlife import math
 
 
-import fliplife
+
+from fliplife.mode import Mode
 from fliplife import Mask, FRAMESIZE
 
 from fliplife.fluepdot import Fluepdot
 
-class Dots(fliplife.mode.Mode):
+class Dots(Mode):
     
     
     def run(self,**params):
@@ -57,3 +58,6 @@ class Dots(fliplife.mode.Mode):
         log(str(self.mask))
         return self.mask
     
+    flags = [
+        Mode.FLAG["invert"],
+    ]

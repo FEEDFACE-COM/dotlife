@@ -44,9 +44,9 @@ class Fill(Mode):
 
         elif pattern == Pattern.font:
             self.mask = Mask()
-            fnt = Font.Font(font)
+            fnt = Font(font)
             msk = fnt.repertoire(size=self.mask.size())
-            self.mask.mask(msk)
+            self.mask.addMask(msk)
         
         if invert: 
             self.mask.inv()
@@ -59,7 +59,7 @@ class Fill(Mode):
     
     flags = [
         ("p:", "pattern=",     "pattern",    DefaultPattern, "pattern", lambda x: Pattern[x.lower()] ),
-        Mode.FLAGS["invert"],
-        Mode.FLAGS["font"],
+        Mode.FLAG["invert"],
+        Mode.FLAG["font"],
     ]        
     
