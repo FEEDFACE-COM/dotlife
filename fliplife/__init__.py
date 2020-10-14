@@ -1,4 +1,6 @@
 
+from dotlife.util import *
+
 import dotlife
 from dotlife import font
 
@@ -9,13 +11,12 @@ def Mask(mask=None,size=FRAMESIZE):
     return dotlife.mask.Mask(mask=mask,size=size)
     
     
-from enum import Enum, auto
 
 
 
 from fliplife.mode import test, read, clear, fill, gauss, echo, exec
 from fliplife.mode import grow, pixel, dots, life, glider, guns, spawn
-from fliplife.mode import fluep, pipe
+from fliplife.mode import flueptext, pipe, scroll, clock
 
 class MODE(Enum):
     test      = test.Test
@@ -32,9 +33,9 @@ class MODE(Enum):
     glider    = glider.Glider
     guns      = guns.Guns
     spawn     = spawn.Spawn
-    flueptext = fluep.Fluep
+    flueptext = flueptext.Flueptext
     pipe      = pipe.Pipe
+    scroll    = scroll.Scroll
+    clock     = clock.Clock
 
-    def __str__(self):
-        return self.name
 

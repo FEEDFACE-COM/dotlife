@@ -17,7 +17,7 @@ class Grow(Mode):
         info("start grow")
 
         self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
-        mask = self.draw(**params)
+        self.mask = self.draw(**params)
         return True
         
     
@@ -34,24 +34,24 @@ class Grow(Mode):
 
         pxl = self.fluepdot.pixel.read(x,y)
         
-        mask = Mask()
+        
         if invert:
 
             if pxl:
                 self.fluepdot.pixel.flip(x,y,False)
-                mask = self.fluepdot.buffer.read()
-                log(str(mask))
+                self.mask = self.fluepdot.buffer.read()
+                log(str(self.mask))
 
 
         else:
                 
             if not pxl:
                 self.fluepdot.pixel.flip(x,y,True)
-                mask = self.fluepdot.buffer.read()
-                log(str(mask))
+                self.mask = self.fluepdot.buffer.read()
+                log(str(self.mask))
         
 
-        return mask
+        return self.mask
 
 
     flags = [

@@ -15,7 +15,6 @@ class Pixel(Mode):
     def run(self,x,y,invert,**params):
         info("start pixel {:d}/{:d}".format(x,y))
 
-        mask = self.fluepdot.buffer.read()
         
         pxl = self.fluepdot.pixel.read(x,y)
         if pxl:
