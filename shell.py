@@ -23,6 +23,7 @@ from fliplife.framebuffer import *
 
 from oledlife.framebuffer import *
 
+
 from fliplife import mode as flipmode
 from oledlife import mode as oledmode
 

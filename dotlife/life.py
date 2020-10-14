@@ -5,94 +5,6 @@ from dotlife.buffer import Buffer
 from dotlife.mask import Mask
 
 
-from enum import Enum,auto
-
-class Pattern(Enum):
-    glider = \
-"""
-  []  
-    []
-[][][]
-"""
-
-    gun = \
-"""
-                                                []                      
-                                            []  []                      
-                        [][]            [][]                        [][]
-                      []      []        [][]                        [][]
-[][]                []          []      [][]                            
-[][]                []      []  [][]        []  []                      
-                    []          []              []                      
-                      []      []                                        
-                        [][]                                            
-""" 
-
-    eater = \
-"""
-[][]    
-[]      
-  [][][]
-      []
-"""
-
-    copperhead = \
-"""
-      [][]  [][][]      
-[]  []        [][][]    
-[]    []        []  [][]
-[]    []        []  [][]
-[]  []        [][][]    
-      [][]  [][][]      
-"""
-
-    rpentomino = \
-"""
-  [][]
-[][]  
-  []  
-"""
-
-    herschel = \
-"""
-[]    
-[]  []
-[][][]
-    []
-"""
-
-    block = \
-"""
-[][]
-[][]
-"""
-
-    shuttle = \
-"""
-                  []                        
-              []  []                        
-            []  []                          
-[][]      []    []                          
-[][]        []  []                          
-              []  []                [][]    
-                  []                []  []  
-                                        []  
-                                        [][]
-"""
-
-#    def __init__(self,name):
-#        super().__init__()
-#        return self
-
-    def __str__(self):
-        return self.name.lower()
-        
-
-    def Mask(self,step=0,flip=Flip.NoFlip):
-        log("spawn " + str(self.name))
-        ret = Mask.Load(self.value)
-        ret.flip(flip)
-        return ret
 
 
 
@@ -184,3 +96,84 @@ class Life(Mask):
 
 
         
+class Pattern(Enum):
+
+
+    def Mask(self,step=0,flip=Flip.NoFlip):
+        log("spawn " + str(self.name))
+        ret = Mask.Load(self.value)
+        ret.flip(flip)
+        return ret
+
+
+    glider = \
+"""
+  []  
+    []
+[][][]
+"""
+
+    gun = \
+"""
+                                                []                      
+                                            []  []                      
+                        [][]            [][]                        [][]
+                      []      []        [][]                        [][]
+[][]                []          []      [][]                            
+[][]                []      []  [][]        []  []                      
+                    []          []              []                      
+                      []      []                                        
+                        [][]                                            
+""" 
+
+    eater = \
+"""
+[][]    
+[]      
+  [][][]
+      []
+"""
+
+    copperhead = \
+"""
+      [][]  [][][]      
+[]  []        [][][]    
+[]    []        []  [][]
+[]    []        []  [][]
+[]  []        [][][]    
+      [][]  [][][]      
+"""
+
+    rpentomino = \
+"""
+  [][]
+[][]  
+  []  
+"""
+
+    herschel = \
+"""
+[]    
+[]  []
+[][][]
+    []
+"""
+
+    block = \
+"""
+[][]
+[][]
+"""
+
+    shuttle = \
+"""
+                  []                        
+              []  []                        
+            []  []                          
+[][]      []    []                          
+[][]        []  []                          
+              []  []                [][]    
+                  []                []  []  
+                                        []  
+                                        [][]
+"""

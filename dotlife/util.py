@@ -4,6 +4,12 @@ from subprocess import PIPE
 
 from enum import Enum
 
+class Enum(Enum):
+
+    def __str__(self):
+        return self.name
+
+
 
 from dotlife.about import NAME
 

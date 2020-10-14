@@ -19,8 +19,6 @@ class Guns(Mode):
         info("start guns")
         self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
     
-        self.mask = Mask()
-        self.mask = self.fluepdot.buffer.read()        
         self.life = life.Life(mask=self.mask)
         
         pos1 = Position(10,2)

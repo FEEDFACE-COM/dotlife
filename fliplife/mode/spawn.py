@@ -48,7 +48,6 @@ class Spawn(Mode):
     
     def draw(self,**params):
         
-        prev = self.fluepdot.buffer.read()
         self.life.step()
         mask = Mask(mask=self.life)
 

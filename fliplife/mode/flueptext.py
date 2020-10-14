@@ -14,7 +14,7 @@ from fliplife.fluepdot import Fluepdot
 
 from dotlife.font import Font
 
-class Fluep(Mode):
+class Flueptext(Mode):
         
     
     def run(self,randomize,x,y,fluepfont,msg=None,**params):
@@ -41,9 +41,9 @@ class Fluep(Mode):
         
 
     flags = [
-        ("F:","fluepfont=",            "fluepfont",                 "fixed_10x20",           "fluepdot font",                                 None),
+        ("F:","fluepfont=", "fluepfont", "fixed_10x20", "fluepdot font", None),
         Mode.FLAG["x"],
         Mode.FLAG["y"],
         Mode.FLAG["randomize"],
-        (None, None,            "msg",                 "hello, world.",           "message",                                 None),
+        (None, None, "msg", "hello, world.", "message", None),
     ]

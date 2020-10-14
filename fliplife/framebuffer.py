@@ -9,7 +9,7 @@ from fliplife import Mask, FRAMESIZE
 
 
 
-
+def debug(x): pass
 
 
 
@@ -23,7 +23,7 @@ class Framebuffer(dotlife.mask.Mask):
     def write(self,mask):
         data = Framebuffer.dataFromMask(mask)
         ret = mask
-        debug("framebuffer write")
+        debug("framebuffer write {}".format(str(mask.size())))
         if not self.nowrite:
             rsp = http.post(self.address,"framebuffer",None,data)
             ret = Framebuffer.MaskFromResponse(rsp)
