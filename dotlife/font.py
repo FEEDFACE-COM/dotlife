@@ -24,6 +24,11 @@ class Font:
     def __init__(self,font):
         try:
             self.alphabet = {}
+            self.spacer = 1
+            try:
+                self.spacer = font.value.Spacer
+            except Exception as x:
+                pass
             self.size = font.value.Size
             self.empty = Mask.Load(font.value.Empty)
             for key,val in font.value.Alphabet.items():
@@ -88,9 +93,9 @@ class Font:
         dim = Size()
         for c in txt:
             if fixed:
-                dim.w += self.size.w + 1
+                dim.w += self.size.w + self.spacer
             else:
-                dim.w += self.glyph(c).w + 1
+                dim.w += self.glyph(c).w + self.spacer
         dim.h = self.size.h + 1
     
         ret = Mask(size=dim)
@@ -113,7 +118,7 @@ class Font:
 #            buf.set(True)
             
             ret.addMask(buf,pos=pos)
-            pos.x += buf.w + 1
+            pos.x += buf.w + self.spacer
 
 
         debug("rendered {:s}: {:s}".format(str(ret.size()),txt))
