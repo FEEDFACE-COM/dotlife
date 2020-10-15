@@ -1,38 +1,38 @@
 
 from dotlife.util import *
-from enum import Enum, auto
+from enum import auto
 
 LIGHT = 0x1
 DARK  = 0x0
 
 class Rotation(Enum):
-    Clockwise = auto()
-    CounterClockwise = auto()
+    clockwise = auto()
+    counterclockwise = auto()
 
 
 class Operation(Enum):
-	Nop = auto()
-	Add = auto()
-	Sub = auto()
+	nop = auto()
+	add = auto()
+	sub = auto()
 	
 
 class Flip(Enum):
-    NoFlip     = auto()
-    Horizontal = auto()
-    Vertical   = auto()
-    Point      = auto()
+    noflip     = auto()
+    horizontal = auto()
+    vertical   = auto()
+    point      = auto()
 
 
 class Direction(Enum): 
-    NorthWest= (-1,-1)
-    North=     ( 0,-1)
-    NorthEast= (+1,-1)
-    East=      (+1, 0)
-    SouthEast= (+1,+1)
-    South=     ( 0,+1)
-    SouthWest= (-1,+1)
-    West=      (-1, 0)
-    Center=    ( 0, 0)
+    northwest= (-1,-1)
+    north=     ( 0,-1)
+    northeast= (+1,-1)
+    east=      (+1, 0)
+    southeast= (+1,+1)
+    south=     ( 0,+1)
+    southwest= (-1,+1)
+    west=      (-1, 0)
+    center=    ( 0, 0)
 
 
 #class Palette(Enum):
@@ -40,9 +40,9 @@ class Direction(Enum):
 #    Custom =    [  1,  2,  3,  4,  5,  6,  7,  8,  9, 11, 13, 19, 29, 38, 51, 63 ] 
 
 class Blend(Enum):
-    Jump  = auto()
-    Black = auto()
-    Frame = auto()
+    jump  = auto()
+    black = auto()
+    frame = auto()
 
 
 def Clamp(p): 

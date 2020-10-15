@@ -55,7 +55,7 @@ class Plasma(Mode):
         fun0 = plasma.Fun( amp=amp0, freq=self.freq0, phase=phase0)
         fun1 = plasma.Fun( amp=amp1, freq=self.freq1, phase=phase1)
 
-        ret = self.plasma.buffer(fun0=fun0,fun1=fun1,op=Operation.Add,palette=Palette.Polynom())
+        ret = self.plasma.buffer(fun0=fun0,fun1=fun1,op=Operation.add,palette=Palette.Polynom())
 
         return ret
 

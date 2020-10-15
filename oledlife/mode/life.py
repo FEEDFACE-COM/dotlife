@@ -20,7 +20,7 @@ class Life(Mode):
         self.timerX = Timer(timer.duration * 1.1, repeat=timer.repeat)
         self.plasma = plasma.Plasma()
         self.life = life.Life()
-        self.life.addGlider((4,4),0, Direction.NorthEast)
+        self.life.addGlider((4,4),0, Direction.northeast)
         self.timer.fun = lambda : self.life.step()
 
     def draw(self):

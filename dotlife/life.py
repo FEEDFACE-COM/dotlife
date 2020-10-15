@@ -47,7 +47,7 @@ class Life(Mask):
 #        info(str(self))
 
 
-    def spawn(self,pattern,pos=Position(0,0),step=0,flip=Flip.NoFlip):
+    def spawn(self,pattern,pos=Position(0,0),step=0,flip=Flip.noflip):
         pat = pattern.Mask(step,flip)
         self.addMask( pat, pos=pos, wrap=True )
         return
@@ -91,7 +91,7 @@ class Life(Mask):
         return False
 
 
-    def addGlider(self,pos=Position(2,2),step=0,direction=Direction.SouthEast):
+    def addGlider(self,pos=Position(2,2),step=0,direction=Direction.southeast):
         return self.spawn(Pattern.Glider,pos=pos,step=step)
 
 
@@ -99,8 +99,8 @@ class Life(Mask):
 class Pattern(Enum):
 
 
-    def Mask(self,step=0,flip=Flip.NoFlip):
-        log("spawn " + str(self.name))
+    def Mask(self,step=0,flip=Flip.noflip):
+        log("spawn " + str(self.name) + ("flip "+flip.name) if flip!=Flip.noflip else '' )
         ret = Mask.Load(self.value)
         ret.flip(flip)
         return ret

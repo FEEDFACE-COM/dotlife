@@ -30,8 +30,8 @@ class Guns(Mode):
         self.life.spawn(life.Pattern.gun,pos=pos1)
         self.life.spawn(life.Pattern.eater,pos=pos1+off1)
         
-        self.life.spawn(life.Pattern.gun,pos=pos2,flip=Flip.Horizontal)
-        self.life.spawn(life.Pattern.eater,pos=pos2+off2,flip=Flip.Horizontal)
+        self.life.spawn(life.Pattern.gun,pos=pos2,flip=Flip.horizontal)
+        self.life.spawn(life.Pattern.eater,pos=pos2+off2,flip=Flip.horizontal)
 
         self.mask = Mask(self.life)
 

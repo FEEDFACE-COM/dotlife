@@ -161,7 +161,7 @@ class Buffer:
                 ret[x,y] = gray
         return ret
 
-    def Gradient(heading=Direction.North, size=DefaultSize):
+    def Gradient(heading=Direction.north, size=DefaultSize):
         ret = Buffer(size=size)
         w,h = size
         u,v = heading.value

@@ -29,7 +29,7 @@ class Plasma():
 #        pass        
 
 
-    def buffer(self,fun0=Fun(),fun1=Fun(), op=Operation.Add, palette=Palette.Linear(), mask=None):
+    def buffer(self,fun0=Fun(),fun1=Fun(), op=Operation.add, palette=Palette.Linear(), mask=None):
         ret = Buffer()
         for y in range(ret.h):
             for x in range(ret.w):
@@ -38,10 +38,10 @@ class Plasma():
                 val0 = fun0( float(x/ret.w) ) if fun0 else 0.0
                 val1 = fun1( float(y/ret.h) ) if fun1 else 0.0
                 val = val0
-                if op == Operation.Add:
+                if op == Operation.add:
                     val = val0 / 2.
                     val+= val1 / 2.
-                elif op == Operation.Sub:
+                elif op == Operation.sub:
                     val = val0 / 2.
                     val-= val1 / 2.         
 

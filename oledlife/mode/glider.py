@@ -17,8 +17,8 @@ class Glider(Mode):
     def __init__(self,timer):
         super().__init__(timer)
         self.life = Life(size=FRAMESIZE)
-        self.life.addGlider(pos=Position(3,3),step=0, direction=Direction.Center)
-        self.life.addGlider(pos=Position(-1,-1),step=3, direction=Direction.Center)
+        self.life.addGlider(pos=Position(3,3),step=0, direction=Direction.center)
+        self.life.addGlider(pos=Position(-1,-1),step=3, direction=Direction.center)
 
     def draw(self):
         buffer = Buffer(size=FRAMESIZE)

@@ -52,9 +52,9 @@ class Tetris:
 #            breakpoint()
             r = random.randrange(0,4)
             if r == 0:
-                self.tile.rotate(Rotation.Clockwise)
+                self.tile.rotate(Rotation.clockwise)
             elif r == 1:
-                self.tile.rotate(Rotation.CounterClockwise)
+                self.tile.rotate(Rotation.counterclockwise)
 
 
         if x < 0:
@@ -79,9 +79,9 @@ class Tetris:
             msk = Mask( val=False, size=(self.mask.h,self.mask.w) )
             for y in range(msk.h):
                 for x in range(msk.w):
-                    if direction == Rotation.Clockwise:
+                    if direction == Rotation.clockwise:
                         msk[x,y] = self.mask[self.mask.h-y-1,x]
-                    elif direction == Rotation.CounterClockwise:
+                    elif direction == Rotation.counterclockwise:
                         msk[x,y] = self.mask[y,self.mask.w-x-1]
                     else:
                         msk[x,y] = self.mask[y,x]

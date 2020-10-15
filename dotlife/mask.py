@@ -65,11 +65,11 @@ class Mask:
         
         for y in range(self.h):
             for x in range(self.w):
-                if flip == Flip.Horizontal:
+                if flip == Flip.horizontal:
                     self.pixel[x][y] = tmp[x,h-1-y]
-                elif flip == Flip.Vertical:
+                elif flip == Flip.vertical:
                     self.pixel[x][y] = tmp[w-1-x,y]
-                elif flip == Flip.Point:
+                elif flip == Flip.point:
                     self.pixel[x][y] = tmp[w-1-x,h-1-y]
 
         return self

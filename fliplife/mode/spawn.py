@@ -21,7 +21,7 @@ class Spawn(Mode):
     
 
     
-    def run(self,x,y,randomize,pattern,step,count,**params):
+    def run(self,x,y,randomize,pattern,step,count,flip,**params):
     
         
         info("start spawn {:s}".format(pattern.name.lower()))
@@ -34,12 +34,11 @@ class Spawn(Mode):
         if randomize:
             for c in range(count):
                 pos = Position(random.randint(0,FRAMESIZE.w-1),random.randint(0,FRAMESIZE.h-1))
-                flip = random.choice( list(Flip) )
-                self.life.spawn(pattern,pos,step,flip)
+                self.life.spawn(pattern,pos,step,random.choice( list(Flip) ))
 
         else:
             pos = Position(x,y)
-            self.life.spawn(pattern,pos,step,Flip.NoFlip)            
+            self.life.spawn(pattern,pos,step,flip)            
         
         self.draw(**params)
         return True
@@ -53,7 +52,6 @@ class Spawn(Mode):
 
         self.fluepdot.buffer.write(mask)
         
-        info(str(mask))
         return mask
     
     
@@ -66,6 +64,7 @@ class Spawn(Mode):
         Mode.FLAG["step"],
         Mode.FLAG["count"],
         Mode.FLAG["randomize"],
+        ("F:","flip=","flip",Flip.noflip,"flip pattern?",lambda x: Flip[x]),
         Mode.FLAG["x"],
         Mode.FLAG["y"],
     ]

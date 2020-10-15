@@ -39,10 +39,10 @@ class Test(Mode):
         
         mul = c % 4 + 1
         direction = {
-            0: Direction.North,
-            1: Direction.West,
-            2: Direction.South,
-            3: Direction.East
+            0: Direction.north,
+            1: Direction.west,
+            2: Direction.south,
+            3: Direction.east
         }[c%4]
         black = c%2 * 0x80
         white = (1 - c%2) * 0x80
