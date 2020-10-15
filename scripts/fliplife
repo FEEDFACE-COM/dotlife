@@ -34,7 +34,7 @@ DEFAULT_HOST = "87.193.3.53"
 
 
 
-def main(runmode, host, speed, clear, forever, nowrite, noread, **params):
+def main(runmode, host, speed, clear, forever, nowrite, noread, preview, **params):
 
     info("fliplife start".format())
 
@@ -77,10 +77,10 @@ def main(runmode, host, speed, clear, forever, nowrite, noread, **params):
             if len(drawbuffer) > 0:
                 buf = drawbuffer[0]
                 drawbuffer = drawbuffer[1:]
-#                info("write drawbuffer, {:d} remaining".format(len(drawbuffer)))
+                debug("write drawbuffer, {:d} remaining".format(len(drawbuffer)))
                 fluepdot.buffer.write(buf)
-                printBuffer(str(buf))
-#                info(str(buf))
+                if preview:
+                    printBuffer(str(buf))
                 Clock.Sleep( speed )
             
             else:
@@ -122,7 +122,7 @@ def quit(sig,frame):
 def printBuffer(buf):
     height = int(math.ceil(FRAMESIZE.h/2))
     width  = int(math.ceil(FRAMESIZE.w/2))
-    Y = 1
+    Y = 2
     columns,lines = os.get_terminal_size()
     up   = "\u001b[{:d}A".format( height  + 1 + Y )
     down   = "\u001b[1E"
@@ -156,8 +156,9 @@ FLAGS = [
     ("R",  "noread",       "noread",           False,    "no reads from fluepdot?",None ),
     ("C",  "clear",        "clear",             True,    "clear fluepdot?",        None ),
     ("F",  "forever",      "forever",          False,    "run continuously?",      None ),
-    ("v",  "verbose",      None,                None,    "increase verbosity",     None ),
-    ("V",  "version",      None,                None,    "display version",        None ),
+    ("P",  "preview",      "preview",          False,    "buffer preview on stdout?",      None ),
+    ("v",  "",      None,                None,    "increase verbosity",     None ),
+    ("V",  "",      None,                None,    "display version",        None ),
 ]
 
 
