@@ -41,7 +41,6 @@ class Clock(Mode):
         self.small = Font(FONT.font3x5) 
         self.fixed = Font(FONT.fix3x5)
         self.large = Font(FONT.font5x5)
-        self.LARGE = Font(FONT.font5x7)
         
 
         
