@@ -16,7 +16,7 @@ class Life(Mask):
     DEAD = 0x00
 
     def __str__(self):
-        return "gen#{}\n".format(self.gen) + super.str()
+        return "gen#{}\n".format(self.gen) + super().__str__()
 
 
     def buffer(self,alive=ALIVE,dead=DEAD):
@@ -177,3 +177,35 @@ class Pattern(Enum):
                                         []  
                                         [][]
 """
+
+
+    fourteener = \
+"""
+        [][]  
+[][]    []  []
+[]          []
+  [][][][][]  
+      []      
+"""
+
+    turtle = \
+"""
+  [][][]              []
+  [][]    []  [][]  [][]
+      [][][]        []  
+  []    []  []      []  
+[]        []        []  
+[]        []        []  
+  []    []  []      []  
+      [][][]        []  
+  [][]    []  [][]  [][]
+  [][][]              []
+"""
+
+    toad = \
+"""
+  [][][]
+[][][]  
+"""
+
+
