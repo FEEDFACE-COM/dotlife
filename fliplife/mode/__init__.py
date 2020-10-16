@@ -16,35 +16,40 @@ from fliplife import DEFAULT_FONT
 
 
 
-def Class(mode):
-
-    # static import for run time checking
-    from fliplife.mode import test,read,clear,fill,gauss,echo,exec
-    from fliplife.mode import grow,pixel,dots,life,glider,guns,spawn
-    
-    try:
-        mod = __import__("fliplife.mode."+str(mode.name), fromlist=[''])
-        ret = getattr(mod,mode.name.capitalize())
-    except AttributeError as x:
-        raise Error("class {} not found".format(mode.capitalize()))
-    except ModuleNotFoundError as x:   # ??
-        raise Error("module {} not found".format(mode.name))
-    except Exception as x:
-        raise Error("mode {} imported exception: {}".format(mode.name,str(x)))
-    
-    return ret
-
-
+#def Class(mode):
+#
+#    # static import for run time checking
+#    from fliplife.mode import test,read,clear,fill,gauss,echo,exec
+#    from fliplife.mode import grow,pixel,dots,life,glider,guns,spawn
+#    
+#    try:
+#        mod = __import__("fliplife.mode."+str(mode.name), fromlist=[''])
+#        ret = getattr(mod,mode.name.capitalize())
+#    except AttributeError as x:
+#        raise Error("class {} not found".format(mode.capitalize()))
+#    except ModuleNotFoundError as x:   # ??
+#        raise Error("module {} not found".format(mode.name))
+#    except Exception as x:
+#        raise Error("mode {} imported exception: {}".format(mode.name,str(x)))
+#    
+#    return ret
+#
+#
 class Mode(dotMode):
 
     help = ""
 
-    def __init__(self,fluepdot,timer,mask):
-        super().__init__(timer)
+    def __init__(self,fluepdot,timer,mask,**params):
+        super().__init__(timer,**params)
         self.fluepdot = fluepdot
         self.mask = mask
 
 
+    def start(**params):
+        return super().start()
+        
+    def draw(**params):
+        return Mask()
 
     FLAG = {
         # param: short long default help func #             
@@ -58,6 +63,7 @@ class Mode(dotMode):
         "y":         ("y:", "",             "y",          0,               "y offset",               lambda x : int(x) ),
         "randomize": ("r", "random",        "randomize",  False,           "randomize?",                          None ),
     }
+    
     
     FLAGS = [
         FLAG["speed"],

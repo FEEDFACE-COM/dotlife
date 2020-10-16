@@ -55,8 +55,8 @@ def Scan(fromMask,toMask):
     
     return ret
 
-def Morph2(fromMask,toMask):
-    ret = [Mask(fromMask)]
+def Morph2(fromMask,toMask,steps=0):
+    ret = [ Mask(fromMask) ]
     
     # scan for deltas
     ons,offs = [],[]
@@ -72,15 +72,18 @@ def Morph2(fromMask,toMask):
     m = Mask(fromMask)    
     
     # random delta order
+    step = 0
     while True:
         m = Mask(m)
 
+        # pick random on
         on = None
         if len(ons) > 0:
             r = random.randint(0,len(ons)-1)
             on = ons[r]
             ons = ons[:r] + ons[r+1:]
         
+        # pick random off
         off = None
         if len(offs) > 0:
             r = random.randint(0,len(offs)-1)
@@ -100,8 +103,11 @@ def Morph2(fromMask,toMask):
             ret += [m]
         else:
             break
-        
-                    
+
+        step += 1
+        if steps != 0 and step >= steps:
+            return ret
+
     return ret
     
     

@@ -21,9 +21,10 @@ from enum import auto
 class Layout(Enum):
     large  = auto()
     small  = auto()
-    dual   = auto()  
+    double = auto()  
     detail = auto()
-    text   = auto() 
+    lyric  = auto() 
+    words  = auto()
 
 
 
@@ -34,47 +35,72 @@ class Clock(Mode):
     
     
     
-    def run(self,stamp,**params):
-#        self.fluepdot.rendering.setMode(Fluepdot.Mode.Full)
-        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
+    def start(self,stamp,**params):
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.Full)
         
         self.small = Font(FONT.font3x5) 
         self.fixed = Font(FONT.fix3x5)
         self.large = Font(FONT.font5x5)
+        self.full = Font(FONT.font5x7)
         
 
         
-        now = datetime.datetime.now()
+        self.now = datetime.datetime.now()
         if stamp != "":
-            now = datetime.datetime.fromisoformat(stamp)
+            self.now = datetime.datetime.fromisoformat(stamp)
         
         
-        info("start clock: {:s}".format(now.strftime("%F %T")))
+        info("start clock: {:s}".format(self.now.strftime("%F %T")))
 
+        self.mask = self.render(**params)
+        self.next = self.mask
 
-#        p0 = int(math.floor(FRAMESIZE.w / (self.font5.size.w+1)))
-#        p1 = p0 - len(msg)
-#        self.pos0 = Position((self.font5.size.w+1)*int(p1/2),int(self.font5.size.h/1))
-        
-        self.mask = self.tick(now,**params)
-#        text = self.font.render(msg,fixed=True)
-#        p0 = int(math.floor(FRAMESIZE.w / (self.font.size.w+1)))
-#       p1 = p0 - len(msg)
-#        self.pos0 = Position((self.font.size.w+1)*int(p1/2),int(self.font.size.h/1))
-        
-#       self.mask.addMask(text,pos=self.pos0,wrap=True)
-        
-        self.fluepdot.buffer.write(self.mask)
-        
-        
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
+
         return True
     
-    def tick(self,now,layout,**params):
-        ret = Mask()
+    
+    def step(self,stamp,**params):
+        log("tick tick")
+        if stamp != "":
+            self.now = datetime.datetime.fromisoformat(stamp)
+        else:
+            self.now = datetime.datetime.now()
 
+        self.next = self.render(**params)
+
+
+    def draw(self,**params):
+
+
+        if self.next != self.mask:
+            m = Morph2(self.mask,self.next,steps=1)
+
+            log("from\n"+str(self.mask))
+            log("to\n"+str(self.next))
+            
+            self.mask = m[1]
+
+        return self.mask
+        
 
         
-        log("tick "+now.strftime("%F %T"))
+    flags = [
+        ("l:", "layout=", "layout", Layout.large, "clock layout", lambda x: Layout[x] ),
+        ("", "stamp=", "stamp", "", "timestamp", None ),
+    ]
+    
+    
+
+
+
+    def render(self,layout,**params):
+        now = self.now
+        ret = Mask()
+    
+    
+        
+        log("render "+now.strftime("%F %T"))
         if layout in [ Layout.small, Layout.large]:
             date_time = now.strftime("%F %T")
             font = self.large
@@ -84,11 +110,11 @@ class Clock(Mode):
             pos0 = Position( int(ceil(w/2)), 6 )
             text = font.render(date_time,fixed=True)
             ret.addMask(text,pos=pos0,wrap=True)
-
-
-
     
-        elif layout == Layout.dual:
+    
+    
+    
+        elif layout == Layout.double:
             date = now.strftime("%F")
             time = now.strftime("%T")
             w0 = FRAMESIZE.w - len(date)*(self.large.size.w+1)
@@ -101,7 +127,7 @@ class Clock(Mode):
             ret.addMask(text,pos=pos1)
     
     
-        elif layout == Layout.text:
+        elif layout == Layout.lyric:
             pos0 = Position(0,1)
             pos1 = Position(0,10)
             txt = humanreadable( now ).split("\n")
@@ -113,8 +139,16 @@ class Clock(Mode):
             ret.addMask(text0,pos=pos0)
             ret.addMask(text1,pos=pos1)
             
-            pass
-
+    
+        elif layout == Layout.words:
+            pos0 = Position(0,4)
+            txt0 = humanshort(now).upper()
+            
+            text0 = self.full.render(txt0,space=2,fixed=False)
+            pos0 = Position( 1+int((FRAMESIZE.w - text0.w)/2), 4)
+            
+            ret.addMask(text0,pos=pos0)
+            
     
         elif layout == Layout.detail:
             date_time = now.strftime("%F %T")
@@ -132,133 +166,157 @@ class Clock(Mode):
             fraction_decade = (now - start_decade).total_seconds() / seconds_decade * 100.
             fraction_year   = (now - start_year).total_seconds() / seconds_year * 100.
             fraction_day    = (now - start_day).total_seconds() / seconds_day * 100.
-
+    
             detail = "DECADE:{:3.0f}% YEAR:{:3.0f}% DAY:{:3.0f}%".format(fraction_decade,fraction_year,fraction_day)
-
+    
             text = self.large.render(date_time,fixed=True)
             ret.addMask(text,pos=pos0)
             text = self.small.render(detail,fixed=False,space=3)
             ret.addMask(text,pos=pos1)
-
+    
     
         return ret
-    
-
-    def draw(self,stamp,**params):
 
 
-        ret = []
-
-        now = datetime.datetime.now()
-        if stamp != "":
-            now = datetime.datetime.fromisoformat(stamp)
-        
-        next = self.tick(now,**params)
-
-        log("from\n"+str(self.mask))
-        log("to\n"+str(next))
-
-        steps = Morph2(self.mask,next)
-
-
-        for i in range(len(steps)):
-            step = steps[i]
-            ret += [ step ]
-            self.mask = step
-        
-        return ret
-
-        
-    flags = [
-        ("l:", "layout=", "layout", Layout.large, "clock layout", lambda x: Layout[x] ),
-        ("", "stamp=", "stamp", "", "timestamp", None ),
-    ]
-    
-    
 
 
 
 def humanreadable(then):
+    return humandate(then) + ", \n" + humantime(then) + " " + human_daytime(then) + "..."
+
+def humandate(then):
+    ret = ""
+    year,month,day,hour,minute,_,weekday,_,_ = then.timetuple()
+
+    ret = "Ein "
+    ret += {
+        0: "Montag",
+        1: "Dienstag",
+        2: "Mittwoch",
+        3: "Donnerstag",
+        4: "Freitag",
+        5: "Samstag",
+        6: "Sonntag",
+    }[weekday%7]
+
+    ret += " im "
+    ret += {
+         1: "Januar",
+         2: "Februar",
+         3: "März",
+         4: "April",
+         5: "Mai",
+         6: "Juni",
+         7: "Juli",
+         8: "August",
+         9: "September",
+        10: "Oktober",
+        11: "November",
+         0: "Dezember",
+    }[month%12]
+    
+    return ret
+
+def humantime(then):
+    ret = ""
+    year,month,day,hour,minute,_,weekday,_,_ = then.timetuple()
+
+    x = 0
+    if minute < 10:
+        ret += "kurz nach"
+    elif minute < 20:
+        ret += "viertel nach"
+    elif minute < 29:
+        ret += "kurz vor halb"
+        x = 1
+    elif minute < 32:
+        ret += "halb"
+        x = 1
+    elif minute < 40:
+        ret += "kurz nach halb"
+        x = 1
+    elif minute < 50:
+        ret += "viertel vor"
+        x = 1
+    else:
+        ret += "kurz vor"
+        x = 1
+
+    ret += " "
+    ret += {
+        1: "Eins",
+        2: "Zwei",
+        3: "Drei",
+        4: "Vier",
+        5: "Fünf",
+        6: "Sechs",
+        7: "Sieben",
+        8: "Acht",
+        9: "Neun",
+       10: "Zehn",
+       11: "Elf",
+        0: "Zwölf",
+    }[(hour+x)%12]
+    if minute < 10 or minute >= 50:
+        ret += " Uhr"
+
+    if hour+x >= 22:
+        ret += " Nachts"
+    elif hour+x >= 19:
+        ret += " Abends"
+    elif hour+x >= 11:
+        ret += ""
+    elif hour+x >= 6:
+        ret += " Morgens"
+    else:
+        ret += " Nachts"
+
+    return ret
+
+def humanshort(then):
+    ret = ""
+    year,month,day,hour,minute,_,weekday,_,_ = then.timetuple()
+
+    x = 0
+    if minute < 2:
+        ret += ""
+    elif minute < 10:
+        ret += "kurz nach"
+    elif minute < 20:
+        ret += "viertel nach"
+    elif minute < 29:
+        ret += "kurz vor halb"
+        x = 1
+    elif minute < 32:
+        ret += "halb"
+        x = 1
+    elif minute < 40:
+        ret += "kurz nach halb"
+        x = 1
+    elif minute < 50:
+        ret += "viertel vor"
+        x = 1
+    elif minute < 59:
+        ret += "kurz vor"
+        x = 1
+    else:
         ret = ""
-        year,month,day,hour,minute,_,weekday,_,_ = then.timetuple()
+        x = 1
 
-        ret = "Ein "
-        ret += {
-            0: "Montag",
-            1: "Dienstag",
-            2: "Mittwoch",
-            3: "Donnerstag",
-            4: "Freitag",
-            5: "Samstag",
-            6: "Sonntag",
-        }[weekday%7]
-
-        ret += " im "
-        ret += {
-             1: "Januar",
-             2: "Februar",
-             3: "März",
-             4: "April",
-             5: "Mai",
-             6: "Juni",
-             7: "Juli",
-             8: "August",
-             9: "September",
-            10: "Oktober",
-            11: "November",
-             0: "Dezember",
-        }[month%12]
-        ret += ", \n"
-
-        x = 0
-        if minute < 10:
-            ret += "kurz nach"
-        elif minute < 20:
-            ret += "viertel nach"
-        elif minute < 29:
-            ret += "kurz vor halb"
-            x = 1
-        elif minute < 32:
-            ret += "halb"
-            x = 1
-        elif minute < 40:
-            ret += "kurz nach halb"
-            x = 1
-        elif minute < 50:
-            ret += "viertel vor"
-            x = 1
-        else:
-            ret += "kurz vor"
-            x = 1
-
-        ret += " "
-        ret += {
-            1: "Eins",
-            2: "Zwei",
-            3: "Drei",
-            4: "Vier",
-            5: "Fünf",
-            6: "Sechs",
-            7: "Sieben",
-            8: "Acht",
-            9: "Neun",
-           10: "Zehn",
-           11: "Elf",
-            0: "Zwölf",
-        }[(hour+x)%12]
-        if minute < 10 or minute >= 50:
-            ret += " Uhr"
-
-        if hour+x >= 22:
-            ret += " Nachts"
-        elif hour+x >= 19:
-            ret += " Abends"
-        elif hour+x >= 11:
-            ret += ""
-        elif hour+x >= 6:
-            ret += " Morgens"
-        else:
-            ret += " Nachts"
-
-        ret += "..."
-        return ret
+    ret += " "
+    ret += {
+        1: "Eins",
+        2: "Zwei",
+        3: "Drei",
+        4: "Vier",
+        5: "Fünf",
+        6: "Sechs",
+        7: "Sieben",
+        8: "Acht",
+        9: "Neun",
+       10: "Zehn",
+       11: "Elf",
+        0: "Zwölf",
+    }[(hour+x)%12]
+        
+    return ret

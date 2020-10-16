@@ -177,6 +177,14 @@ class Mask:
         return ret
     
     
+    def __eq__(self,other):
+        if self.w != other.w or self.h != other.h:
+            return False
+        for y in range(self.h):
+            for x in range(self.w):
+                if self[x,y] != other[x,y]:
+                    return False
+        return True
     
 
     def __str__(self):

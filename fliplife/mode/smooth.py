@@ -16,7 +16,7 @@ from dotlife.clock import Clock
 from dotlife.font import Font
 from dotlife.effects import Morph, Morph2, Axis, Scan
 
-class Scroll(Mode):
+class Smooth(Mode):
         
     
     def run(self,font,msg=None,**params):
@@ -49,7 +49,7 @@ class Scroll(Mode):
         
         self.fluepdot.buffer.write(self.mask)
         
-        self.l = int(self.text.w/(self.font.size.w+1))
+        self.l = self.text.w
         self.k = 0
         
         return True
@@ -63,31 +63,27 @@ class Scroll(Mode):
         ret = []
 
         k = self.k
-        L = self.text.w
+        L = self.l
         
         W,H = self.font.size.w+1, self.font.size.h+1
 
 
         next = Mask()
-        pos0 = Position(-W,0)
-        pos1 = Position(k*W,0)
+        pos0 = Position(k,0)
 
 
-        if k != 0:
-            txt0 = self.text.subMask(size=Size(k*W,H))
-            next.addMask(txt0,pos=self.pos0+pos0,wrap=True)
-        
-        if self.l-k != 0:            
-            txt1 = self.text.subMask(pos=Position((k)*W,0),size=Size((self.l-k)*W,H))
-            next.addMask(txt1,pos=self.pos0+pos1,wrap=True)
+        next = Mask()
+        next.addMask(self.text,pos=self.pos0+pos0,wrap=True)
 
 
-#        log("from\n"+str(self.mask))
-#        log("to\n"+str(next))
+        log("from\n"+str(self.mask))
+        log("to\n"+str(next))
 
-        steps = Morph2(self.mask,next)
+#        steps = Morph2(self.mask,next)
+#        steps = Scan(self.mask,next)
+#        steps = [self.mask,next]
+
         steps = [self.mask,next]
-
 
         for i in range(len(steps)):
             step = steps[i]
@@ -97,12 +93,13 @@ class Scroll(Mode):
 
         
         self.k += 1
-        if self.k > self.l:
+        
+        if self.k >= self.l:
             log("step")
             self.k = 0
-            self.pos0.x -= W
-            if self.pos0.x <= -L:
-                self.pos0.x+= FRAMESIZE.w
+            self.pos0.x += self.l
+            if self.pos0.x+self.l >= FRAMESIZE.w:
+                self.pos0.x-= FRAMESIZE.w
                 
 
         return ret

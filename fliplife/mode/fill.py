@@ -25,7 +25,7 @@ class Fill(Mode):
     DefaultPattern = Pattern.check
     
     
-    def run(self,pattern,invert,font,offset,**params):
+    def start(self,pattern,invert,font,offset,**params):
         log("start fill with {:s}{:s}".format(str(pattern)," [invert]" if invert else ""))
 
         self.font = Font(font)
@@ -88,7 +88,7 @@ class Fill(Mode):
         log("to:\n"+str(next))
         
         ret = Morph2(mask,next)
-        return ret
+        return next
     
 
     patterns = Pattern

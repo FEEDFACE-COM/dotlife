@@ -3,16 +3,19 @@ from dotlife.buffer import Buffer
 
 class Mode():
 
-    def __init__(self,timer):
+    def __init__(self,timer,**params):
         self.timer = timer
-        self.timer.fun = lambda : self.step()
+        self.timer.fun = lambda: self.step(**params)
         self.debug = False
 
 
-    def draw(self):
-        return Buffer()
+    def start(self):
+        return False
 
-    def step(self):
+    def draw(self):
+        return Mask()
+
+    def step(self,**params):
         pass
 
     def __str__(self):

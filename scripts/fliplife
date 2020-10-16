@@ -21,7 +21,7 @@ from dotlife.clock import Clock, FRAME, NOW
 
 import fliplife
 from fliplife import MODE, DEFAULT_FONT
-from fliplife.mode import Class
+
 from fliplife import Mask, FRAMESIZE
 from fliplife.fluepdot import Fluepdot
 
@@ -34,7 +34,7 @@ DEFAULT_HOST = "87.193.3.53"
 
 
 
-def main(runmode, host, speed, clear, forever, nowrite, noread, preview, **params):
+def main(runmode, host, speed, clear, forever, nowrite, noread, preview, framerate, **params):
 
     info("fliplife start".format())
 
@@ -53,7 +53,7 @@ def main(runmode, host, speed, clear, forever, nowrite, noread, preview, **param
     Clock.Init()
 
     fluepdot = Fluepdot(address,nowrite,noread)
-    timer = Clock.Timer(speed,repeat=True)
+    timer = Clock.Timer(1000.*speed,repeat=True)
     mask = Mask()
     
     if not clear:
@@ -61,42 +61,42 @@ def main(runmode, host, speed, clear, forever, nowrite, noread, preview, **param
         mask = fluepdot.buffer.read()
             
     try:
-        mode = runmode.value(fluepdot,timer,mask)
+        mode = runmode.value(fluepdot,timer,mask,**params)
     except Error as x:
         FATAL("fail init mode {:s}: {:s}".format(runmode.name,str(x)))
 
 
-
     try:
-        run = mode.run(**params)
-        drawbuffer = []
-        while run and forever:
-            Clock.Tick()
-            info("{:s} {:s}".format(Clock.Str(),str(mode)))
-            
-            if len(drawbuffer) > 0:
-                buf = drawbuffer[0]
-                drawbuffer = drawbuffer[1:]
-                debug("write drawbuffer, {:d} remaining".format(len(drawbuffer)))
-                fluepdot.buffer.write(buf)
-                if preview:
-                    printBuffer(str(buf))
-                Clock.Sleep( speed )
-            
-            else:
-                draw = mode.draw(**params)
-                if type(draw) == type([]):
-                    drawbuffer = draw
-#                    info("new drawbuffer: {:d} elements".format(len(drawbuffer)))
-                    continue
-                    
-                elif type(draw) == type(Mask()):
-                    buf = draw
-                    fluepdot.buffer.write(buf)
-                    info(str(buf))
-                    Clock.Sleep( speed )
-                    
 
+        run = mode.start(**params)
+
+        buf = mode.draw(**params)
+        fluepdot.buffer.write(buf)
+
+        while run and forever:
+
+            prev = buf
+
+            if preview:
+                printBuffer(str(buf))
+
+            Clock.Sleep( framerate )
+            Clock.Tick()
+            
+            if Clock.frame % int(1./framerate) == 0:
+                info("{:s} {:s}".format(Clock.Str(),str(mode)))
+            
+#            if timer.fired:
+#                info("TRIGGER!!: {:s}".format(str(timer)))
+#                mode.step(**params)
+                
+            buf = mode.draw(**params)
+            if buf != prev:
+                fluepdot.buffer.write(buf)
+            
+            
+#            Clock.Sleep( framerate )
+            
 
 
     except KeyboardInterrupt as x:
@@ -122,7 +122,7 @@ def quit(sig,frame):
 def printBuffer(buf):
     height = int(math.ceil(FRAMESIZE.h/2))
     width  = int(math.ceil(FRAMESIZE.w/2))
-    Y = 2
+    Y = 6
     columns,lines = os.get_terminal_size()
     up   = "\u001b[{:d}A".format( height  + 1 + Y )
     down   = "\u001b[1E"
@@ -157,6 +157,7 @@ FLAGS = [
     ("C",  "clear",        "clear",             True,    "clear fluepdot?",        None ),
     ("F",  "forever",      "forever",          False,    "run continuously?",      None ),
     ("P",  "preview",      "preview",          False,    "buffer preview on stdout?",      None ),
+    ("f:", "framerate=",   "framerate",           1.,    "display update interval (s)",      lambda x: float(x) ),
     ("v",  "",      None,                None,    "increase verbosity",     None ),
     ("V",  "",      None,                None,    "display version",        None ),
 ]

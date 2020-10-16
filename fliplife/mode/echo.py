@@ -17,7 +17,7 @@ from dotlife.font import Font
 class Echo(Mode):
         
     
-    def run(self,randomize,x,y,font,msg=None,**params):
+    def run(self,randomize,x,y,font,fixed,msg=None,**params):
 #        self.fluepdot.rendering.setMode(Fluepdot.Mode.Full)
         self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
         self.randomize = randomize
@@ -32,7 +32,7 @@ class Echo(Mode):
         info("start echo: {:s}".format(self.msg))
         
 
-        self.buf = self.font.render(self.msg)
+        self.buf = self.font.render(self.msg,fixed=fixed,space=4)
         log(str(self.buf))
         
         self.mask = self.draw(x,y,**params)
@@ -59,6 +59,7 @@ class Echo(Mode):
         Mode.FLAG["x"],
         Mode.FLAG["y"],
         Mode.FLAG["randomize"],
+        ("F","fixed","fixed",False,"fixed font width", None),
         (None, None,            "msg",                 "hello, world.",           "message",                                 None),
     ]
     

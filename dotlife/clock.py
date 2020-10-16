@@ -67,6 +67,7 @@ class Timer():
         
     def __init__(self,duration=1.,repeat=True):
         self.count = 0     # times fired
+        self.fired = False # fired this tick?
         self.fun = None
         self.start = NOW()
         self.duration = duration
@@ -131,7 +132,8 @@ class Timer():
         if NOW() > self.start + self.duration: # triggered?
 
             self.count += 1
-
+            self.fired = True
+            
             if self.fun: # fire!
                 self.fun()
             
@@ -142,6 +144,7 @@ class Timer():
                 
             return False
 
+        self.fired = False
         return True
 
         
