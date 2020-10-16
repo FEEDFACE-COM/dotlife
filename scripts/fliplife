@@ -36,7 +36,7 @@ DEFAULT_HOST = "87.193.3.53"
 
 def main(runmode, host, speed, clear, forever, nowrite, noread, preview, framerate, **params):
 
-    info("fliplife start".format())
+    info("fliplife start at {:.2f}fps".format(framerate))
 
     # register signals
     signal.signal(signal.SIGQUIT, quit)
@@ -73,17 +73,17 @@ def main(runmode, host, speed, clear, forever, nowrite, noread, preview, framera
         buf = mode.draw(**params)
         fluepdot.buffer.write(buf)
 
+        if preview:
+            printBuffer(str(buf))
+
         while run and forever:
 
             prev = buf
 
-            if preview:
-                printBuffer(str(buf))
-
-            Clock.Sleep( framerate )
+            Clock.Sleep( 1./framerate )
             Clock.Tick()
             
-            if Clock.frame % int(1./framerate) == 0:
+            if framerate < 1. or Clock.frame % int(framerate) == 0:
                 info("{:s} {:s}".format(Clock.Str(),str(mode)))
             
 #            if timer.fired:
@@ -93,6 +93,8 @@ def main(runmode, host, speed, clear, forever, nowrite, noread, preview, framera
             buf = mode.draw(**params)
             if buf != prev:
                 fluepdot.buffer.write(buf)
+            if preview:
+                printBuffer(str(buf))
             
             
 #            Clock.Sleep( framerate )
@@ -157,7 +159,7 @@ FLAGS = [
     ("C",  "clear",        "clear",             True,    "clear fluepdot?",        None ),
     ("F",  "forever",      "forever",          False,    "run continuously?",      None ),
     ("P",  "preview",      "preview",          False,    "buffer preview on stdout?",      None ),
-    ("f:", "framerate=",   "framerate",           1.,    "display update interval (s)",      lambda x: float(x) ),
+    ("f:", "framerate=",   "framerate",           1.,    "fluepdot update interval (f/s)",      lambda x: float(x) ),
     ("v",  "",      None,                None,    "increase verbosity",     None ),
     ("V",  "",      None,                None,    "display version",        None ),
 ]

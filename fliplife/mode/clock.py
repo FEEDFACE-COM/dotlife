@@ -41,13 +41,14 @@ class Clock(Mode):
         self.small = Font(FONT.font3x5) 
         self.fixed = Font(FONT.fix3x5)
         self.large = Font(FONT.font5x5)
-        self.full = Font(FONT.font5x7)
+        self.full =  Font(FONT.font5x7)
         
 
         
         self.now = datetime.datetime.now()
         if stamp != "":
             self.now = datetime.datetime.fromisoformat(stamp)
+            self.start = datetime.datetime.now()
         
         
         info("start clock: {:s}".format(self.now.strftime("%F %T")))
@@ -61,25 +62,34 @@ class Clock(Mode):
     
     
     def step(self,stamp,**params):
-        log("tick tick")
         if stamp != "":
-            self.now = datetime.datetime.fromisoformat(stamp)
+            self.now = datetime.datetime.fromisoformat(stamp) + (datetime.datetime.now() - self.start )
         else:
             self.now = datetime.datetime.now()
 
         self.next = self.render(**params)
 
 
-    def draw(self,**params):
+    def draw(self,layout,**params):
 
 
         if self.next != self.mask:
-            m = Morph2(self.mask,self.next,steps=1)
+        
+        
+            if layout in [Layout.small,Layout.large,Layout.double]:
+                m = Morph2(self.mask,self.next,steps=1)
 
-            log("from\n"+str(self.mask))
-            log("to\n"+str(self.next))
+                debug("from\n"+str(self.mask))
+                debug("to\n"+str(self.next))
             
-            self.mask = m[1]
+                self.mask = m[1]
+                
+                
+            else:
+                debug("to\n"+str(self.next))
+                self.mask = self.next
+                
+#            self.mask = self.next
 
         return self.mask
         
@@ -100,7 +110,7 @@ class Clock(Mode):
     
     
         
-        log("render "+now.strftime("%F %T"))
+        debug("render "+now.strftime("%F %T"))
         if layout in [ Layout.small, Layout.large]:
             date_time = now.strftime("%F %T")
             font = self.large
