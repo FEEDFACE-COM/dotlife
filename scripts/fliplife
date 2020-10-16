@@ -63,7 +63,7 @@ def main(runmode, host, speed, clear, forever, nowrite, noread, preview, framera
     try:
         mode = runmode.value(fluepdot,timer,mask,**params)
     except Error as x:
-        FATAL("fail init mode {:s}: {:s}".format(runmode.name,str(x)))
+        FATAL("fail init mode {:s}: {:s}".format(str(runmode),str(x)))
 
 
     try:
@@ -113,7 +113,13 @@ def main(runmode, host, speed, clear, forever, nowrite, noread, preview, framera
 #    except Exception as x:
 #        FATAL("unexpected: " + repr(x) )
             
+            
+    return 0
 
+
+            
+
+## UTILITY #####################################################################
         
 
 def quit(sig,frame):

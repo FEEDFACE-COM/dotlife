@@ -13,19 +13,20 @@ from dotlife import *
 from dotlife.util import *
 from dotlife.about import NAME, VERSION
 
-
-from dotlife.life import Life
-from dotlife.buffer import Buffer
-from dotlife.pattern import *
+from dotlife.pattern import PATTERN
 from dotlife.clock import Clock, FRAME, NOW
 
-from oledlife.mode import *
-from oledlife import FRAMESIZE
-from oledlife.framebuffer import FrameBuffer
+
+import oledlife
+from oledlife import MODE
+
+from oledlife import Mask, FRAMESIZE
+
+from oledlife.paneloled import Paneloled
 from oledlife.dmx import *
 
 
-DEFAULT_MODE = MODE.glider
+DEFAULT_MODE = MODE.fyi
 
 
 ## MAIN ########################################################################
@@ -34,124 +35,126 @@ DEFAULT_MODE = MODE.glider
 
 
 
-def main(modename, device, preview, step, blend, invert, gain, **params):
+def main(runmode, device, nowrite, forever,preview, framerate, speed, **params):
 
-
-    step = step * 1000.
-
-    info( "\n" * 2 + str(PATTERN.DOTLIFE.value)[1:-1] + "\n" * 2) 
-    info("oledlife mode {:s}".format(modename))
-
-
+    info("oledlife start at {:.2f}fps".format(framerate))
 
     # register signals
     signal.signal(signal.SIGQUIT, quit)
     
-    # open serial
-    dmx = None
-    if device:
-        try:
-            info("open dmx {}".format(device))
-            dmx = DMX(device)
-        except DMXError as x:
-            FATAL("open dmx {}: {}".format(device,x))
-
-    
     Clock.Init()
     try:
-        mode = MODE(modename)
-    except ValueError as x:
-        pass
-#        usage()
-    
-    try:
-        mode = Mode.Init(modename,step)
+        paneloled = Paneloled(device,nowrite)
     except Error as x:
-        FATAL("fail init mode {:s}: {:s}".format(modename,str(x)))
-        
-    prev = ( FRAME(), NOW() )
-    pointbreak= False
-    while True:
-        try:
-            Clock.Tick()
-            framebuffer = FrameBuffer()
+        FATAL("fail open paneloled dmx: "+str(x))
 
-            buffer = mode.draw()
-
-            if blend == dotlife.Blend.jump:
-                pass
-            elif blend == dotlife.Blend.Black:
-                buffer.mul( mode.timer.sin0(1.) )
-            elif blend == dotlife.Blend.Frame:
-                buffer.mul(16. * (mode.timer.ease(freq=4.)))
-                tmp = Buffer()
-                tmp.add( mode.last )
-                tmp.mul(16. * (1. - mode.timer.ease(freq=4.)))
-                buffer.add( tmp )
-        
-            
-            if gain != 0x00:
-                buffer.mul( gain )
-        
-            framebuffer.add( buffer )
-
-            if dmx:
-                send(dmx,framebuffer)
-
-            if FRAME() % 60 == 0:
-                if FRAME() % 600 == 0:
-                    debug("{:s} {:.1f}fps {:s}".format(Clock.Str(),fps(prev),str(mode)))
-                prev = ( FRAME(), NOW() )
-
-            if preview:
-                Y = FRAMESIZE.h+1
-                columns,lines = os.get_terminal_size()
-                up   = "\u001b[{:d}A".format( FRAMESIZE.w + 1 + Y )
-                down   = "\u001b[1E"
-                right = "\u001b[{:d}C".format(columns - ((FRAMESIZE.w+2) * 2 ))
-                buf = str(framebuffer).split("\n")
-                sys.stdout.write(up)
-                for i in range(Y):
-                    sys.stdout.write( right + 20*" " + down)
-                for s in buf:
-                    sys.stdout.write(right + s + down)
-                sys.stdout.write( right + 20*" " + down)
-                sys.stdout.flush()
-
-#            Clock.Sleep()
-            
-        except Error as x:
-            FATAL("error: {:s}".format( str(x) ))
+    timer = Clock.Timer(1000.*speed,repeat=True)
+    mask = Mask()
     
-
-        except KeyboardInterrupt as x:
-            info("user interrupt")  
-            break
-    
-        except SystemExit as x:
-            info("exit.")
-            break
-   
-        except BrokenPipeError:
-            error("broken pipe, disable preview")
-            preview = False
-   
-#       except Exception as x:
-#            FATAL("unexpected: " + repr(x) )
             
-
-def fps(prev):
-    (frame, time) = prev
-    return float( (FRAME() - frame) /  ((NOW() - time)/1000.) )
-
-
-def send(dmx,framebuffer):
     try:
-        frame = framebuffer.bytes()
-        dmx.send(frame)
-    except DMXError as x:
-        error("fail send {:d} byte: {}".format(len(frame),x))
+        mode = runmode.value(timer,mask,**params)
+    except Error as x:
+        FATAL("fail init mode {:s}: {:s}".format(str(runmode),str(x)))
+
+    
+    
+    
+    
+    try:
+
+        run = mode.start(**params)
+
+        buf = mode.draw(**params)
+        paneloled.send(buf)
+
+        if preview:
+            printBuffer(str(buf))
         
+
+    
+        while run and forever:
+        
+            Clock.Sleep( 1./framerate )
+            Clock.Tick()
+            
+            if framerate < 1. or Clock.frame % int(framerate) == 0:
+                info("{:s} {:s}".format(Clock.Str(),str(mode)))
+                
+        
+            buf = mode.draw(**params)
+            paneloled.send(buf)
+            
+            if preview:
+                printBuffer(str(buf))
+        
+
+    except KeyboardInterrupt as x:
+        info("user interrupt.") 
+        
+    except Error as x:
+        FATAL("error: {:s}".format( str(x) ))
+    
+    except SystemExit as x:
+        info("exit.")
+   
+#    except Exception as x:
+#        FATAL("unexpected: " + repr(x) )
+    
+    
+    
+    return 0
+    
+#        
+#    prev = ( FRAME(), NOW() )
+#    pointbreak= False
+#    while True:
+#        try:
+#            Clock.Tick()
+#            framebuffer = Framebuffer()
+#
+#            buffer = mode.draw()
+#
+#            if blend == dotlife.Blend.jump:
+#                pass
+#            elif blend == dotlife.Blend.Black:
+#                buffer.mul( mode.timer.sin0(1.) )
+#            elif blend == dotlife.Blend.Frame:
+#                buffer.mul(16. * (mode.timer.ease(freq=4.)))
+#                tmp = Buffer()
+#                tmp.add( mode.last )
+#                tmp.mul(16. * (1. - mode.timer.ease(freq=4.)))
+#                buffer.add( tmp )
+#        
+#            
+#            if gain != 0x00:
+#                buffer.mul( gain )
+#        
+#            framebuffer.add( buffer )
+#
+#            if dmx:
+#                send(dmx,framebuffer)
+#
+#            if FRAME() % 60 == 0:
+#                if FRAME() % 600 == 0:
+#                    debug("{:s} {:.1f}fps {:s}".format(Clock.Str(),fps(prev),str(mode)))
+#                prev = ( FRAME(), NOW() )
+#
+#            if preview:
+#                Y = FRAMESIZE.h+1
+#
+#
+#
+
+
+## UTILITY #####################################################################
+
+
+
+#def fps(prev):
+#    (frame, time) = prev
+#    return float( (FRAME() - frame) /  ((NOW() - time)/1000.) )
+
 
 def quit(sig,frame):
     log("exit.")   
@@ -160,6 +163,21 @@ def quit(sig,frame):
 
 
 
+def printBuffer(buf):
+    Y = FRAMESIZE.h+1
+    columns,lines = os.get_terminal_size()
+    up   = "\u001b[{:d}A".format( FRAMESIZE.w + 1 + Y )
+    down   = "\u001b[1E"
+    right = "\u001b[{:d}C".format(columns - ((FRAMESIZE.w+2) * 2 ))
+    buf = str(buf).split("\n")
+    sys.stdout.write(up)
+    for i in range(Y):
+        sys.stdout.write( right + 20*" " + down)
+    for s in buf:
+        sys.stdout.write(right + s + down)
+    sys.stdout.write( right + 20*" " + down)
+    sys.stdout.flush()
+
     
 
 
@@ -169,76 +187,132 @@ def quit(sig,frame):
 
 
 
-## PARAMS ######################################################################
+## FLAGS ######################################################################
     
-    
-    
+
+HELPFLAGS = [
+        ("h",  "help",         None,                None,    "display help",           None ),
+]
 
 FLAGS = [
     # short long param default help func #             
-    ("S:", "serial=",           "device",              "",                      "serial device",                                              None ),
-    ("v",  "verbose",           None,                  None,                    "increase verbosity",                                         None ),
-    ("P", "preview",            "preview",             False,                   "preview on stdout",                                          None ),                  
-    ("V",  "version",           None,                  None,                    "display version",                                            None ),
-    ("h",  "help",              None,                  None,                    "display help",                                               None ),
+    ("h",  "help",         None,                None,    "display help",           None ),
+    ("S:", "serial=",      "device",  "/dev/ttyUSB0",    "paneloled serial device",                                              None ),
+    ("W",  "nowrite",      "nowrite",          False,    "no writes to paneloled?", None ),
+    ("C",  "clear",        "clear",             True,    "clear paneloled?",        None ),
+    ("F",  "forever",      "forever",          True,     "run continuously?",      None ),
+    ("P",  "preview",      "preview",          False,    "buffer preview on stdout?",      None ),
+    ("f:", "framerate=",   "framerate",           10.,    "paneloled update interval (f/s)",      lambda x: float(x) ),
+    ("v",  "",      None,                None,    "increase verbosity",     None ),
+    ("V",  "",      None,                None,    "display version",        None ),
 ]
-
-MODEFLAGS = [
-    # short long param default help func #             
-    ("", "",                   "modename",             DEFAULT_MODE.name,      "mode",          None ),
-    ("b:", "blend=",            "blend",               dotlife.Blend.jump,      "blend style {}".format(",".join([ str(b) for b in Blend])), lambda x : dotlife.Blend(x) ),
-    ("s:", "step=",             "step",                1.0,                     "step speed",                                                 lambda x : float(x) ),
-    ("",   "inv",               "invert",              False,                   "invert brightness",                                          None ),
-    ("",   "gain=",             "gain",                1.0,                     "gain brightness",                                            lambda x: float(x) ),
-]
-
-PARAMS = FLAGS + MODEFLAGS
+    
 
 
 
+def usage(mode=None,msg=""):
 
-
-
-def usage():
-    if len(logging.getLogger(NAME).handlers) > 0:
-        logging.getLogger(NAME).handlers[0].setFormatter( logging.Formatter( "%(message)s") )
-        
-    log("""## Usage
-
-{} [-{}] {} <MODE>
-""".format(
-        "oledlife",
-        "".join([s[0] if len(s) >= 1 else "" for (s,_,_,_,_,_) in FLAGS]),
-        " ".join(["[--{:s}]".format(l) if len(l) >= 1 else "" for (_,l,_,_,_,_) in MODEFLAGS]),
+    from dotlife.util import usage as log
+    
+    
+    if msg != "":
+        log("##")
+        log("## Usage Error: " + msg)
+        log("##")
+        log("")
+    
+    if mode == None:
+    
+        log("## Usage")
+        log("  {} [-{}] {} <mode>  ...".format(
+            "oledlife",
+            "".join([s[0] if s else "" for (s,_,_,_,_,_) in FLAGS]),
+            "".join(["[--{:s}] ".format(l) if not s and l else "" for (s,l,_,_,_,_) in FLAGS]),
+            )
         )
-    )
+        log("")
+        
+        log("## Flags")
+        for (s,l,p,d,h,_) in FLAGS:
+            if not p:
+                continue
+            log("  {:3} {:20}    {}{}".format( "-"+s.rstrip(":")+"," if s else "","--"+l.rstrip("=") if l else "",h,("" if d in [None,False] else ", default: "+str(d).lower()) ))
+        log("")
 
-    log("## Flags")
-    for (s,l,p,d,h,_) in FLAGS:
-        if not s and not l:
-            continue
-        log("  {:3} {:20}    {}{}".format( "-"+s.rstrip(":")+"," if s else "","--"+l.rstrip("=") if l else "",h,("" if d is None else ", default "+str(d).lower()) ))
-    log("")
+        log("## Modes")
+        modes = "  "
+        for k in MODE:
+#            log("  {:16s}{:s}".format(k.name,k.value.help))
+            modes += k.name + " "
+            if len(modes) > 40:
+                log(modes)
+                modes = "  "
+        log(modes)
+        log("")
+    
+    else:
+        log("## Usage")
+        log("")
+        
+        log("  {} {} [-{}] {}".format(
+                "oledlife",
+                mode.name,
+                "".join([s[0] if s else "" for (s,_,_,_,_,_) in mode.value.flags]),
+                "".join(    p if not s and not l else "" for (s,l,p,_,_,_) in mode.value.flags),
+            )
+        )
+        log("")
+        
+        log("## Mode Flags")
+        f = None
+        for (s,l,p,d,h,_) in oledlife.mode.Mode.FLAGS + mode.value.flags:
+            if s or l:
+                log("  {:3} {:16}    {}{}".format( "-"+s.rstrip(":")+"," if s else "","--"+l.rstrip("=") if l else "",h,("" if d in [None,False] else ", default: "+str(d).lower()) ))
+        log("")
+    
 
-    for (s,l,p,d,h,_) in MODEFLAGS:
-        if not s and not l:
-            continue
-        log("  {:3} {:20}    {}{}".format( "-"+s.rstrip(":")+"," if s else "","--"+l.rstrip("=") if l else "",h,("" if d is None else ", default "+str(d).lower()) ))
-    log("")
+            
+        fonts,patterns = [],[]
+        for (_,_,p,_,_,_) in mode.value.flags:
+            if p == "font":
+                for f in dotlife.font.FONT:
+                    fonts += [f]
+            if p == "pattern":
+                for p in mode.value.patterns:
+                    patterns += [p]
 
-    log("## Modes")
-    modes = ""
-    for k in MODE:
-        modes += " " + k.name
-        if len(modes) > 40:
-            log("{:s}".format(modes))
-            modes = ""
-    log("{:s}".format(modes))
-    log("")
-#    for k in MODE:
-#        log("  {:8} {:15}    {}".format(k.name,"",""))
-#    log("")
+        if fonts:
+            log("## Fonts")
+            fnt = ""
+            for f in fonts:
+                fnt += str(f) + " "
+                if len(fnt) > 40:
+                    log("  " + fnt)
+                    fnt = ""
+            log("  " + fnt)
+            log("")
 
+        if patterns:
+            log("## Patterns")
+            pat = ""
+            for p in patterns:
+                pat += str(p) + " "
+                if len(pat) > 40:
+                    log("  " + pat)
+                    pat = ""
+            log("  " + pat)
+            log("")
+        
+
+        args = None
+        for (s,l,p,d,h,_) in mode.value.flags:
+            if not s and not l:
+                args = "  {:20}    {}{}".format( p,h,("" if d in [None,False] else ", default: "+str(d).lower()) )
+        if args:
+            log("## Arguments")
+            log(args)
+            log("")
+        
     exit(-1)
 
     
@@ -246,10 +320,10 @@ def usage():
 
 #REM, raspbian utf8 trouble: https://unix.stackexchange.com/questions/347914/how-to-set-lc-all-en-gb-utf-8-in-raspbian
 
+
+
 def about():
-    if len(logging.getLogger(NAME).handlers) > 0:
-        logging.getLogger(NAME).handlers[0].setFormatter( logging.Formatter( "%(message)s") )
-    log("""\
+    sys.stderr.write("""\
 oledlife {}
 ©2020 FEEDFACE.COM
 """.format(VERSION) )
@@ -257,6 +331,7 @@ oledlife {}
     
     
     
+## MAIN ########################################################################
 
 
 if __name__ == "__main__":
@@ -271,15 +346,16 @@ if __name__ == "__main__":
     logger.addHandler(handler)
     
     
-    short = "".join( [s for (s,_,_,_,_,_) in PARAMS if s is not None] )
-    long = [l for (_,l,_,_,_,_) in PARAMS if l is not None] 
-    params = dict( [(n,d) for (_,_,n,d,_,_) in PARAMS if n is not None] )
+    
+    ## read global flags
+    short = "".join( [s for (s,_,_,_,_,_) in FLAGS+HELPFLAGS if s is not None] )
+    long = [l for (_,l,_,_,_,_) in FLAGS+HELPFLAGS if l is not None] 
+    params = dict( [(n,d) for (_,_,n,d,_,_) in FLAGS if n is not None] )
     
     try:
         opts, args = getopt.getopt(sys.argv[1:],short,long)
     except getopt.GetoptError as x:
-        error("{}".format(x))
-        usage()
+        usage(None,"{}".format(x))
     
     for opt, arg in opts:
         if opt in ("-h", "--help"):
@@ -294,10 +370,8 @@ if __name__ == "__main__":
             verbosity = logging.ERROR
             logger.setLevel(verbosity)
             handler.setLevel(verbosity)
-        elif opt in ("-P", "--preview"):
-            params["preview"] = True
         else:
-            for (s,l,p,_,h,f) in PARAMS:
+            for (s,l,p,_,h,f) in FLAGS:
                 if s is None and l is None:
                     continue
                 if opt in ["-"+s.rstrip(":"),"--"+l.rstrip("=")]:
@@ -306,29 +380,65 @@ if __name__ == "__main__":
                         try:
                             params[p] = fun(arg)
                         except Exception as x:
-                            error("invalid argument: {} {}".format(opt,arg))
-                            usage()
+                            usage(None,"invalid argument: {} {}".format(opt,arg))
                     else:
-                        params[p] = True
+                        params[p] ^= True
                     break
             else:
-                error("internal error: option {} not implemented.".format(opt))
-                usage()            
+                usage(None,"internal error: option {} not implemented.".format(opt))
 
-    for (s,l,n,_,_,_) in PARAMS:
+    for (s,l,n,_,_,_) in FLAGS:
         if n and params[n] is None:
-            error("mandatory parameter {}/{} missing.".format("-"+s.rstrip(":") if s else "","--"+l.rstrip("=") if l else ""))
-            usage()
+            usage(None,"mandatory parameter {}/{} missing.".format("-"+s.rstrip(":") if s else "","--"+l.rstrip("=") if l else ""))
 
+    ## read mode
+    runmode = DEFAULT_MODE
     if len(args) >= 1:
-        params['modename'] = args[0]
-    
-    if len(args) > 1:
-        if args[1] == "-h":
-            usage()
+        try:
+            runmode = MODE[ args[0] ]
+            args = args[1:]
+        except KeyError:
+            usage(None,"invalid mode: {:s}".format(args[0]))
 
+
+
+    ## read mode flags
+    modeflags = HELPFLAGS + oledlife.mode.Mode.FLAGS + runmode.value.flags
+    short = "".join( [s for (s,_,_,_,_,_) in modeflags if s is not None] )
+    long = [l for (_,l,_,_,_,_) in modeflags if l is not None] 
+    modeparams = dict( [(n,d) for (_,_,n,d,_,_) in modeflags if n is not None] )
+    
+
+    try:
+        opts, args = getopt.getopt(args,short,long)
+    except getopt.GetoptError as x:
+        usage(runmode,str(x))
+    
+
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            usage(runmode)
+        else:
+            for (s,l,p,_,h,f) in modeflags:
+                if opt in ["-"+s.rstrip(":"),"--"+l.rstrip("=")]:
+                    fun = f if f else lambda x: x
+                    if s.endswith(":") or l.endswith("="):
+                        try:
+                            modeparams[p] = fun(arg)
+                        except Exception as x:
+                            usage(runmode,"invalid argument: {} {}".format(opt,arg))
+                    else:
+                        modeparams[p] = True
+                    break
+            else:
+                usage(runmode,"internal error: option {} not implemented.".format(opt))            
+
+
+    ## read remainder into no-flags mode param    
+    for (s,l,p,_,_,_) in modeflags:
+        if not s and not l:
+            modeparams[p] = " ".join(args)
+        
 
 #    dump(params)
-    exit( main(**params) )
-    
-   
+    exit( main(runmode,**params,**modeparams) )

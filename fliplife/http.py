@@ -6,7 +6,7 @@ from dotlife.util import *
 from urllib import request, parse
 
 
-#def debug(s): pass
+def debug(s): pass
     
     
 

@@ -7,6 +7,8 @@ from dotlife.util import *
 class DMXError(Error):
     pass
 
+def debug(s): pass
+
 class DMX:
 
 
@@ -59,7 +61,7 @@ class DMX:
 #        ))
         try:
             l = self.serial.write(packet)
-#            debug("wrote {:d} byte".format(l))
+            debug("wrote {:d} byte".format(l))
         except serial.serialutil.SerialTimeoutException as x:
             raise DMXError("dmx write timeout")
         except serial.SerialException as x:

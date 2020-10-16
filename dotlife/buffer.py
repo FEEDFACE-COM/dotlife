@@ -33,7 +33,13 @@ class Buffer:
                     ret += " ◼︎"
                 else:
                     ret += "?¿"
-            ret += "\n"
+            ret += " {:01d}\n".format(y%10)
+
+
+        for x in range(self.w):
+            ret += " {:01d}".format(x%10)
+        ret += "  \n"
+
         return ret[:-1]
 
 

@@ -1,35 +1,46 @@
+
 import dotlife
+from dotlife import *
 from dotlife.pattern import *
-from dotlife.mask import *
-from dotlife.buffer import *
-from dotlife.util import *
-from dotlife.mode import Mode
+
+#from dotlife.mask import *
+from dotlife.buffer import Buffer
+#from dotlife.util import *
+#from dotlife.mode import Mode
 from dotlife.plasma import Plasma, Fun
-from dotlife.palette import *
+from dotlife.palette import Palette
 from dotlife.clock import Timer
 from dotlife.math import *
 
-def Init(timer):
-    return FYI(timer)
+from dotlife.util import *
+
+import oledlife
+from oledlife.mode import Mode
+from oledlife import Mask, FRAMESIZE
+
 
 
 class FYI(Mode):
 
-    def __init__(self,timer):
-        super().__init__(timer)
-        self.plasma = Plasma()
-        pattern = dotlife.pattern.PATTERN.FYI.value
-        self.mask = dotlife.mask.Mask(size=Size(8,8))
-        self.mask.addMask( dotlife.mask.Mask.Load(pattern), pos=Position(0,2) )
-        info(str(self.mask))
-        self.timers = [
-            Timer(1.*timer.duration*2.),
-            Timer(1.*timer.duration*3.),
-            Timer(1.*timer.duration/5.),
-            Timer(1.*timer.duration/3.),
-        ]
     
-    def draw(self):
+    def start(self,**params):
+        log("start FYI")
+        pattern = dotlife.pattern.PATTERN.FYI.value
+        self.plasma = Plasma()
+        self.mask = Mask()
+        self.mask.addMask( dotlife.mask.Mask.Load(pattern), pos=Position(0,2) )
+        self.timers = [
+            Timer(1.*self.timer.duration*2.),
+            Timer(1.*self.timer.duration*3.),
+            Timer(1.*self.timer.duration/5.),
+            Timer(1.*self.timer.duration/3.),
+        ]
+        info(str(self.mask))
+        return True
+    
+    
+    
+    def draw(self,**params):
         ret = Buffer()
         off = self.timer.count=1 * PI
         phase = self.timer.cycle()

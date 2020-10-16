@@ -13,7 +13,7 @@ def debug(x): pass
 
 
 
-class Framebuffer(dotlife.mask.Mask):
+class Framebuffer():
     
     def __init__(self,address,nowrite,noread):
         super().__init__()

@@ -11,30 +11,11 @@ from fliplife import DEFAULT_FONT
 # to add a new mode 'foobar':
 #   1. add 'from fliplife.mode import foobar'
 #   2. add 'foobar = "foobar.Foobar"' to Enum fliplife.MODE
-#   3. create class Foobar(fliplife.mode.Mode) in dotlife/mode/foobar.py
+#   3. create class Foobar(fliplife.mode.Mode) in fliplife/mode/foobar.py
 #
 
 
 
-#def Class(mode):
-#
-#    # static import for run time checking
-#    from fliplife.mode import test,read,clear,fill,gauss,echo,exec
-#    from fliplife.mode import grow,pixel,dots,life,glider,guns,spawn
-#    
-#    try:
-#        mod = __import__("fliplife.mode."+str(mode.name), fromlist=[''])
-#        ret = getattr(mod,mode.name.capitalize())
-#    except AttributeError as x:
-#        raise Error("class {} not found".format(mode.capitalize()))
-#    except ModuleNotFoundError as x:   # ??
-#        raise Error("module {} not found".format(mode.name))
-#    except Exception as x:
-#        raise Error("mode {} imported exception: {}".format(mode.name,str(x)))
-#    
-#    return ret
-#
-#
 class Mode(dotMode):
 
     help = ""
