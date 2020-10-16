@@ -78,7 +78,7 @@ def main(modename, device, preview, step, blend, invert, gain, **params):
 
             buffer = mode.draw()
 
-            if blend == dotlife.Blend.Jump:
+            if blend == dotlife.Blend.jump:
                 pass
             elif blend == dotlife.Blend.Black:
                 buffer.mul( mode.timer.sin0(1.) )
@@ -186,7 +186,7 @@ FLAGS = [
 MODEFLAGS = [
     # short long param default help func #             
     ("", "",                   "modename",             DEFAULT_MODE.name,      "mode",          None ),
-    ("b:", "blend=",            "blend",               dotlife.Blend.Jump.name,"blend style {}".format(",".join([ b.name for b in Blend])), lambda x : dotlife.Blend(x) ),
+    ("b:", "blend=",            "blend",               dotlife.Blend.jump,      "blend style {}".format(",".join([ str(b) for b in Blend])), lambda x : dotlife.Blend(x) ),
     ("s:", "step=",             "step",                1.0,                     "step speed",                                                 lambda x : float(x) ),
     ("",   "inv",               "invert",              False,                   "invert brightness",                                          None ),
     ("",   "gain=",             "gain",                1.0,                     "gain brightness",                                            lambda x: float(x) ),

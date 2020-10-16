@@ -53,11 +53,12 @@ class Mask:
                 self.pixel[x][y] = True
     
 
-    def inv(self):
-        for y in range(self.h):
-            for x in range(self.w):
-                self.pixel[x][y] ^= True
-        return self
+    def inverse(self):
+        ret = Mask(mask=self)
+        for y in range(ret.h):
+            for x in range(ret.w):
+                ret[x,y] ^= True
+        return ret
 
     def flip(self,flip):
         w,h = self.w,self.h

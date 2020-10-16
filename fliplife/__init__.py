@@ -14,7 +14,7 @@ def Mask(mask=None,size=FRAMESIZE):
 
 
 
-from fliplife.mode import test, read, clear, fill, gauss, echo, exec
+from fliplife.mode import test, read, clear, reset, fill, gauss, echo, exec
 from fliplife.mode import grow, pixel, dots, life, glider, guns, spawn
 from fliplife.mode import flueptext, pipe, scroll, clock, smooth
 
@@ -22,6 +22,7 @@ class MODE(Enum):
     test      = test.Test
     read      = read.Read
     clear     = clear.Clear
+    reset     = reset.Reset
     fill      = fill.Fill
     gauss     = gauss.Gauss
     echo      = echo.Echo

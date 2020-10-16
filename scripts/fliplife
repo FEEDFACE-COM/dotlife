@@ -159,7 +159,7 @@ FLAGS = [
     ("C",  "clear",        "clear",             True,    "clear fluepdot?",        None ),
     ("F",  "forever",      "forever",          False,    "run continuously?",      None ),
     ("P",  "preview",      "preview",          False,    "buffer preview on stdout?",      None ),
-    ("f:", "framerate=",   "framerate",           1.,    "fluepdot update interval (f/s)",      lambda x: float(x) ),
+    ("f:", "framerate=",   "framerate",           10.,    "fluepdot update interval (f/s)",      lambda x: float(x) ),
     ("v",  "",      None,                None,    "increase verbosity",     None ),
     ("V",  "",      None,                None,    "display version",        None ),
 ]
@@ -224,7 +224,7 @@ def usage(mode=None,msg=""):
         )
         log("")
         
-        log("## Flags")
+        log("## Mode Flags")
         f = None
         for (s,l,p,d,h,_) in fliplife.mode.Mode.FLAGS + mode.value.flags:
             if s or l:

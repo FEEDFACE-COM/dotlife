@@ -72,7 +72,7 @@ class Fill(Mode):
             ret.addMask(fill)
         
         if invert: 
-            ret.inv()
+            ret = ret.inverse()
     
         return ret
 
