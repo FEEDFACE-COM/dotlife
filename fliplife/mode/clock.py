@@ -145,7 +145,7 @@ class Clock(Mode):
             txt0 = humanshort(now).upper()
             
             text0 = self.full.render(txt0,space=2,fixed=False)
-            pos0 = Position( 1+int((FRAMESIZE.w - text0.w)/2), 4)
+            pos0 = Position( 4+int((FRAMESIZE.w - text0.w)/2), 4)
             
             ret.addMask(text0,pos=pos0)
             
@@ -182,7 +182,7 @@ class Clock(Mode):
 
 
 def humanreadable(then):
-    return humandate(then) + ", \n" + humantime(then) + " " + human_daytime(then) + "..."
+    return humandate(then) + ", \n" + humantime(then) + "..."
 
 def humandate(then):
     ret = ""
@@ -222,27 +222,31 @@ def humantime(then):
     year,month,day,hour,minute,_,weekday,_,_ = then.timetuple()
 
     x = 0
-    if minute < 10:
-        ret += "kurz nach"
+    if minute < 2:
+        ret += ""
+    elif minute < 10:
+        ret += "kurz nach "
     elif minute < 20:
-        ret += "viertel nach"
+        ret += "viertel nach "
     elif minute < 29:
-        ret += "kurz vor halb"
+        ret += "kurz vor halb "
         x = 1
     elif minute < 32:
-        ret += "halb"
+        ret += "halb "
         x = 1
     elif minute < 40:
-        ret += "kurz nach halb"
+        ret += "kurz nach halb "
         x = 1
     elif minute < 50:
-        ret += "viertel vor"
+        ret += "viertel vor "
+        x = 1
+    elif minute < 59:
+        ret += "kurz vor "
         x = 1
     else:
-        ret += "kurz vor"
+        ret = ""
         x = 1
 
-    ret += " "
     ret += {
         1: "Eins",
         2: "Zwei",
@@ -257,7 +261,9 @@ def humantime(then):
        11: "Elf",
         0: "Zwölf",
     }[(hour+x)%12]
-    if minute < 10 or minute >= 50:
+    if minute < 2 or minute > 58:
+        if (hour+x)%12 == 1: #FIXUP:  Eins<>Ein
+            ret = ret[:-1]
         ret += " Uhr"
 
     if hour+x >= 22:
@@ -281,29 +287,28 @@ def humanshort(then):
     if minute < 2:
         ret += ""
     elif minute < 10:
-        ret += "kurz nach"
+        ret += "kurz nach "
     elif minute < 20:
-        ret += "viertel nach"
+        ret += "viertel nach "
     elif minute < 29:
-        ret += "kurz vor halb"
+        ret += "kurz vor halb "
         x = 1
     elif minute < 32:
-        ret += "halb"
+        ret += "halb "
         x = 1
     elif minute < 40:
-        ret += "kurz nach halb"
+        ret += "kurz nach halb "
         x = 1
     elif minute < 50:
-        ret += "viertel vor"
+        ret += "viertel vor "
         x = 1
     elif minute < 59:
-        ret += "kurz vor"
+        ret += "kurz vor "
         x = 1
     else:
         ret = ""
         x = 1
 
-    ret += " "
     ret += {
         1: "Eins",
         2: "Zwei",
@@ -318,5 +323,9 @@ def humanshort(then):
        11: "Elf",
         0: "Zwölf",
     }[(hour+x)%12]
+    if minute < 2 or minute > 58:
+        if (hour+x)%12 == 1: #FIXUP:  Eins<>Ein
+            ret = ret[:-1]
+        ret += " Uhr"
         
     return ret
