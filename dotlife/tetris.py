@@ -8,21 +8,18 @@ import random, copy
 
 class Tetris:
 
-    W = 8
-    H = 8
-
     def __str__(self):
         return "tetris"
         
     def buffer(self,light=LIGHT,dark=DARK):
-        ret = Buffer()
-        ret.addMask( self.tile.mask, (self.tile.x,self.tile.y) )
+        ret = Buffer(size=Size(self.w,self.h))
+        ret.addMask( self.tile.mask,light=light, pos=Position(self.tile.x,self.tile.y) )
         return ret
         
         
-    def __init__(self,size=(8,8)):
+    def __init__(self,size=DefaultSize):
         random.seed()
-        self.w,self.h = size
+        self.w,self.h = size.w,size.h
         tetros = []
         for t in Tetris.Tetronimo:
             tetros.append( t )
@@ -76,7 +73,7 @@ class Tetris:
         
         
         def rotate(self,direction=None):
-            msk = Mask( val=False, size=(self.mask.h,self.mask.w) )
+            msk = Mask( val=False, size=Size(self.mask.h,self.mask.w) )
             for y in range(msk.h):
                 for x in range(msk.w):
                     if direction == Rotation.clockwise:

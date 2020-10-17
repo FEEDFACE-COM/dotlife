@@ -13,14 +13,13 @@ from dotlife import *
 from dotlife.util import *
 from dotlife.about import NAME, VERSION
 
-from dotlife.pattern import PATTERN
 from dotlife.clock import Clock, FRAME, NOW
 
 
 import oledlife
 from oledlife import MODE
 
-from oledlife import Mask, FRAMESIZE
+from oledlife import Buffer, FRAMESIZE
 from oledlife.mode import Mode
 from oledlife.paneloled import Paneloled
 
@@ -48,11 +47,11 @@ def main(runmode, device, nowrite, forever,preview, framerate, speed, **params):
         FATAL("fail open paneloled dmx: "+str(x))
 
     timer = Clock.Timer(1000.*speed,repeat=True)
-    mask = Mask()
+    buffer = Buffer()
     
             
     try:
-        mode = runmode.value(timer,mask,**params)
+        mode = runmode.value(timer,buffer,**params)
     except Error as x:
         FATAL("fail init mode {:s}: {:s}".format(str(runmode),str(x)))
 
@@ -201,7 +200,7 @@ FLAGS = [
     ("C",  "clear",        "clear",             True,    "clear paneloled?",        None ),
     ("F",  "forever",      "forever",          True,     "run continuously?",      None ),
     ("P",  "preview",      "preview",          False,    "buffer preview on stdout?",      None ),
-    ("f:", "framerate=",   "framerate",           10.,    "paneloled update interval (f/s)",      lambda x: float(x) ),
+    ("f:", "framerate=",   "framerate",           10.,    "paneloled update interval (fps)",      lambda x: float(x) ),
     ("v",  "",      None,                None,    "increase verbosity",     None ),
     ("V",  "",      None,                None,    "display version",        None ),
 ]

@@ -3,33 +3,33 @@ from dotlife.mode import Mode
 #from dotlife.clock import timer
 
 from dotlife.pattern import *
-from dotlife.buffer import Buffer
-from dotlife.mask import Mask
 
 
-def Init(timer):
-    return Invader(timer)
-
+from oledlife import Mask, Buffer
+from oledlife.mode import Mode
 
 
 class Invader(Mode):
 
-    def __init__(self,timer):
-        super().__init__(timer)
-        self.mask = Mask.Load( INVADER[ self.timer.count % len(INVADER)] )
+    def start(self,step,**params):
+        c = (step+self.timer.count) % len(INVADER)
+        self.mask = Mask().Load( INVADER[ c ] )
+        return True
         
-        
-    def draw(self):
+    def draw(self,light,**params):
         ret = Buffer()
-        ret.mask( self.mask )
+        ret.addMask( self.mask, light=light )
         return ret
 
 
-    def step(self):
-        super().step()
-        self.mask = Mask.Load( INVADER[ self.timer.count % len(INVADER) ] )
+    def step(self,step,**params):
+        c = (step+self.timer.count) % len(INVADER)
+        self.mask = self.mask.Load( INVADER[ c ] )
 
-
+    flags = [
+        Mode.FLAG("step"),
+        ("l:","light=","light",1,"brightness",lambda x: int(x) ),
+    ]    
 
 INVADER= ["""
   []        []  

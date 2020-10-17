@@ -9,19 +9,20 @@ import dotlife.palette as palette
 from dotlife.clock import Timer
 from dotlife.math import *
 
-def Init(timer):
-    return Palette(timer)
+
+from oledlife import FRAMESIZE, Buffer, Mask
+from oledlife.mode import Mode
+
 
 
 class Palette(Mode):
     
     
-    def __init__(self,timer):
-        super().__init__(timer)
+    def start(self,**params):
         self.palette = palette.Palette.Linear()
 
 
-    def draw(self):
+    def draw(self,**params):
     
         p = (self.timer.count / 2)
 #        p = self.timer.count
@@ -54,6 +55,3 @@ class Palette(Mode):
 #        buffer.mul( self.timer.sin0() * 0x20 + 0x8)
         return buffer
 
-
-    def __str__(self):
-        return "{}".format(self.palette)

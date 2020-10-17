@@ -1,47 +1,13 @@
 
 from dotlife import *
+from dotlife.mask import Mask
 from dotlife.util import *
 
 
 
-class Buffer:
+class Buffer(Mask):
 
-    DefaultSize = Size(8,8)
     
-    def __str__(self):
-        ret = ""
-        for y in range(self.h):
-            for x in range(self.w):
-                p = self.pixel[x][y]
-                if p < 0x00:
-                    ret += "¿?"
-                elif p == 0x00:
-                    ret += "  "
-                elif p <= 0x01:
-                    ret += " ."
-                elif p <= 0x02:
-                    ret += " ."
-                elif p <= 0x10:
-                    ret += " ▫︎"
-                elif p <= 0x20:
-                    ret += " □"
-                elif p <= 0x40:
-                    ret += " ◻︎"
-                elif p <= 0x80:
-                    ret += " ☐"
-                elif p < 0xff:
-                    ret += " ◼︎"
-                else:
-                    ret += "?¿"
-            ret += " {:01d}\n".format(y%10)
-
-
-        for x in range(self.w):
-            ret += " {:01d}".format(x%10)
-        ret += "  \n"
-
-        return ret[:-1]
-
 
     def num(self):
         ret = ""
@@ -61,7 +27,7 @@ class Buffer:
     def __init__(self,val=0x00,size=DefaultSize):
         self.w, self.h = size.w,size.h
         if self.w <= 0 or self.h <= 0:
-            raise dotlife.Error("invalid buffer dimensions {}x{}".format(self.w,self.h)) 
+            raise Error("invalid buffer dimensions {}x{}".format(self.w,self.h)) 
         val = Clamp(val)
         self.pixel = [ [ val for yy in range(self.h) ] for xx in range(self.w) ]
     
@@ -86,7 +52,7 @@ class Buffer:
         return Size(self.w,self.h)
 
     def palette(self,palette):
-        ret = Buffer(size=(self.w,self.h))
+        ret = Buffer(size=self.size())
         for y in range(self.h):
             for x in range(self.w):
                 ret[x,y] = palette[ self[x,y] ]
@@ -132,8 +98,8 @@ class Buffer:
                     self[x,y] = light
 
 
-    def addMask(self,mask,pos=(0,0),wrap=False,light=LIGHT):
-        dx,dy = pos
+    def addMask(self,mask,pos=Position(0,0),wrap=False,light=LIGHT):
+        dx,dy = pos.x,pos.y
         for y in range(mask.h):
             if not wrap and not 0 <= y+dy < self.h:
                 continue
@@ -142,10 +108,11 @@ class Buffer:
                     continue
                 if mask[x,y]:
                     self[x+dx,y+dy]= light
+        return self
         
 
 
-    def buffer(self,size=DefaultSize,pos=(0,0)):
+    def buffer(self,size=DefaultSize,pos=Position(0,0)):
         w,h = size.w,size.h
         dx,dy = pos
         ret = Buffer(size=size)
@@ -154,6 +121,44 @@ class Buffer:
                 ret[x,y] = self[x+dx,y+dy]
         return ret
         
+
+    def __str__(self):
+        ret = ""
+        for y in range(self.h):
+            for x in range(self.w):
+                p = self.pixel[x][y]
+                if False:
+                    ret += "{:02x}".format(p)
+                    continue
+                if p < 0x00:
+                    ret += "¿?"
+                elif p == 0x00:
+                    ret += "  "
+                elif p <= 0x01:
+                    ret += " ."
+                elif p <= 0x02:
+                    ret += " ."
+                elif p <= 0x10:
+                    ret += " ▫︎"
+                elif p <= 0x20:
+                    ret += " □"
+                elif p <= 0x40:
+                    ret += " ◻︎"
+                elif p <= 0x80:
+                    ret += " ☐"
+                elif p < 0xff:
+                    ret += " ◼︎"
+                else:
+                    ret += "?¿"
+            ret += " {:01d}\n".format(y%10)
+
+
+        for x in range(self.w):
+            ret += " {:01d}".format(x%10)
+        ret += "  \n"
+
+        return ret[:-1]
+
 
 # fillers
 
@@ -216,3 +221,5 @@ class Buffer:
                 else:
                     ret.pixel[x][y] = ( (x+1) + (y-4)*w ) * mul
         return ret        
+
+

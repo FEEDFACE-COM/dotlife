@@ -6,23 +6,22 @@ from dotlife.buffer import Buffer
 from dotlife.mask import Mask
 from dotlife.palette import Palette
 
-def Init(timer):
-    return Pulser(timer)
 
+
+from oledlife.mode import Mode
 
 class Pulser(Mode):
     
-    def __init__(self,timer):
-        super().__init__(timer)
-        self.mask=Mask.Load("""
+    def start(self,**params):
+        self.mask = Mask().Load("""
     [][]
     [][]
 [][]    
 [][]    
 """)
-        
+        return True
     
-    def draw(self):
+    def draw(self,**params):
 
         pal = Palette.Sine()
 
@@ -32,13 +31,12 @@ class Pulser(Mode):
         ret = Buffer()
         for y in range(ret.h):
             for x in range(ret.w):
-                idx = pal.idx( y*ret.w + x + 0*self.timer.linear())
+                idx = pal.idx( y*ret.w + x + self.timer.linear())
                 ret[x,y] = pal[idx % pal.length ] 
 
 #        ret.tile(self.mask,light=0x0)
         return ret
 
 
-    def step(self):
-        super().step()
-        self.mask.inv()
+    def step(self,**params):
+        self.mask = self.mask.inverse()

@@ -7,6 +7,7 @@ import random
 import dotlife
 import oledlife, fliplife
 
+import dotlife.life
 
 from dotlife.clock import *
 from dotlife.buffer import *
@@ -14,7 +15,6 @@ from dotlife.mask import *
 from dotlife.mode import *
 from dotlife.pattern import *
 from dotlife.plasma import *
-from dotlife.life import *
 from dotlife.font import *
 
 from fliplife import *

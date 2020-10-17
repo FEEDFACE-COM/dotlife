@@ -3,6 +3,7 @@ from enum import auto
 from dotlife.util import Enum
 
 from dotlife.font import FONT
+from dotlife import *
 
 
 class Mode():
@@ -37,9 +38,10 @@ class Mode():
             "speed":     ("s:", "speed=",       "speed",      1.0,             "step speed [s]",       lambda x : float(x) ),
             "invert":    ("i",  "invert",       "invert",     False,           "invert pattern?",                     None ),
             "count":     ("c:", "count=",       "count",      1,               "count",                  lambda x : int(x) ),
-            "font":      ("f:", "font=",        "font",       default,         "font",                   lambda x: FONT[x] ),
+            "font":      ("F:", "font=",        "font",       default,         "font",                   lambda x: FONT[x] ),
             "pattern":   ("p:", "pattern=",     "pattern",    default,         "pattern",      lambda x:  type(default)[x] ), # get type of default, then lookup x in type
             "step":      ("q:", "step=",        "step",       0,               "step",                   lambda x : int(x) ),
+            "flip":      ("f:", "flip=",        "flip",       Flip.noflip,     ",".join([str(f) for f in Flip]),                  lambda x : Flip[x] ),
             "x":         ("x:", "",             "x",          0,               "x offset",               lambda x : int(x) ),
             "y":         ("y:", "",             "y",          0,               "y offset",               lambda x : int(x) ),
             "randomize": ("r", "random",        "randomize",  False,           "randomize?",                          None ),

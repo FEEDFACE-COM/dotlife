@@ -25,7 +25,7 @@ class FYI(Mode):
     
     def start(self,**params):
         log("start FYI")
-        pattern = dotlife.pattern.PATTERN.FYI.value
+        pattern = dotlife.pattern.Pattern.FYI.value
         self.plasma = Plasma()
         self.mask = Mask()
         self.mask.addMask( dotlife.mask.Mask.Load(pattern), pos=Position(0,2) )

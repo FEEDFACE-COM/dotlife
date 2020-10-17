@@ -15,7 +15,6 @@ from dotlife.util import *
 from dotlife.about import NAME, VERSION
 
 
-from dotlife.pattern import PATTERN
 from dotlife.font import Font, FONT
 from dotlife.clock import Clock, FRAME, NOW
 

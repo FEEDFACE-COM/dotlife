@@ -4,37 +4,36 @@ from dotlife.pattern import *
 from dotlife.mask import *
 from dotlife.buffer import *
 from dotlife.util import *
-from dotlife.mode import Mode
 from dotlife.tunnel import Tunnel
 from dotlife.palette import *
 from dotlife.clock import Timer
 from dotlife.math import *
 
-def Init(timer):
-    return Tunnel(timer)
+from oledlife import FRAMESIZE 
+from oledlife.mode import Mode
 
 
 class Tunnel(Mode):
 
-    def __init__(self,timer):
-        super().__init__(timer)
+    def start(self,**params):
         self.tunnel = dotlife.tunnel.Tunnel()
         self.timers = [
-            Timer(1.*timer.duration*1.),
-            Timer(1.*timer.duration*1.9 * 7.),
-            Timer(1.*timer.duration*2.3 * 5.),
+            Timer(1.*self.timer.duration*1.),
+            Timer(1.*self.timer.duration*1.9 * 7.),
+            Timer(1.*self.timer.duration*2.3 * 5.),
         ]
-        pattern0 = dotlife.pattern.PATTERN.HEXDIGIT.value[0]
-        pattern1 = dotlife.pattern.PATTERN.HEXDIGIT.value[0xf]
+        pattern0 = dotlife.pattern.Pattern.HEXDIGIT.value[0]
+        pattern1 = dotlife.pattern.Pattern.HEXDIGIT.value[0xf]
         
 #        self.mask = dotlife.mask.Mask(False,(8,8))
 #        self.mask.mask( dotlife.mask.Mask.Load( dotlife.pattern.PATTERN.LOVE.value), (1,1)) 
 #        self.mask = self.mask.inverse()
 
-        self.mask = mask.Mask.Checkers(size=(8,8))
+        self.mask = mask.Mask.Checkers(size=FRAMESIZE)
+        return True
         
 
-    def draw(self):
+    def draw(self,**params):
         ret = Buffer()
         
 
@@ -96,5 +95,3 @@ class Tunnel(Mode):
         return ret
         
         
-    def __str__(self):
-        return super().__str__() + " " + str(self.timers[0]) #+ "{:100.20f}".format(PI)

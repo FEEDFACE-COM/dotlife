@@ -1,6 +1,5 @@
 
 from dotlife import *
-from dotlife.buffer import Buffer
 from dotlife.util import *
 
 
@@ -38,13 +37,6 @@ class Mask:
 
     def size(self):
         return Size(self.w,self.h)
-
-#    def inverse(self):
-#        ret = Mask(size=Size(self.w,self.h))
-#        for y in range(self.h):
-#            for x in range(self.w):
-#                ret.pixel[x][y] = not self.pixel[x][y]
-#        return ret
 
     
     def set(self,val=True):
@@ -91,7 +83,7 @@ class Mask:
 
     
 
-
+    # add a mask 
     def addMask(self,mask,pos=Position(0,0),wrap=False):
         for y in range(mask.h):
             if not wrap and not 0 <= y+pos.y < self.h:
@@ -103,7 +95,7 @@ class Mask:
                     self[x+pos.x,y+pos.y] = mask[x,y]
         return self
         
-        
+    # get the submask    
     def subMask(self,pos=Position(0,0),size=Size(1,1)):
         ret = Mask(size=size)
         for y in range(ret.h):
@@ -116,26 +108,45 @@ class Mask:
                     ret[x,y] = True
         return ret
 
+    def centerForMask(self,mask):
+        ret = Position()
+        ret.x = int(abs(self.w-mask.w)/2)
+        ret.y = int(abs(self.h-mask.h)/2)
+        return ret
+
 
     def trimMask(self):
-        size = self.size()
+        ret = Mask(size=self.size())
         pos = Position(0,0)
-        keep = False
-        for y in range(self.size.h):
-            if self[0,y]:
-                keep = True
-        if not keep:
-            size.w -= 1
+
+        for y in range(self.h):
+            keep = True in [ self[x,y] for x in range(self.w) ]
+            if keep:
+                break
+            ret.h -= 1
+            pos.y += 1
+
+        for y in range(self.h-1,-1,-1):
+            keep = True in [ self[x,y] for x in range(self.w) ]
+            if keep:
+                break
+            ret.h -= 1
+
+        for x in range(self.w):
+            keep = True in [ self[x,y] for y in range(self.h) ]
+            if keep:
+                break
+            ret.w -= 1
             pos.x += 1
-        keep = False
-        for y in range(self.size.h):
-            if self[self.size.w-1,y]:
-                keep = True
-        if not keep:
-            size.w -= 1
+
+        for x in range(self.h-1,-1,-1):
+            keep = True in [ self[x,y] for y in range(self.h) ]
+            if keep:
+                break
+            ret.w -= 1
+
         
-        
-        
+        ret = self.subMask(size=ret.size(),pos=pos)
         
         return ret
         
@@ -257,3 +268,12 @@ class Mask:
     
         return ret[:-1]
     
+    
+# fillers
+
+    def Checkers(size=DefaultSize):
+        ret = Mask(size=size)
+        for y in range(ret.h):
+            for x in range(ret.w):
+                ret[x,y] = (x%2 != y%2)
+        return ret

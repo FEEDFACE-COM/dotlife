@@ -10,9 +10,8 @@ import random
 
 class Fire():
 
-    def __init__(self,size=(8,8)):
-        w,y = size
-        self.state = Buffer(size=(w,h+4))
+    def __init__(self,size=DefaultSize):
+        self.state = Buffer(size=size+Size(0,4))
         random.seed()
         for x in range(self.state.w):
             self.state[x,self.state.h-1] = 1+ random.randrange( 12 )

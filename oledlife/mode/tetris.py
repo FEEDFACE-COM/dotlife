@@ -5,24 +5,25 @@ from dotlife.buffer import Buffer
 
 import dotlife.tetris
 
+from oledlife import Buffer, FRAMESIZE
+from oledlife.mode import Mode
 
-def Init(timer):
-    return Tetris(timer)
 
 
 class Tetris(Mode):
     
-    def __init__(self,timer):
-        super().__init__(timer)
-        self.tetris = dotlife.tetris.Tetris()
+    def start(self,**params):
+        self.tetris = dotlife.tetris.Tetris(size=FRAMESIZE)
+        return True
     
-    def draw(self):
-        buffer = self.tetris.buffer(0x1,0x00)
+    def draw(self,light,**params):
+        buffer = self.tetris.buffer(light=light)
         return buffer
 
 
-    def step(self):
-        super().step()
+    def step(self,**params):
         self.tetris.step()
 
-
+    flags = [
+        ("l:","light=","light",1,"brightness",lambda x: int(x) ),
+    ]

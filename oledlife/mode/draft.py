@@ -4,21 +4,20 @@ from dotlife.pattern import *
 from dotlife.mask import *
 from dotlife.buffer import *
 from dotlife.util import *
-from dotlife.mode import Mode
 from dotlife.plasma import Plasma, Fun
 from dotlife.palette import *
 from dotlife.clock import Timer
 from dotlife.math import *
 
-def Init(timer):
-    return Draft(timer)
 
+
+from oledlife import FRAMESIZE, Buffer, Mask
+from oledlife.mode import Mode
 
 class Draft(Mode):
     
     
-    def __init__(self,timer):
-        super().__init__(timer)
+    def start(self,**params):
 #        self.mask = Mask.Load("""
 #[]  []
 #  []  
@@ -26,7 +25,7 @@ class Draft(Mode):
 #""")
 #        info(str(self.mask))
 
-        self.mask = mask.Mask.Checkers(size=(8,8))
+        self.mask = mask.Mask.Checkers(size=FRAMESIZE)
 
 
 #        pattern = dotlife.pattern.PATTERN.FYI.value
@@ -36,10 +35,10 @@ class Draft(Mode):
 
         self.plasma = Plasma()
         self.timers = [
-            Timer(1.*timer.duration*2.),
-            Timer(1.*timer.duration*3.),
-            Timer(1.*timer.duration/5.),
-            Timer(1.*timer.duration/3.),
+            Timer(1.*self.timer.duration*2.),
+            Timer(1.*self.timer.duration*3.),
+            Timer(1.*self.timer.duration/5.),
+            Timer(1.*self.timer.duration/3.),
         ]
 
 #        self.tunnel = dotlife.tunnel.Tunnel()
@@ -49,10 +48,10 @@ class Draft(Mode):
 #            Timer(1.*timer.duration*2.3 * 5.),
 #        ]
         
-
+        return True
         
     
-    def draw(self):
+    def draw(self,**params):
         ret = Buffer()
         off = self.timer.count=1 * PI
         phase = self.timer.cycle()

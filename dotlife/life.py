@@ -48,6 +48,7 @@ class Life(Mask):
 
 
     def spawn(self,pattern,pos=Position(0,0),step=0,flip=Flip.noflip):
+        log("spawn " + str(self.name) + "step "+step + ("flip "+str(flip)) if flip!=Flip.noflip else '' )
         pat = pattern.Mask(step,flip)
         self.addMask( pat, pos=pos, wrap=True )
         return
@@ -92,7 +93,7 @@ class Life(Mask):
 
 
     def addGlider(self,pos=Position(2,2),step=0,direction=Direction.southeast):
-        return self.spawn(Pattern.Glider,pos=pos,step=step)
+        return self.spawn(Pattern.glider,pos=pos,step=step)
 
 
         
@@ -100,10 +101,20 @@ class Pattern(Enum):
 
 
     def Mask(self,step=0,flip=Flip.noflip):
-        log("spawn " + str(self.name) + ("flip "+flip.name) if flip!=Flip.noflip else '' )
-        ret = Mask.Load(self.value)
+        msk = Mask.Load(self.value)
+        if step > 0:
+            tmp = Life(size=Size(msk.w*2,msk.h*2))
+            tmp.addMask(msk)
+            for s in range(step):
+                tmp.step()
+            ret = tmp.trimMask()
+        else:                
+            ret = Mask.Load(self.value)
+    
         ret.flip(flip)
         return ret
+
+
 
 
     glider = \
@@ -208,4 +219,36 @@ class Pattern(Enum):
 [][][]  
 """
 
+    octagon = \
+"""
+      [][]      
+    []    []    
+  []        []  
+[]            []
+[]            []
+  []        []  
+    []    []    
+      [][]      
+"""
 
+    opentomino = \
+"""
+[][][][][]
+"""
+
+    paperclip = \
+"""
+    [][]  
+  []    []
+  []  [][]
+[][]  []  
+[]    []  
+  [][]    
+"""
+
+    pentadecathlon = \
+"""
+    []        []    
+[][]  [][][][]  [][]
+    []        []    
+"""

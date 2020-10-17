@@ -5,6 +5,7 @@ from enum import auto
 LIGHT = 0x1
 DARK  = 0x0
 
+
 class Rotation(Enum):
     clockwise = auto()
     counterclockwise = auto()
@@ -57,6 +58,11 @@ class Size():
 
     def __str__(self):
         return "{:d}x{:d}".format(self.w,self.h)
+
+    def __add__(self,b):
+        return Size(w=self.w+b.w, h=self.h+b.h)
+
+DefaultSize = Size(8,8)
 
 
 class Position():
