@@ -16,7 +16,7 @@ def Buffer(val=0x00,size=FRAMESIZE):
 
 from oledlife.mode import test, clear, glider, fyi, fill
 from oledlife.mode import fire, tunnel, invader, plasma, pulser
-from oledlife.mode import scroller, tetris, palette, draft
+from oledlife.mode import scroller, tetris, palette, draft, symbol
 
 class MODE(Enum):
     test      = test.Test
@@ -33,5 +33,6 @@ class MODE(Enum):
     tetris    = tetris.Tetris
     palette   = palette.Palette
     draft     = draft.Draft
+    symbol    = symbol.Symbol
 
 

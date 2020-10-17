@@ -48,6 +48,6 @@ class Mode():
             "style":     ("Y:", "style=",       "style",      default,         "style",        lambda x:  type(default)[x] ), # get type of default, then lookup x in type
         }.get(name,("","","",None,"",None))
 
-
+    Pattern = ()
 
     
