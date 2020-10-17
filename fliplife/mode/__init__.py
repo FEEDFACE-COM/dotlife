@@ -26,25 +26,11 @@ class Mode(dotlife.mode.Mode):
         self.mask = mask
 
 
-    def start(**params):
+    def start(self,**params):
         return super().start()
         
-    def draw(**params):
-        return Mask()
-
-#    FLAG = {
-#        # param: short long default help func #             
-#        "speed":     ("s:", "speed=",       "speed",      1.0,             "step speed [s]",       lambda x : float(x) ),
-#        "invert":    ("i",  "invert",       "invert",     False,           "invert pattern?",                     None ),
-#        "count":     ("c:", "count=",       "count",      1,               "count",                  lambda x : int(x) ),
-#        "font":      ("f:", "font=",        "font",       DEFAULT_FONT,    "font",                   lambda x: FONT[x] ),
-#        "pattern":   ("p:", "pattern=",     "pattern",    None,            "pattern",                             None ),
-#        "step":      ("q:", "step=",        "step",       0,               "pattern step",           lambda x : int(x) ),
-#        "x":         ("x:", "",             "x",          0,               "x offset",               lambda x : int(x) ),
-#        "y":         ("y:", "",             "y",          0,               "y offset",               lambda x : int(x) ),
-#        "randomize": ("r", "random",        "randomize",  False,           "randomize?",                          None ),
-#    }
-    
+    def draw(self,**params):
+        return Mask()    
     
     FLAGS = [
         dotlife.mode.Mode.FLAG("speed"),

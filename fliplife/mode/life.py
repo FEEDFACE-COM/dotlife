@@ -14,7 +14,7 @@ from fliplife.fluepdot import Fluepdot
 class Life(Mode):
     
     
-    def run(self,count,**params):
+    def start(self,count,**params):
         info("start life")
         self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
 
@@ -27,19 +27,11 @@ class Life(Mode):
     
     def draw(self,**params):
 
-        prev = Mask(mask=self.life)
         self.life.step()
-        mask = Mask(mask=self.life)
+
+        return Mask(mask=self.life)
 
 
-        if True:
-            self.fluepdot.buffer.write(mask)
-
-#        else:
-#            self.fluepdot.pixel.flipDelta(prev,mask)
-        
-        info(str(mask))
-        return mask
     
     flags = [
         Mode.FLAG("count"),

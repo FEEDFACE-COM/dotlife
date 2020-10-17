@@ -13,13 +13,15 @@ from fliplife import Mask, FRAMESIZE
 from fliplife.fluepdot import Fluepdot
 
 from dotlife.clock import Clock
-from dotlife.font import Font
+from dotlife.font import Font, FONT
 from dotlife.effects import Morph, Morph2, Axis, Scan
 
 class Scroll(Mode):
         
     
-    def run(self,font,msg=None,**params):
+    DefaultFont = FONT.font3x5
+    
+    def start(self,font,msg=None,**params):
 #        self.fluepdot.rendering.setMode(Fluepdot.Mode.Full)
         self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
         
@@ -86,6 +88,11 @@ class Scroll(Mode):
 #        log("to\n"+str(next))
 
         steps = Morph2(self.mask,next)
+        
+        if len(steps) >= 2:
+            return steps[1]
+        return steps[0]
+        
         steps = [self.mask,next]
 
 
@@ -109,7 +116,7 @@ class Scroll(Mode):
 
         
     flags = [
-        Mode.FLAG("font"),
+        Mode.FLAG("font",DefaultFont),
         ("P:","pause=",       "pause",                 1.0,                        "pause",                              lambda x: int(x) ),
         (None, None,            "msg",                 "hello, world.",           "message",                                 None),
     ]

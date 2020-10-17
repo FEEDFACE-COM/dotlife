@@ -24,10 +24,10 @@ class Mode(dotlife.mode.Mode):
         self.mask = mask
 
 
-    def start(**params):
+    def start(self,**params):
         return super().start()
         
-    def draw(**params):
+    def draw(self,**params):
         return Mask()
 
 #    FLAG = {

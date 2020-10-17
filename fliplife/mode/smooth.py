@@ -13,13 +13,15 @@ from fliplife import Mask, FRAMESIZE
 from fliplife.fluepdot import Fluepdot
 
 from dotlife.clock import Clock
-from dotlife.font import Font
+from dotlife.font import Font, FONT
 from dotlife.effects import Morph, Morph2, Axis, Scan
 
 class Smooth(Mode):
         
     
-    def run(self,font,msg=None,**params):
+    DefaultFont = FONT.font3x5
+    
+    def start(self,font,msg=None,**params):
 #        self.fluepdot.rendering.setMode(Fluepdot.Mode.Full)
         self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
         
@@ -85,6 +87,8 @@ class Smooth(Mode):
 
         steps = [self.mask,next]
 
+        return next
+
         for i in range(len(steps)):
             step = steps[i]
             ret += [ step ]
@@ -106,7 +110,7 @@ class Smooth(Mode):
 
         
     flags = [
-        Mode.FLAG("font"),
+        Mode.FLAG("font",DefaultFont),
         ("P:","pause=",       "pause",                 1.0,                        "pause",                              lambda x: int(x) ),
         (None, None,            "msg",                 "hello, world.",           "message",                                 None),
     ]

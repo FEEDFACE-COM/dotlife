@@ -37,7 +37,7 @@ DEFAULT_HOST = "87.193.3.53"
 
 def main(runmode, host, speed, clear, forever, nowrite, noread, preview, framerate, **params):
 
-    info("fliplife start at {:.2f}fps".format(framerate))
+    info("fliplife start at {:.2f}fps{:s}".format(framerate," FOREVER" if forever else ""))
 
     # register signals
     signal.signal(signal.SIGQUIT, quit)
@@ -383,7 +383,9 @@ if __name__ == "__main__":
 
 
     ## read mode flags
-    modeflags = HELPFLAGS + fliplife.mode.Mode.FLAGS + runmode.value.flags
+    modeflags = HELPFLAGS + Mode.FLAGS + runmode.value.flags
+
+#    modeflags = HELPFLAGS + fliplife.mode.Mode.FLAGS + runmode.value.flags
     short = "".join( [s for (s,_,_,_,_,_) in modeflags if s is not None] )
     long = [l for (_,l,_,_,_,_) in modeflags if l is not None] 
     modeparams = dict( [(n,d) for (_,_,n,d,_,_) in modeflags if n is not None] )

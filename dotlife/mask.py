@@ -179,6 +179,8 @@ class Mask:
     
     
     def __eq__(self,other):
+        if other == None:
+            return False
         if self.w != other.w or self.h != other.h:
             return False
         for y in range(self.h):

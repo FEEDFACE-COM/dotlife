@@ -26,6 +26,7 @@ class Fill(Mode):
 
     Pattern = Pattern
     DefaultPattern = Pattern.check
+    DefaultFont = FONT.font3x5
     
     
     def start(self,pattern,invert,font,offset,**params):
@@ -36,7 +37,7 @@ class Fill(Mode):
         
         log("before:\n"+str(self.mask))
         
-        msk = self.tick(pattern,invert,**params)
+        msk = self.render(pattern,invert,**params)
         self.mask.addMask(msk)
         log("after:\n"+str(self.mask))
         
@@ -44,7 +45,7 @@ class Fill(Mode):
     
     
 
-    def tick(self,pattern,invert,**params):
+    def render(self,pattern,invert,cutoff,**params):
     
         ret = Mask()
         
@@ -58,7 +59,7 @@ class Fill(Mode):
         elif pattern == Pattern.gauss:
             for y in range(FRAMESIZE.h):
                 for x in range(FRAMESIZE.w):
-                    if random.gauss(0.,1.) > 0.:
+                    if random.gauss(0.,1.) > cutoff:
                         ret[x,y] = True
 
         elif pattern == Pattern.font:
@@ -84,21 +85,21 @@ class Fill(Mode):
 
         self.offset += 1
 
-        mask = self.mask
-        next = self.tick(pattern,invert,**params)
+        self.mask = self.render(pattern,invert,**params)
+#        next = self.render(pattern,invert,**params)
         
-        log("from:\n"+str(mask))
-        log("to:\n"+str(next))
+ #       log("from:\n"+str(mask))
+ #       log("to:\n"+str(next))
         
-        ret = Morph2(mask,next)
-        return next
+        return self.mask
     
 
     
     flags = [
-        ("p:", "pattern=",     "pattern",    DefaultPattern, "pattern", lambda x: Pattern[x.lower()] ),
         ("o:", "offset=",      "offset",                  0, "offset",  lambda x: int(x)             ),
+        ("c:", "cutoff=",      "cutoff",                0.5, "cutoff",  lambda x: float(x)             ),
+        Mode.FLAG("pattern",DefaultPattern),
         Mode.FLAG("invert"),
-        Mode.FLAG("font"),
+        Mode.FLAG("font",DefaultFont),
     ]        
     

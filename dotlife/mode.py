@@ -2,7 +2,7 @@
 from enum import auto
 from dotlife.util import Enum
 
-
+from dotlife.font import FONT
 
 
 class Mode():

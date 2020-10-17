@@ -15,7 +15,7 @@ from fliplife.fluepdot import Fluepdot
 class Guns(Mode):
     
     
-    def run(self,randomize,**params):
+    def start(self,randomize,**params):
         info("start guns")
         self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
     

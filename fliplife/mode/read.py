@@ -3,18 +3,18 @@ from dotlife.util import *
 
 
 import fliplife
+from fliplife.mode import Mode
 from fliplife import FRAMESIZE
 
 
-class Read(fliplife.mode.Mode):
+class Read(Mode):
     
     
-    def run(self,**params):
+    def start(self,**params):
         info("start read")
 
         self.mask = self.fluepdot.buffer.read()
-        log(str(self.mask))
         return False
     
-    def draw(self):
+    def draw(self,**params):
         return self.mask

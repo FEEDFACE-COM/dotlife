@@ -17,7 +17,7 @@ from dotlife.font import Font
 class Flueptext(Mode):
         
     
-    def run(self,randomize,x,y,fluepfont,msg=None,**params):
+    def start(self,randomize,x,y,fluepfont,msg=None,**params):
 #        self.fluepdot.rendering.setMode(Fluepdot.Mode.Full)
         self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
         self.randomize = randomize

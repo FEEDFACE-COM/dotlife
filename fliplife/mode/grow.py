@@ -13,7 +13,7 @@ from fliplife.fluepdot import Fluepdot
 class Grow(Mode):
     
     
-    def run(self,**params):
+    def start(self,**params):
         info("start grow")
 
         self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)

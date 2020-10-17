@@ -15,7 +15,7 @@ from fliplife.fluepdot import Fluepdot
 class Glider(Mode):
     
     
-    def run(self,count,randomize,**params):
+    def start(self,count,randomize,**params):
         info("start life")
         self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
 
@@ -38,7 +38,7 @@ class Glider(Mode):
 
         else:
             d = int(FRAMESIZE.w / count)
-            direction = Direction.SouthEast
+            direction = Direction.southeast
             step = 0
             pos = Position( int(FRAMESIZE.w/2) , int(FRAMESIZE.h/2) )
             for c in range(count):
@@ -57,12 +57,14 @@ class Glider(Mode):
         
         
         self.mask = self.draw(**params)
-        return False
+        return True
         
     
     def draw(self,**params):
         
         prev = self.fluepdot.buffer.read()
+        
+        
         mask = Mask(mask=self.life)
         self.fluepdot.buffer.write(mask)
         

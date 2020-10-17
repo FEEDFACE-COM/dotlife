@@ -15,13 +15,13 @@ from fliplife.fluepdot import Fluepdot
 class Spawn(Mode):
     
 
-    
+    Pattern = life.Pattern
     DefaultPattern = life.Pattern.glider
     DefaultPosition = Position(0,0)
     
 
     
-    def run(self,x,y,randomize,pattern,step,count,flip,**params):
+    def start(self,x,y,randomize,pattern,step,count,flip,**params):
     
         
         info("start spawn {:s}".format(pattern.name.lower()))
@@ -56,11 +56,9 @@ class Spawn(Mode):
     
     
     
-    patterns = life.Pattern
 
     flags = [
-        ("p:", "pattern=",     "pattern",    DefaultPattern, "pattern", lambda x: life.Pattern[x.lower()] ),
-#        Mode.FLAG["pattern"],
+        Mode.FLAG("pattern",DefaultPattern),
         Mode.FLAG("step"),
         Mode.FLAG("count"),
         Mode.FLAG("randomize"),

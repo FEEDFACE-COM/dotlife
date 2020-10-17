@@ -17,7 +17,7 @@ from dotlife.font import Font, FONT
 class Pipe(Mode):
         
     
-    def run(self,font,**params):
+    def start(self,font,**params):
 #        self.fluepdot.rendering.setMode(Fluepdot.Mode.Full)
         self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
 

@@ -11,10 +11,12 @@ from fliplife import Mask, FRAMESIZE
 
 from fliplife.fluepdot import Fluepdot
 
+
+
 class Dots(Mode):
     
     
-    def run(self,**params):
+    def start(self,**params):
         info("start dots")
         self.count = 0
         
