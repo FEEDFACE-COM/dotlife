@@ -14,8 +14,11 @@ def Mask(mask=None,size=FRAMESIZE):
 def Buffer(val=0x00,size=FRAMESIZE):
     return dotlife.buffer.Buffer(val=val,size=size)
 
-from oledlife.mode import fyi
+from oledlife.mode import test, clear, glider, fyi
 
 
 class MODE(Enum):
+    test      = test.Test
+    clear     = clear.Clear
     fyi       = fyi.FYI
+    glider    = glider.Glider

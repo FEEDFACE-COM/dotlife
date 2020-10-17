@@ -64,10 +64,10 @@ class Exec(Mode):
         return self.mask
 
     flags = [
-        Mode.FLAG["font"],
-        Mode.FLAG["x"],
-        Mode.FLAG["y"],
-        Mode.FLAG["randomize"],
+        Mode.FLAG("font"),
+        Mode.FLAG("x"),
+        Mode.FLAG("y"),
+        Mode.FLAG("randomize"),
         (None, None,            "cmd",               'date "+%F %T %z"',           "command",                                 None),
     ]
         

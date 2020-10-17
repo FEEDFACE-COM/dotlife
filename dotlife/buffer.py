@@ -160,48 +160,45 @@ class Buffer:
 
 
     def Fill(gray=0x1, size=DefaultSize ):
-        w,h = size
         ret = Buffer(size=size)
-        for y in range(h):
-            for x in range(w):
+        for y in range(size.h):
+            for x in range(size.w):
                 ret[x,y] = gray
         return ret
 
     def Gradient(heading=Direction.north, size=DefaultSize):
         ret = Buffer(size=size)
-        w,h = size
         u,v = heading.value
-        for y in range(h):
-            for x in range(w):
+        for y in range(size.h):
+            for x in range(size.w):
                 if u > 0:
                     ret[x,y] += x+1
                 if u < 0:
-                    ret[x,y] += (w-1-x+1)
+                    ret[x,y] += (size.w-1-x+1)
                 if v > 0:
                     ret[x,y] += y+1
                 if v < 0:
-                    ret[x,y] += (h-1-y+1)
+                    ret[x,y] += (size.h-1-y+1)
         return ret                        
     
     
     def SixtyFourShadesOfGrey(mul=0x1):
-        w,h = 8,8
-        ret = Buffer( size=(w,h) )
+        size = Size(8,8)
+        ret = Buffer( size=size )
         c = 0x1
-        for y in range(h):
-            for x in range(w):
+        for y in range(size.h):
+            for x in range(size.w):
                 if y % 2 == 0:
                     ret.pixel[x][y] = Clamp(c * mul)
                 else:
-                    ret.pixel[w-1-x][y] = Clamp(c * mul)
+                    ret.pixel[size.w-1-x][y] = Clamp(c * mul)
                 c += 1
         return ret
     
     def Checkers(black=0x00,white=0x20, size=DefaultSize):
         ret = Buffer()
-        w,h = size
-        for y in range(h):
-            for x in range(w):
+        for y in range(size.h):
+            for x in range(size.w):
                 if x % 2 != y % 2:
                     ret[x,y] = black
                 else:
@@ -210,7 +207,7 @@ class Buffer:
 
     def Ranges(size=DefaultSize, mul=1):
         ret = Buffer()
-        w,h = size
+        w,h = size.w,size.h
         c = 1
         for y in range(h):
             for x in range(w):

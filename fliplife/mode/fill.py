@@ -11,6 +11,7 @@ from fliplife.mode import Mode
 
 from enum import auto
 
+    
 class Pattern(Enum):
     check = auto()
     gauss = auto()
@@ -18,10 +19,12 @@ class Pattern(Enum):
     axis = auto()
     border = auto()
 
-    
+
 
 class Fill(Mode):
-    
+
+
+    Pattern = Pattern
     DefaultPattern = Pattern.check
     
     
@@ -91,12 +94,11 @@ class Fill(Mode):
         return next
     
 
-    patterns = Pattern
     
     flags = [
         ("p:", "pattern=",     "pattern",    DefaultPattern, "pattern", lambda x: Pattern[x.lower()] ),
         ("o:", "offset=",      "offset",                  0, "offset",  lambda x: int(x)             ),
-        Mode.FLAG["invert"],
-        Mode.FLAG["font"],
+        Mode.FLAG("invert"),
+        Mode.FLAG("font"),
     ]        
     

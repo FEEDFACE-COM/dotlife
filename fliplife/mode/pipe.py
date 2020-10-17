@@ -79,6 +79,6 @@ class Pipe(Mode):
         return ret 
         
     flags = [
-        Mode.FLAG["font"],
+        Mode.FLAG("font"),
     ]
         

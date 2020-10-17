@@ -23,9 +23,10 @@ import fliplife
 from fliplife import MODE, DEFAULT_FONT
 
 from fliplife import Mask, FRAMESIZE
+from fliplife.mode import Mode
 from fliplife.fluepdot import Fluepdot
 
-DEFAULT_MODE = MODE.read
+DEFAULT_MODE = MODE.clock
 DEFAULT_HOST = "87.193.3.53"
 
 ## MAIN ########################################################################
@@ -173,10 +174,6 @@ FLAGS = [
 
 
 
-## UTILITY #####################################################################
-
-
-
 def usage(mode=None,msg=""):
 
     from dotlife.util import usage as log
@@ -191,7 +188,8 @@ def usage(mode=None,msg=""):
     if mode == None:
     
         log("## Usage")
-        log("  {} [-{}] {} <mode>  ...".format(
+        log("")
+        log("  {} [-{}]{} <MODE> [-h] ...".format(
             "fliplife",
             "".join([s[0] if s else "" for (s,_,_,_,_,_) in FLAGS]),
             "".join(["[--{:s}] ".format(l) if not s and l else "" for (s,l,_,_,_,_) in FLAGS]),
@@ -210,69 +208,88 @@ def usage(mode=None,msg=""):
         modes = "  "
         for k in MODE:
 #            log("  {:16s}{:s}".format(k.name,k.value.help))
-            modes += k.name + " "
+            modes += k.name + ", "
             if len(modes) > 40:
                 log(modes)
                 modes = "  "
-        log(modes)
+        if len(modes)>0:
+            log(modes[:-2])
         log("")
     
     else:
+        flags = Mode.FLAGS + mode.value.flags
         log("## Usage")
         log("")
-        
-        log("  {} {} [-{}] {}".format(
-                "fliplife",
-                mode.name,
-                "".join([s[0] if s else "" for (s,_,_,_,_,_) in mode.value.flags]),
-                "".join(    p if not s and not l else "" for (s,l,p,_,_,_) in mode.value.flags),
+
+        log("  {:s} {:s} [-{}] {}".format(
+            "fliplife",
+                mode,
+                "".join([s[0] if s else "" for (s,_,_,_,_,_) in flags]),
+                "".join(    p if not s and not l else "" for (s,l,p,_,_,_) in flags),
             )
         )
         log("")
         
         log("## Mode Flags")
         f = None
-        for (s,l,p,d,h,_) in fliplife.mode.Mode.FLAGS + mode.value.flags:
+        for (s,l,p,d,h,_) in flags:
             if s or l:
                 log("  {:3} {:16}    {}{}".format( "-"+s.rstrip(":")+"," if s else "","--"+l.rstrip("=") if l else "",h,("" if d in [None,False] else ", default: "+str(d).lower()) ))
         log("")
     
 
             
-        fonts,patterns = [],[]
-        for (_,_,p,_,_,_) in mode.value.flags:
+        fonts,patterns,styles = [],[], []
+        for (_,_,p,_,_,_) in flags:
             if p == "font":
                 for f in dotlife.font.FONT:
                     fonts += [f]
             if p == "pattern":
-                for p in mode.value.patterns:
+                for p in mode.value.Pattern:
                     patterns += [p]
+            if p == "style":
+                for p in mode.value.Style:
+                    styles += [p]
 
         if fonts:
             log("## Fonts")
             fnt = ""
             for f in fonts:
-                fnt += str(f) + " "
+                fnt += str(f) + ", "
                 if len(fnt) > 40:
                     log("  " + fnt)
                     fnt = ""
-            log("  " + fnt)
+            if len(fnt) > 0:
+                log("  " + fnt[:-2])
             log("")
 
         if patterns:
             log("## Patterns")
             pat = ""
             for p in patterns:
-                pat += str(p) + " "
+                pat += str(p) + ", "
                 if len(pat) > 40:
                     log("  " + pat)
                     pat = ""
-            log("  " + pat)
+            if len(pat)>0:
+                log("  " + pat[:-2])
+            log("")
+
+        if styles:
+            log("## Styles")
+            stl = ""
+            for p in styles:
+                stl += str(p) + ", "
+                if len(stl) > 40:
+                    log("  " + stl)
+                    stl = ""
+            if len(stl)>0:
+                log("  " + stl[:-2])
             log("")
         
 
         args = None
-        for (s,l,p,d,h,_) in mode.value.flags:
+        for (s,l,p,d,h,_) in flags:
             if not s and not l:
                 args = "  {:20}    {}{}".format( p,h,("" if d in [None,False] else ", default: "+str(d).lower()) )
         if args:

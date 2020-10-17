@@ -59,5 +59,5 @@ class Dots(Mode):
         return self.mask
     
     flags = [
-        Mode.FLAG["invert"],
+        Mode.FLAG("invert"),
     ]

@@ -21,11 +21,10 @@ from fliplife import *
 from fliplife.pixel import *
 from fliplife.framebuffer import *
 
-from oledlife.framebuffer import *
+from oledlife.paneloled import *
+from fliplife.fluepdot import *
 
 
-from fliplife import mode as flipmode
-from oledlife import mode as oledmode
 
 for m in fliplife.MODE:
     try:
@@ -35,7 +34,7 @@ for m in fliplife.MODE:
         FATAL("mode {} not imported: {}".format(m.name,str(x)))
 
 
-for m in oledmode.MODE:
+for m in oledlife.MODE:
     try:
         cls = __import__("oledlife.mode."+str(m.name), fromlist=[''])
 #    except ModuleNotFoundError as x:   # ??

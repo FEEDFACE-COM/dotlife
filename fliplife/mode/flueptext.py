@@ -42,8 +42,8 @@ class Flueptext(Mode):
 
     flags = [
         ("F:","fluepfont=", "fluepfont", "fixed_10x20", "fluepdot font", None),
-        Mode.FLAG["x"],
-        Mode.FLAG["y"],
-        Mode.FLAG["randomize"],
+        Mode.FLAG("x"),
+        Mode.FLAG("y"),
+        Mode.FLAG("randomize"),
         (None, None, "msg", "hello, world.", "message", None),
     ]

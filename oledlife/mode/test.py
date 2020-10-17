@@ -1,58 +1,42 @@
 
 from dotlife import *
 from dotlife.util import *
-from dotlife.mode import Mode
+from oledlife.mode import *
 
 from dotlife.buffer import Buffer
 
 
-def Init(timer):
-    return Test(timer)
+class Style(Enum): # need to make it tuple: foo = ( lambda x: pass, ) # otherwise foo becomes a method
+    ranges = ( lambda x: Buffer.Ranges(mul=(x % 4 + 1)), )
+    shades = ( lambda x: Buffer.SixtyFourShadesOfGrey(mul=(x % 4 + 1)), )
+    checks = ( lambda x: Buffer.Checkers(black=(x%2 * 0x80), white=((1 - x%2) * 0x80)), )
+    grades = ( lambda x: Buffer.Gradient(heading={ 0: Direction.north, 1: Direction.west, 2: Direction.south, 3: Direction.east }[x%4]), )
+
 
 
 class Test(Mode):
+
+
+#    DefaultStyle = Style.grades
+    Style = Style
     
-    def __init__(self,timer):
-        super().__init__(timer)
+
     
-    def step(self):
-        pass
+    def start(self,style,**params):
+        info("start test {:}".format(style))
+        return True
     
-    def draw(self):
-        c = int(self.timer.count)
-        d = int(c/4) % 4 
+    def draw(self,style,step,**params):
+        c = int(self.timer.count) % 4
+        debug("draw test {:}#{:d}".format(style,c))
+        fun, = style.value
+        buf = fun( c )
+        return buf
         
-        
-        d = 3
-#        c = 1
-        
-        col = 0x1
-        ret = Buffer()
-        for y in range(ret.h):
-            for x in range(ret.w):
-                if y == 0:
-                    ret[x,y] = x+1
-                if y == 1:
-                    ret[x,y] = 0xA + (x+1)**2
-                
-        return ret
-        
-        mul = c % 4 + 1
-        direction = {
-            0: Direction.north,
-            1: Direction.west,
-            2: Direction.south,
-            3: Direction.east
-        }[c%4]
-        black = c%2 * 0x80
-        white = (1 - c%2) * 0x80
-        
-        fun = {
-            0: lambda : Buffer.Ranges(mul=mul),
-            1: lambda : Buffer.SixtyFourShadesOfGrey(mul=mul),
-            2: lambda : Buffer.Checkers(black=black,white=white),
-            3: lambda : Buffer.Gradient(direction),
-        }.get(d, lambda: Buffer() )
-        
-        ret = fun()
-        return ret
+
+
+    flags = [
+        Mode.FLAG("step"),
+        Mode.FLAG("style",Style.checks),
+    ]
+    

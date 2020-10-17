@@ -2,7 +2,7 @@
 from dotlife.util import *
 
 
-from dotlife.mode import Mode as dotMode
+import dotlife.mode
 from dotlife.font import FONT
 
 from fliplife import DEFAULT_FONT
@@ -16,7 +16,7 @@ from fliplife import DEFAULT_FONT
 
 
 
-class Mode(dotMode):
+class Mode(dotlife.mode.Mode):
 
     help = ""
 
@@ -32,22 +32,22 @@ class Mode(dotMode):
     def draw(**params):
         return Mask()
 
-    FLAG = {
-        # param: short long default help func #             
-        "speed":     ("s:", "speed=",       "speed",      1.0,             "step speed [s]",       lambda x : float(x) ),
-        "invert":    ("i",  "invert",       "invert",     False,           "invert pattern?",                     None ),
-        "count":     ("c:", "count=",       "count",      1,               "count",                  lambda x : int(x) ),
-        "font":      ("f:", "font=",        "font",       DEFAULT_FONT,    "font",                   lambda x: FONT[x] ),
-        "pattern":   ("p:", "pattern=",     "pattern",    None,            "pattern",                             None ),
-        "step":      ("q:", "step=",        "step",       0,               "pattern step",           lambda x : int(x) ),
-        "x":         ("x:", "",             "x",          0,               "x offset",               lambda x : int(x) ),
-        "y":         ("y:", "",             "y",          0,               "y offset",               lambda x : int(x) ),
-        "randomize": ("r", "random",        "randomize",  False,           "randomize?",                          None ),
-    }
+#    FLAG = {
+#        # param: short long default help func #             
+#        "speed":     ("s:", "speed=",       "speed",      1.0,             "step speed [s]",       lambda x : float(x) ),
+#        "invert":    ("i",  "invert",       "invert",     False,           "invert pattern?",                     None ),
+#        "count":     ("c:", "count=",       "count",      1,               "count",                  lambda x : int(x) ),
+#        "font":      ("f:", "font=",        "font",       DEFAULT_FONT,    "font",                   lambda x: FONT[x] ),
+#        "pattern":   ("p:", "pattern=",     "pattern",    None,            "pattern",                             None ),
+#        "step":      ("q:", "step=",        "step",       0,               "pattern step",           lambda x : int(x) ),
+#        "x":         ("x:", "",             "x",          0,               "x offset",               lambda x : int(x) ),
+#        "y":         ("y:", "",             "y",          0,               "y offset",               lambda x : int(x) ),
+#        "randomize": ("r", "random",        "randomize",  False,           "randomize?",                          None ),
+#    }
     
     
     FLAGS = [
-        FLAG["speed"],
+        dotlife.mode.Mode.FLAG("speed"),
     ]
     
     flags = []

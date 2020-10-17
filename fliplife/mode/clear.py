@@ -25,5 +25,5 @@ class Clear(Mode):
                 
     
     flags = [
-        Mode.FLAG["invert"],
+        Mode.FLAG("invert"),
     ]

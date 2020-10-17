@@ -42,5 +42,5 @@ class Life(Mode):
         return mask
     
     flags = [
-        Mode.FLAG["count"],
+        Mode.FLAG("count"),
     ]

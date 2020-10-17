@@ -18,7 +18,7 @@ from dotlife.effects import Morph, Morph2, Axis, Scan
 
 from enum import auto
 
-class Layout(Enum):
+class Style(Enum):
     large  = auto()
     small  = auto()
     double = auto()  
@@ -27,12 +27,12 @@ class Layout(Enum):
     words  = auto()
 
 
-
         
         
 
 class Clock(Mode):
     
+    Style = Style
     
     
     def start(self,stamp,**params):
@@ -70,13 +70,13 @@ class Clock(Mode):
         self.next = self.render(**params)
 
 
-    def draw(self,layout,**params):
+    def draw(self,style,**params):
 
 
         if self.next != self.mask:
         
         
-            if layout in [Layout.small,Layout.large,Layout.double]:
+            if style in [Style.small,Style.large,Style.double]:
                 m = Morph2(self.mask,self.next,steps=1)
 
                 debug("from\n"+str(self.mask))
@@ -96,7 +96,8 @@ class Clock(Mode):
 
         
     flags = [
-        ("l:", "layout=", "layout", Layout.large, "clock layout", lambda x: Layout[x] ),
+        Mode.FLAG("style",Style.large),
+#        ("y:", "style=", "style", Style.large, "clock style", lambda x: Style[x] ),
         ("", "stamp=", "stamp", "", "timestamp", None ),
     ]
     
@@ -104,17 +105,17 @@ class Clock(Mode):
 
 
 
-    def render(self,layout,**params):
+    def render(self,style,**params):
         now = self.now
         ret = Mask()
     
     
         
         debug("render "+now.strftime("%F %T"))
-        if layout in [ Layout.small, Layout.large]:
+        if style in [ Style.small, Style.large]:
             date_time = now.strftime("%F %T")
             font = self.large
-            if layout == Layout.small:
+            if style == Style.small:
                 font = self.fixed
             w = FRAMESIZE.w - len(date_time)*(font.size.w+1)
             pos0 = Position( int(ceil(w/2)), 6 )
@@ -124,7 +125,7 @@ class Clock(Mode):
     
     
     
-        elif layout == Layout.double:
+        elif style == Style.double:
             date = now.strftime("%F")
             time = now.strftime("%T")
             w0 = FRAMESIZE.w - len(date)*(self.large.size.w+1)
@@ -137,7 +138,7 @@ class Clock(Mode):
             ret.addMask(text,pos=pos1)
     
     
-        elif layout == Layout.lyric:
+        elif style == Style.lyric:
             pos0 = Position(0,1)
             pos1 = Position(0,10)
             txt = humanreadable( now ).split("\n")
@@ -150,7 +151,7 @@ class Clock(Mode):
             ret.addMask(text1,pos=pos1)
             
     
-        elif layout == Layout.words:
+        elif style == Style.words:
             pos0 = Position(0,4)
             txt0 = humanshort(now).upper()
             
@@ -160,7 +161,7 @@ class Clock(Mode):
             ret.addMask(text0,pos=pos0)
             
     
-        elif layout == Layout.detail:
+        elif style == Style.detail:
             date_time = now.strftime("%F %T")
             pos0 = Position(0,1)
             pos1 = Position(0,10)

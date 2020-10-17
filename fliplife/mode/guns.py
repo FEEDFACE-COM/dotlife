@@ -51,6 +51,6 @@ class Guns(Mode):
         return self.mask
     
     flags = [
-        Mode.FLAG["randomize"],
+        Mode.FLAG("randomize"),
     ]
     

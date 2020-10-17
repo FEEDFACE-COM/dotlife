@@ -21,13 +21,12 @@ import oledlife
 from oledlife import MODE
 
 from oledlife import Mask, FRAMESIZE
-
+from oledlife.mode import Mode
 from oledlife.paneloled import Paneloled
-from oledlife.dmx import *
 
 
 DEFAULT_MODE = MODE.fyi
-
+DEFAULT_DEVICE = "/dev/ttyUSB1"
 
 ## MAIN ########################################################################
 
@@ -197,7 +196,7 @@ HELPFLAGS = [
 FLAGS = [
     # short long param default help func #             
     ("h",  "help",         None,                None,    "display help",           None ),
-    ("S:", "serial=",      "device",  "/dev/ttyUSB0",    "paneloled serial device",                                              None ),
+    ("S:", "serial=",      "device",  DEFAULT_DEVICE,    "paneloled serial device",                                              None ),
     ("W",  "nowrite",      "nowrite",          False,    "no writes to paneloled?", None ),
     ("C",  "clear",        "clear",             True,    "clear paneloled?",        None ),
     ("F",  "forever",      "forever",          True,     "run continuously?",      None ),
@@ -224,7 +223,8 @@ def usage(mode=None,msg=""):
     if mode == None:
     
         log("## Usage")
-        log("  {} [-{}] {} <mode>  ...".format(
+        log("")
+        log("  {} [-{}]{} <MODE> [-h] ...".format(
             "oledlife",
             "".join([s[0] if s else "" for (s,_,_,_,_,_) in FLAGS]),
             "".join(["[--{:s}] ".format(l) if not s and l else "" for (s,l,_,_,_,_) in FLAGS]),
@@ -236,76 +236,95 @@ def usage(mode=None,msg=""):
         for (s,l,p,d,h,_) in FLAGS:
             if not p:
                 continue
-            log("  {:3} {:20}    {}{}".format( "-"+s.rstrip(":")+"," if s else "","--"+l.rstrip("=") if l else "",h,("" if d in [None,False] else ", default: "+str(d).lower()) ))
+            log("  {:3} {:20}    {}{}".format( "-"+s.rstrip(":")+"," if s else "","--"+l if l else "",h,("" if d in [None,False] else ", default: "+str(d).lower()) ))
         log("")
 
         log("## Modes")
         modes = "  "
         for k in MODE:
 #            log("  {:16s}{:s}".format(k.name,k.value.help))
-            modes += k.name + " "
+            modes += k.name + ", "
             if len(modes) > 40:
                 log(modes)
                 modes = "  "
-        log(modes)
+        if len(modes)>0:
+            log(modes[:-2])
         log("")
     
     else:
+        flags = Mode.FLAGS + mode.value.flags
         log("## Usage")
         log("")
-        
-        log("  {} {} [-{}] {}".format(
-                "oledlife",
-                mode.name,
-                "".join([s[0] if s else "" for (s,_,_,_,_,_) in mode.value.flags]),
-                "".join(    p if not s and not l else "" for (s,l,p,_,_,_) in mode.value.flags),
+
+        log("  {:s} {:s} [-{}] {}".format(
+            "oledlife",
+                mode,
+                "".join([s[0] if s else "" for (s,_,_,_,_,_) in flags]),
+                "".join(    p if not s and not l else "" for (s,l,p,_,_,_) in flags),
             )
         )
         log("")
         
         log("## Mode Flags")
         f = None
-        for (s,l,p,d,h,_) in oledlife.mode.Mode.FLAGS + mode.value.flags:
+        for (s,l,p,d,h,_) in flags:
             if s or l:
-                log("  {:3} {:16}    {}{}".format( "-"+s.rstrip(":")+"," if s else "","--"+l.rstrip("=") if l else "",h,("" if d in [None,False] else ", default: "+str(d).lower()) ))
+                log("  {:3} {:16}    {}{}".format( "-"+s.rstrip(":")+"," if s else "","--"+l if l else "",h,("" if d in [None,False] else ", default: "+str(d).lower()) ))
         log("")
     
 
             
-        fonts,patterns = [],[]
-        for (_,_,p,_,_,_) in mode.value.flags:
+        fonts,patterns,styles = [],[], []
+        for (_,_,p,_,_,_) in flags:
             if p == "font":
                 for f in dotlife.font.FONT:
                     fonts += [f]
             if p == "pattern":
-                for p in mode.value.patterns:
+                for p in mode.value.Pattern:
                     patterns += [p]
+            if p == "style":
+                for p in mode.value.Style:
+                    styles += [p]
 
         if fonts:
             log("## Fonts")
             fnt = ""
             for f in fonts:
-                fnt += str(f) + " "
+                fnt += str(f) + ", "
                 if len(fnt) > 40:
                     log("  " + fnt)
                     fnt = ""
-            log("  " + fnt)
+            if len(fnt) > 0:
+                log("  " + fnt[:-2])
             log("")
 
         if patterns:
             log("## Patterns")
             pat = ""
             for p in patterns:
-                pat += str(p) + " "
+                pat += str(p) + ", "
                 if len(pat) > 40:
                     log("  " + pat)
                     pat = ""
-            log("  " + pat)
+            if len(pat)>0:
+                log("  " + pat[:-2])
+            log("")
+
+        if styles:
+            log("## Styles")
+            stl = ""
+            for p in styles:
+                stl += str(p) + ", "
+                if len(stl) > 40:
+                    log("  " + stl)
+                    stl = ""
+            if len(stl)>0:
+                log("  " + stl[:-2])
             log("")
         
 
         args = None
-        for (s,l,p,d,h,_) in mode.value.flags:
+        for (s,l,p,d,h,_) in flags:
             if not s and not l:
                 args = "  {:20}    {}{}".format( p,h,("" if d in [None,False] else ", default: "+str(d).lower()) )
         if args:

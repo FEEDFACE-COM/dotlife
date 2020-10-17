@@ -55,10 +55,10 @@ class Echo(Mode):
         return ret 
         
     flags = [
-        Mode.FLAG["font"],
-        Mode.FLAG["x"],
-        Mode.FLAG["y"],
-        Mode.FLAG["randomize"],
+        Mode.FLAG("font"),
+        Mode.FLAG("x"),
+        Mode.FLAG("y"),
+        Mode.FLAG("randomize"),
         ("F","fixed","fixed",False,"fixed font width", None),
         (None, None,            "msg",                 "hello, world.",           "message",                                 None),
     ]

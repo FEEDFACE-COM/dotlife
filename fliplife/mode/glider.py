@@ -70,6 +70,6 @@ class Glider(Mode):
         return mask
     
     flags = [
-        Mode.FLAG["count"],
-        Mode.FLAG["randomize"],
+        Mode.FLAG("count"),
+        Mode.FLAG("randomize"),
     ]

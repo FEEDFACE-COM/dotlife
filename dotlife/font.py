@@ -8,7 +8,7 @@ from dotlife.mask import Mask
 from dotlife.fonts import font3x5, fixed3x5, font5x5, font5x7, blinkenlights
 
 
-#def debug(s): pass
+def debug(s): pass
 
 
 class FONT(Enum):

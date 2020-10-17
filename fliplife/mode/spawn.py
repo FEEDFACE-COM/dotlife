@@ -61,11 +61,11 @@ class Spawn(Mode):
     flags = [
         ("p:", "pattern=",     "pattern",    DefaultPattern, "pattern", lambda x: life.Pattern[x.lower()] ),
 #        Mode.FLAG["pattern"],
-        Mode.FLAG["step"],
-        Mode.FLAG["count"],
-        Mode.FLAG["randomize"],
+        Mode.FLAG("step"),
+        Mode.FLAG("count"),
+        Mode.FLAG("randomize"),
         ("F:","flip=","flip",Flip.noflip,"flip pattern?",lambda x: Flip[x]),
-        Mode.FLAG["x"],
-        Mode.FLAG["y"],
+        Mode.FLAG("x"),
+        Mode.FLAG("y"),
     ]
     

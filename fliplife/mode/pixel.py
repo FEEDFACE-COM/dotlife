@@ -37,7 +37,7 @@ class Pixel(Mode):
         
     
     flags = [
-        Mode.FLAG["x"],
-        Mode.FLAG["y"],
-        Mode.FLAG["invert"],
+        Mode.FLAG("x"),
+        Mode.FLAG("y"),
+        Mode.FLAG("invert"),
     ]

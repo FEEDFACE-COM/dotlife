@@ -109,7 +109,7 @@ class Scroll(Mode):
 
         
     flags = [
-        Mode.FLAG["font"],
+        Mode.FLAG("font"),
         ("P:","pause=",       "pause",                 1.0,                        "pause",                              lambda x: int(x) ),
         (None, None,            "msg",                 "hello, world.",           "message",                                 None),
     ]
