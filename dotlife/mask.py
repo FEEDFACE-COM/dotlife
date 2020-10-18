@@ -84,7 +84,9 @@ class Mask:
     
 
     # add a mask 
-    def addMask(self,mask,pos=Position(0,0),wrap=False):
+    def addMask(self,mask,pos=None,wrap=False):
+        if pos == None:
+            pos = Position( int(abs(self.w-mask.w)/2), int(abs(self.h-mask.h)/2) )
         for y in range(mask.h):
             if not wrap and not 0 <= y+pos.y < self.h:
                 continue

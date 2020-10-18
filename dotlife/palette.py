@@ -5,7 +5,10 @@ from dotlife import *
 from dotlife.math import *
 from dotlife.buffer import Buffer
 
+
+
 class Palette():
+
 
     def __init__(self,color=None):
         self.color = color if color else [ LIGHT ]
@@ -16,7 +19,8 @@ class Palette():
         ret= ( int( float(self.length - 1) * x )  )
         return ret
 
-
+    def item(self,idx):
+        return self.color[idx%len(self.color)]
             
     def __getitem__(self,idx):
         if idx < 0:
@@ -56,11 +60,20 @@ class Palette():
         return Palette( [ (x+min)*2 for x in range(0,32) ] )# + [ (x+1)*2 for x in range(16,32) ] )
     
     
-    def Sine(freq=1.,amp=32.0):
+    def Sine(freq=1.,amp=32.0,phase=0.0,bias=0.0):
         pal = [ 0 for x in range(0,32) ]
         for x in range(len(pal)):
             phi = x / len(pal) * TAU
-            pal[x] = int( (amp-1.) * sine( freq*phi ) + 1. )
+            pal[x] = int( (amp-1.) * sine( freq*phi + phase) + 1. ) + bias
         return Palette( pal )
         
 
+class PALETTE(Enum):
+    polynom = Palette( [ (x) for x in range(0,16) ] + [ (x)*2 for x in range(8,16) ] + [ (x+1)*4 for x in range(8,16) ])
+    linear = Palette( [ (x) for x in range(0,32) ] )
+    quadratic = Palette( [ (x)*2 for x in range(0,32) ] )
+    sine = Palette.Sine()
+    
+    
+    
+    

@@ -47,9 +47,11 @@ class Life(Mask):
 #        info(str(self))
 
 
-    def spawn(self,pattern,pos=Position(0,0),step=0,flip=Flip.noflip):
-        log("spawn " + str(self.name) + "step "+step + ("flip "+str(flip)) if flip!=Flip.noflip else '' )
+    def spawn(self,pattern,pos=None,step=0,flip=Flip.noflip):
         pat = pattern.Mask(step,flip)
+        if pos == None:
+            pos = Position( int(abs(self.w-pat.w)/2), int(abs(self.h-pat.h)/2) )
+        log("spawn " + str(self.name) + "step "+step + ("flip "+str(flip)) if flip!=Flip.noflip else '' )
         self.addMask( pat, pos=pos, wrap=True )
         return
 

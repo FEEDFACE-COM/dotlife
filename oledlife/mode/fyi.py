@@ -25,8 +25,8 @@ class FYI(Mode):
     
     def start(self,**params):
         log("start FYI")
-        pattern = dotlife.pattern.Pattern.FYI.value
-        self.plasma = Plasma()
+        pattern = dotlife.pattern.Pattern.fyi.value
+        self.plasma = Plasma(self.timer.duration)
         self.mask = Mask()
         self.mask.addMask( dotlife.mask.Mask.Load(pattern), pos=Position(0,2) )
         self.timers = [
@@ -70,11 +70,11 @@ class FYI(Mode):
         fun3 = Fun( amp=1., freq=PI, phase=phase1+offset)
 
 
-        back = self.plasma.buffer(fun0,fun1,palette=Palette.Polynom(),mask=self.mask)
-        front = self.plasma.buffer(fun2,fun3,palette=Palette.Polynom(),mask=self.mask.inverse())
+        back = self.plasma.buffer(off=1.0)
+        front = self.plasma.buffer()
 
-        ret.add(front)
-        ret.add(back)
+        ret.add(front.addMask(self.mask))
+        ret.add(back.addMask(self.mask.inverse()))
         return ret
         
         

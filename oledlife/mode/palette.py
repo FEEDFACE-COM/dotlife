@@ -5,7 +5,7 @@ from dotlife.buffer import *
 from dotlife.util import *
 from dotlife.mode import Mode
 from dotlife.plasma import Plasma, Fun
-import dotlife.palette as palette
+from dotlife.palette import PALETTE
 from dotlife.clock import Timer
 from dotlife.math import *
 
@@ -13,45 +13,49 @@ from dotlife.math import *
 from oledlife import FRAMESIZE, Buffer, Mask
 from oledlife.mode import Mode
 
+from enum import auto
 
+class Style(Enum):
+    scroll = auto()
+    fade   = auto()
+    all    = auto()
 
 class Palette(Mode):
     
+    Style = Style
     
-    def start(self,**params):
-        self.palette = palette.Palette.Linear()
+    def start(self,palette,**params):
+        self.palette = palette
+        return True
 
+    def draw(self,style,**params):
 
-    def draw(self,**params):
-    
-        p = (self.timer.count / 2)
-#        p = self.timer.count
-
-        if p % 4 == 0:
-            self.palette = palette.Palette.Linear()
-        elif p % 4 == 1:
-            self.palette = palette.Palette.Quadratic()
-        elif p % 4 == 2:
-            self.palette = palette.Palette.Polynom()
-        elif p % 4 == 3:
-            self.palette = palette.Palette.Sine()
-
-
-#        self.palette = palette.Palette.Polynom()
-        self.palette = palette.Palette.Sine(1.)
-        pal = self.palette
+        pal = self.palette.value
         c = 16
-#        c = self.timer.count
-        buffer = Buffer()
-        for y in range(int(buffer.h/2)):
-            for x in range(buffer.w):
-                buffer[x,y] = pal[c % pal.length]
-                c += 1
-        for y in range(int(buffer.h/2),buffer.h):
-            for x in range(buffer.w):
-                buffer[x,y] = pal[pal.length - c % pal.length]
-                c += 1
+        c = self.timer.count % pal.length
 
-#        buffer.mul( self.timer.sin0() * 0x20 + 0x8)
+        buffer = Buffer()
+        
+        if style == Style.all:
+            for y in range(int(buffer.h/2)):
+                for x in range(buffer.w):
+                    buffer[x,y+int(buffer.h/4)] = pal[c]
+                    c += 1
+                    c %= pal.length
+        elif style == Style.fade:
+            buffer = Buffer(size=FRAMESIZE,val=pal[c])
+        elif style == Style.scroll:
+            for y in range(buffer.h):
+                for x in range(buffer.w):
+                    buffer[x,y] = pal[c]
+                c += 1
+                c %= pal.length
+                            
         return buffer
 
+    flags = [
+        Mode.FLAG("style",Style.all),
+        ("P:","palette=","palette",PALETTE.linear,"palette",lambda x: PALETTE[x] ),
+    ]
+        
+        

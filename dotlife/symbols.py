@@ -7,11 +7,18 @@ from dotlife.mask import Mask
 
 class Symbol(Enum):
 
-    def Mask(self,flip=Flip.noflip):
-        ret = Mask.Load(self.value)
+    def Mask(self,step=0,flip=Flip.noflip):
+        if self.name == "none":
+            return Mask()
+        if type(self.value) == type([]):
+            txt = self.value[step%len(self.value)] 
+        else:
+            txt = self.value    
+        ret = Mask.Load(txt)
         ret.flip(flip)
         return ret
 
+    none = ""
 
     question = """
 [][][]  
@@ -110,6 +117,7 @@ class Symbol(Enum):
     [][][]    
       []      
 """
+
 
     spacer = """
   []        []  
