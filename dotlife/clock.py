@@ -24,6 +24,9 @@ class Clock:
     now   = 0.0
     frame = -1
     timers = []
+    paused = False
+    pausetime = 0.0
+    
     
     def Init():
         Clock.timers = []
@@ -34,10 +37,19 @@ class Clock:
             
     def Str():
         return "#{:05d} {:5.1f}s".format(Clock.frame,Clock.now/1000.)
+
+
+    def fps(prev):
+        (frame, time) = prev
+        return float( (Clock.frame - frame) /  ((Clock.now - time)/1000.) )
         
     def Tick():
-        Clock.now = Clock.Elapsed() * CLOCK_RATE
-        Clock.frame += 1
+        if Clock.paused:
+            Clock.frame += 1
+            Clock.now = Clock.pausetime
+        else:
+            Clock.frame += 1
+            Clock.now = (Clock.Elapsed() - Clock.pausetime) * CLOCK_RATE
         tmp = []
         for timer in Clock.timers:
             if timer.update():
@@ -47,8 +59,19 @@ class Clock:
     def Sleep(duration=1./FRAME_RATE):
         time.sleep( duration )
     
-    def Timer(duration,repeat=True):
-        ret = Timer(duration,repeat)
+    
+    def Pause(state=None):
+        if state == None:
+            state = Clock.paused ^ True
+        Clock.paused = state
+        Clock.pausetime = (Clock.Elapsed() - Clock.pausetime) * CLOCK_RATE
+        info("clock {:s}".format( "paused" if Clock.paused else "unpaused"))
+        
+        
+        
+    
+    def Timer(duration,repeat=0,fun=None):
+        ret = Timer(duration,repeat,fun)
 #        Clock.timers.append(ret)
 #        debug("clock timer {}".format( ret ) )
         return ret
@@ -65,24 +88,24 @@ class Clock:
     
 class Timer():
         
-    def __init__(self,duration=1.,repeat=True):
+    def __init__(self,duration=1.,repeat=0, fun=None):
         self.count = 0     # times fired
         self.fired = False # fired this tick?
-        self.fun = None
+        self.fun = fun
         self.start = NOW()
         self.duration = duration
         self.repeat = repeat
         Clock.timers.append(self)
         
     def __str__(self):
-        return "{:.1f}/{:.1f}{:s} {:4.2f} {:4.2f}π {:4.2f}∿  #{:d}".format(
+        return "{:.1f}/{:.1f} {:4.2f} {:4.2f}π {:4.2f}∿ #{:d}{:s}".format(
             self.elapsed()/1000.,
             self.duration/1000.,
-            "r" if self.repeat else " ",
             self.fader(), 
             self.cycle()/math.PI,
-            self.ease(), 
-            self.count
+            self.ease(),
+            self.count,
+            "/∞" if self.repeat==0 else "/{:d}".format(self.repeat),
         )
 
     def elapsed(self):
@@ -131,16 +154,19 @@ class Timer():
     def update(self): # returns True to keep, False to discard
         if NOW() > self.start + self.duration: # triggered?
 
-            self.count += 1
             self.fired = True
+            self.count += 1
             
             if self.fun: # fire!
                 self.fun()
             
-            if self.repeat:
+            if self.repeat == 0 or self.count < self.repeat:
                 while self.start + self.duration < NOW():
                     self.start += self.duration 
                 return True
+                
+            else: # finite repeats
+                return False
                 
             return False
 

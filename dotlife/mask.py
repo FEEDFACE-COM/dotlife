@@ -39,11 +39,6 @@ class Mask:
         return Size(self.w,self.h)
 
     
-    def set(self,val=True):
-        for y in range(self.h):
-            for x in range(self.w):
-                self.pixel[x][y] = True
-    
 
     def inverse(self):
         ret = Mask(mask=self)
@@ -53,35 +48,32 @@ class Mask:
         return ret
 
     def flip(self,flip):
+        ret = Mask(mask=self)
         w,h = self.w,self.h
-        tmp = Mask(mask=self)
         
         for y in range(self.h):
             for x in range(self.w):
                 if flip == Flip.horizontal:
-                    self.pixel[x][y] = tmp[x,h-1-y]
+                    ret[x,y] = self[x,h-1-y]
                 elif flip == Flip.vertical:
-                    self.pixel[x][y] = tmp[w-1-x,y]
+                    ret[x,y] = self[w-1-x,y]
                 elif flip == Flip.point:
-                    self.pixel[x][y] = tmp[w-1-x,h-1-y]
+                    ret[x,y] = self[w-1-x,h-1-y]
 
-        return self
+        return ret
                 
 
-#    def __add__(self,val):
-#        if type(val) == type( Mask() ):
-#            return self.addMask(val)
-#        raise Error("operation {} + {} -> {} not implemented".format(type(self).__name__,type(val).__name__,type(self).__name__) )
-#
-#    def addMask(self,val):
-#        for y in range(self.h):
-#            for x in range(self.w):
-#                if 0 <= x < val.w and 0 <= y < val.h:
-#                    self.pixel[x][y] = val[x,y]
-#        return self
-#
+    def double(self):
+        ret = Mask(size=Size(self.w*2,self.h*2)
+        for y in range(self.h):
+            for x in range(self.w):
+                ret[2*x  ,2*y  ] = self[x,y]
+                ret[2*x+1,2*y  ] = self[x,y]
+                ret[2*x  ,2*y+1] = self[x,y]
+                ret[2*x+1,2*y+1] = self[x,y]
+        return ret
 
-    
+
 
     # add a mask 
     def addMask(self,mask,pos=None,wrap=False):
@@ -109,6 +101,7 @@ class Mask:
                 if self[x+pos.x,y+pos.y]:
                     ret[x,y] = True
         return ret
+
 
     def centerForMask(self,mask):
         ret = Position()

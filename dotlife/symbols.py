@@ -15,7 +15,7 @@ class Symbol(Enum):
         else:
             txt = self.value    
         ret = Mask.Load(txt)
-        ret.flip(flip)
+        ret = ret.flip(flip)
         return ret
 
     none = ""
@@ -27,6 +27,18 @@ class Symbol(Enum):
   []    
         
   []    
+"""
+
+
+    checkers = """
+[]  []  []  []  
+  []  []  []  []
+[]  []  []  []  
+  []  []  []  []
+[]  []  []  []  
+  []  []  []  []
+[]  []  []  []  
+  []  []  []  []
 """
 
     skull = """

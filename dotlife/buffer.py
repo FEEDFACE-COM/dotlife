@@ -89,14 +89,6 @@ class Buffer(Mask):
                 self.pixel[x][y] = Clamp( self.pixel[x][y] * val )
     
 
-        
-                
-    def tile(self,mask,light=0x1):
-        for y in range(self.h):
-            for x in range(self.w):
-                if mask[x,y]:
-                    self[x,y] = light
-
 
     def addMask(self,mask,pos=None,wrap=False,light=LIGHT):
         if pos == None:

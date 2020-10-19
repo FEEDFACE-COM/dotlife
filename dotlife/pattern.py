@@ -14,7 +14,7 @@ class Pattern(Enum):
         else:
             txt = self.value
         ret = Mask.Load(txt)
-        ret.flip(flip)
+        ret = ret.flip(flip)
         return ret
 
 

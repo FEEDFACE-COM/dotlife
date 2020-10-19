@@ -23,7 +23,8 @@ class Framebuffer():
     def write(self,mask):
         data = Framebuffer.dataFromMask(mask)
         ret = mask
-        debug("framebuffer write {}".format(str(mask.size())))
+#        debug("framebuffer write {}".format(str(mask.size())))
+        debug(str(mask))
         if not self.nowrite:
             rsp = http.post(self.address,"framebuffer",None,data)
             ret = Framebuffer.MaskFromResponse(rsp)

@@ -112,8 +112,7 @@ class Pattern(Enum):
             ret = tmp.trimMask()
         else:                
             ret = Mask.Load(self.value)
-    
-        ret.flip(flip)
+        ret = ret.flip(flip)
         return ret
 
 

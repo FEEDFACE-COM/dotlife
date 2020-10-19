@@ -30,6 +30,9 @@ def dump(x,s=None): logging.getLogger(NAME).debug( ((s + "\n")  if s else "") + 
 def usage(s): 
     for l in s.split("\n"): logging.getLogger(NAME).error(l)
 
+def is_debug():
+    return logging.getLogger(NAME).level <= logging.DEBUG
+
 
 
 class Error(Exception):

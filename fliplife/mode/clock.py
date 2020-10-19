@@ -16,6 +16,8 @@ from dotlife.clock import Clock
 from dotlife.font import Font, FONT
 from dotlife.effects import Morph, Morph2, Axis, Scan
 
+from dotlife import invader
+
 from enum import auto
 
 class Style(Enum):
@@ -58,19 +60,43 @@ class Clock(Mode):
 
         self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
 
+        self.coocoo = None
+        self.hour = self.now.hour
         return True
     
+    def coocooc(self,**params):
+        info("FIRED FIRED")
     
-    def step(self,stamp,**params):
+    def step(self,style,stamp,**params):
         if stamp != "":
             self.now = datetime.datetime.fromisoformat(stamp) + (datetime.datetime.now() - self.start )
         else:
             self.now = datetime.datetime.now()
 
-        self.next = self.render(**params)
+        for p in params:
+            debug(str(p))
+        self.next = self.render(style,**params)
 
 
-    def draw(self,style,**params):
+    def draw(self,style,stamp,**params):
+
+        if self.coocoo and self.coocoo.active():
+            idx = self.coocoo.count % 2
+            return Mask().addMask(invader.INVADER.one.Mask(idx))
+
+    
+        hour = datetime.datetime.now().hour
+        if stamp != "":
+            hour = (datetime.datetime.fromisoformat(stamp) + (datetime.datetime.now() - self.start )).hour
+        else:
+            hour = datetime.datetime.now().hour
+            
+        if hour != self.hour:
+            self.step(style,stamp,**params)
+            self.coocoo = dotlife.clock.Clock.Timer(1500.,hour%12,lambda: self.coocooc(**params))
+            debug("coocooc {:}".format(self.coocoo))
+
+        self.hour = hour
 
 
         if self.next != self.mask:
@@ -78,10 +104,8 @@ class Clock(Mode):
         
             if style in [Style.small,Style.large,Style.double]:
                 m = Morph2(self.mask,self.next,steps=1)
-
                 debug("from\n"+str(self.mask))
                 debug("to\n"+str(self.next))
-            
                 self.mask = m[1]
                 
                 
@@ -89,7 +113,6 @@ class Clock(Mode):
                 debug("to\n"+str(self.next))
                 self.mask = self.next
                 
-#            self.mask = self.next
 
         return self.mask
         

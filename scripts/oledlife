@@ -70,22 +70,32 @@ def main(runmode, device, nowrite, forever,preview, framerate, speed, **params):
             printBuffer(str(buf))
         
 
-    
+        prev = ( FRAME(), NOW() )
         while run and forever:
         
-            Clock.Sleep( 1./framerate )
-            Clock.Tick()
-            
-            if framerate < 1. or Clock.frame % int(framerate) == 0:
-                info("{:s} {:s}".format(Clock.Str(),str(mode)))
+            try:
+                Clock.Sleep( 1./framerate )
+                Clock.Tick()
                 
-        
-            buf = mode.draw(**params)
-            paneloled.send(buf)
+                if framerate < 1. or Clock.frame % int(framerate) == 0:
+                    info("{:s} {:s} {:.1f}fps".format(Clock.Str(),str(mode),Clock.fps(prev)))
+                    prev = ( FRAME(), NOW() )
+                    
             
-            if preview:
-                printBuffer(str(buf))
-        
+                buf = mode.draw(**params)
+                paneloled.send(buf)
+                
+                if preview:
+                    printBuffer(str(buf))
+
+            except KeyboardInterrupt as x:
+                if is_debug():
+                    info("toggle pause.") 
+                    Clock.Pause()
+                else:
+                    raise x
+
+
 
     except KeyboardInterrupt as x:
         info("user interrupt.") 
@@ -149,9 +159,6 @@ def main(runmode, device, nowrite, forever,preview, framerate, speed, **params):
 
 
 
-#def fps(prev):
-#    (frame, time) = prev
-#    return float( (FRAME() - frame) /  ((NOW() - time)/1000.) )
 
 
 def quit(sig,frame):

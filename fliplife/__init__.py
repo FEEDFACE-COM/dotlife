@@ -16,7 +16,7 @@ def Mask(mask=None,size=FRAMESIZE):
 
 from fliplife.mode import test, read, clear, reset, fill, echo, exec
 from fliplife.mode import grow, pixel, dots, life, glider, guns, spawn
-from fliplife.mode import flueptext, pipe, scroll, clock, smooth
+from fliplife.mode import flueptext, pipe, scroll, clock, smooth, invader
 
 class MODE(Enum):
     test      = test.Test
@@ -38,5 +38,6 @@ class MODE(Enum):
     scroll    = scroll.Scroll
     clock     = clock.Clock
     smooth    = smooth.Smooth
+    invader   = invader.Invader
 
 
