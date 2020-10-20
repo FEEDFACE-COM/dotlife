@@ -6,7 +6,7 @@ from dotlife.util import *
 from dotlife.mode import Mode
 from dotlife.plasma import Plasma, Fun
 from dotlife.palette import PALETTE
-from dotlife.clock import Timer
+from dotlife.time import Timer
 from dotlife.math import *
 
 

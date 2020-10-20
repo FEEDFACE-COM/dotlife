@@ -13,7 +13,7 @@ from dotlife import *
 from dotlife.util import *
 from dotlife.about import NAME, VERSION
 
-from dotlife.clock import Clock, FRAME, NOW
+from dotlife.time import Clock, FRAME, NOW
 
 
 import oledlife

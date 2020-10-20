@@ -9,7 +9,7 @@ import oledlife, fliplife
 
 import dotlife.life
 
-from dotlife.clock import *
+from dotlife.time import *
 from dotlife.buffer import *
 from dotlife.mask import *
 from dotlife.mode import *

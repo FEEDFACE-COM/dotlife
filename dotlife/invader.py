@@ -4,7 +4,7 @@
 from dotlife import *
 from dotlife.math import *
 from dotlife.util import *
-from dotlife.clock import Timer
+from dotlife.time import Timer
 
 from dotlife.mask import Mask
 
@@ -87,7 +87,7 @@ class INVADER(Enum):
         else:
             txt = self.value
         ret = Mask.Load(txt)
-        ret = ret.flip()
+        ret = ret.flip(flip)
         return ret
 
 

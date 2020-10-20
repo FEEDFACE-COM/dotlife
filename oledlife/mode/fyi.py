@@ -9,7 +9,7 @@ from dotlife.buffer import Buffer
 #from dotlife.mode import Mode
 from dotlife.plasma import Plasma, Fun
 from dotlife.palette import Palette
-from dotlife.clock import Timer
+from dotlife.time import Timer
 from dotlife.math import *
 
 from dotlife.util import *

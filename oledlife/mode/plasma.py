@@ -9,7 +9,7 @@ from oledlife import Mask,Buffer
 import dotlife.plasma as plasma
 
 from dotlife.palette import Palette
-from dotlife.clock import Timer
+from dotlife.time import Timer
 
 from oledlife.mode import Mode
 

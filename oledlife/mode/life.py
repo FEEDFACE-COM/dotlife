@@ -4,7 +4,7 @@ from dotlife.util import *
 from dotlife.mode import Mode
 from dotlife.buffer import Buffer
 from dotlife.plasma import Plasma, Fun
-from dotlife.clock import Timer
+from dotlife.time import Timer
 
 import dotlife.life as life
 

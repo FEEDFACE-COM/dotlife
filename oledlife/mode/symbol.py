@@ -3,7 +3,7 @@ import dotlife
 from dotlife import *
 from dotlife.util import *
 from dotlife.mode import Mode
-#from dotlife.clock import timer
+#from dotlife.time import timer
 
 from dotlife.symbols import Symbol
 

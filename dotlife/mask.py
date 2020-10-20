@@ -64,7 +64,7 @@ class Mask:
                 
 
     def double(self):
-        ret = Mask(size=Size(self.w*2,self.h*2)
+        ret = Mask(size=Size(self.w*2,self.h*2))
         for y in range(self.h):
             for x in range(self.w):
                 ret[2*x  ,2*y  ] = self[x,y]

@@ -6,7 +6,7 @@ from dotlife.buffer import *
 from dotlife.util import *
 import dotlife.tunnel
 from dotlife.palette import *
-from dotlife.clock import Timer
+from dotlife.time import Timer
 from dotlife.math import *
 
 from oledlife import FRAMESIZE 

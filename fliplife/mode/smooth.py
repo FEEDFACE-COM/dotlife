@@ -12,7 +12,7 @@ from fliplife.mode import Mode
 from fliplife import Mask, FRAMESIZE
 from fliplife.fluepdot import Fluepdot
 
-from dotlife.clock import Clock
+from dotlife.time import Clock
 from dotlife.font import Font, FONT
 from dotlife.effects import Morph, Morph2, Axis, Scan
 

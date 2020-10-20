@@ -6,7 +6,7 @@ from dotlife.math import *
 from dotlife.util import *
 from dotlife.palette import Palette
 
-from dotlife.clock import Timer
+from dotlife.time import Timer
 
 
 class Fun():  # fun( [0..π..2π] ) => [ 0 .. 1 .. 0 ]

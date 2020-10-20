@@ -12,7 +12,7 @@ from fliplife.mode import Mode
 from fliplife import Mask, FRAMESIZE
 from fliplife.fluepdot import Fluepdot
 
-from dotlife.clock import Clock
+from dotlife.time import Clock
 from dotlife.font import Font, FONT
 from dotlife.effects import Morph, Morph2, Axis, Scan
 
@@ -93,7 +93,7 @@ class Clock(Mode):
             
         if hour != self.hour:
             self.step(style,stamp,**params)
-            self.coocoo = dotlife.clock.Clock.Timer(1500.,hour%12,lambda: self.coocooc(**params))
+            self.coocoo = time.Clock.Timer(1500.,hour%12,lambda: self.coocooc(**params))
             debug("coocooc {:}".format(self.coocoo))
 
         self.hour = hour
