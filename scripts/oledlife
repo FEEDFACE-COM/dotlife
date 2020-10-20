@@ -89,7 +89,7 @@ def main(runmode, device, nowrite, forever,preview, framerate, speed, **params):
                     printBuffer(str(buf))
 
             except KeyboardInterrupt as x:
-                if is_debug():
+                if pausable():
                     info("toggle pause.") 
                     Clock.Pause()
                 else:

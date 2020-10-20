@@ -94,7 +94,7 @@ def main(runmode, host, speed, clear, forever, nowrite, noread, preview, framera
                     printBuffer(str(buf))
             
             except KeyboardInterrupt as x:
-                if is_debug():
+                if pausable():
                     info("toggle pause.") 
                     Clock.Pause()
                 else:

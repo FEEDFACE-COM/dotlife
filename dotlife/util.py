@@ -13,25 +13,24 @@ class Enum(Enum):
 
 from dotlife.about import NAME
 
-def debug(s): 
-    for l in s.split("\n"): logging.getLogger(NAME).debug(l)
-def info(s):  
-    for l in s.split("\n"): logging.getLogger(NAME).info(l)
-def log(s):   
-    for l in s.split("\n"): logging.getLogger(NAME).log(logging.WARNING,l)
-def error(s): 
-    for l in s.split("\n"): logging.getLogger(NAME).error("!!ERROR! " + l)
-def FATAL(s): 
-    for l in s.split("\n"): 
-        logging.getLogger(NAME).critical("!!FATAL! " + l); 
-    exit(-2)
-def dump(x,s=None): logging.getLogger(NAME).debug( ((s + "\n")  if s else "") + pprint.pformat(x))
 
-def usage(s): 
-    for l in s.split("\n"): logging.getLogger(NAME).error(l)
+def _log(msg,level,prefix=""):
+    for line in msg.split("\n"): logging.getLogger(NAME).log(level, prefix+line)
 
-def is_debug():
-    return logging.getLogger(NAME).level <= logging.DEBUG
+
+def debug(msg): _log(msg,logging.DEBUG)
+def info(msg): _log(msg,logging.INFO)
+def log(msg): _log(msg,logging.WARNING)
+def usage(msg): _log(msg,logging.ERROR)
+def error(msg): _log(msg,logging.ERROR,"!!ERROR! ")
+def FATAL(msg): _log(msg,logging.CRITICAL,"!!FATAL! "+msg); exit(-2)
+
+    
+
+def dump(x,msg=None): logging.getLogger(NAME).debug( ((msg + "\n")  if msg else "") + pprint.pformat(x))
+
+
+def pausable(): return logging.getLogger(NAME).level < logging.DEBUG
 
 
 
