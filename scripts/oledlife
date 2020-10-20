@@ -46,7 +46,7 @@ def main(runmode, device, nowrite, forever,preview, framerate, speed, **params):
     except Error as x:
         FATAL("fail open paneloled dmx: "+str(x))
 
-    timer = Clock.Timer(1000.*speed,repeat=True)
+    timer = Clock.Timer(1000.*speed,repeat=0)
     buffer = Buffer()
     
             

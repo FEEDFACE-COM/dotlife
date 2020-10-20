@@ -72,8 +72,6 @@ class Clock:
     
     def Timer(duration,repeat=0,fun=None):
         ret = Timer(duration,repeat,fun)
-#        Clock.timers.append(ret)
-#        debug("clock timer {}".format( ret ) )
         return ret
     
     def Elapsed(): # miliseconds
@@ -96,16 +94,17 @@ class Timer():
         self.duration = duration
         self.repeat = repeat
         Clock.timers.append(self)
+
         
     def __str__(self):
-        return "{:.1f}/{:.1f} {:4.2f} {:4.2f}π {:4.2f}∿ #{:d}{:s}".format(
+        return "{:.1f}/{:.1f} {:4.2f} {:4.2f}π {:4.2f}∿ {:s}{:s}".format(
             self.elapsed()/1000.,
             self.duration/1000.,
             self.fader(), 
             self.cycle()/math.PI,
             self.ease(),
-            self.count,
-            "/∞" if self.repeat==0 else "/{:d}".format(self.repeat),
+            "#{:d}".format(self.count) if self.repeat == 0 else "",
+            "{:d}/{:d}".format(self.count,self.repeat) if self.repeat != 0 else "",
         )
 
     def elapsed(self):
@@ -160,12 +159,13 @@ class Timer():
             if self.fun: # fire!
                 self.fun()
             
+            # infinite repeats, or not yet reached final repeat
             if self.repeat == 0 or self.count < self.repeat:
                 while self.start + self.duration < NOW():
                     self.start += self.duration 
                 return True
                 
-            else: # finite repeats
+            else: # final repeat
                 return False
                 
             return False

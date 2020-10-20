@@ -53,7 +53,7 @@ def main(runmode, host, speed, clear, forever, nowrite, noread, preview, framera
     Clock.Init()
 
     fluepdot = Fluepdot(address,nowrite,noread)
-    timer = Clock.Timer(1000.*speed,repeat=True)
+    timer = Clock.Timer(1000.*speed,repeat=0)
     mask = Mask()
     
     if not clear:
@@ -80,24 +80,26 @@ def main(runmode, host, speed, clear, forever, nowrite, noread, preview, framera
 
             prev = buf
 
-            Clock.Sleep( 1./framerate )
-            Clock.Tick()
-            
-            if framerate < 1. or Clock.frame % int(framerate) == 0:
-                info("{:s} {:s}".format(Clock.Str(),str(mode)))
-            
-#            if timer.fired:
-#                info("TRIGGER!!: {:s}".format(str(timer)))
-#                mode.step(**params)
+            try:
+                Clock.Sleep( 1./framerate )
+                Clock.Tick()
                 
-            buf = mode.draw(**params)
-            if buf != prev:
-                fluepdot.buffer.write(buf)
-            if preview:
-                printBuffer(str(buf))
+                if framerate < 1. or Clock.frame % int(framerate) == 0:
+                    info("{:s} {:s}".format(Clock.Str(),str(mode)))
+                
+                buf = mode.draw(**params)
+                if buf != prev:
+                    fluepdot.buffer.write(buf)
+                if preview:
+                    printBuffer(str(buf))
             
+            except KeyboardInterrupt as x:
+                if is_debug():
+                    info("toggle pause.") 
+                    Clock.Pause()
+                else:
+                    raise x
             
-#            Clock.Sleep( framerate )
             
 
 
