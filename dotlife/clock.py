@@ -94,17 +94,27 @@ class Clock():
             
             start_decade = now.replace(year=(now.year-now.year%10),month=1,day=1,hour=0,minute=0,second=0,microsecond=0)
             start_year   = now.replace(                            month=1,day=1,hour=0,minute=0,second=0,microsecond=0)
+            start_month  = now.replace(                                    day=1,hour=0,minute=0,second=0,microsecond=0)
             start_day    = now.replace(                                          hour=0,minute=0,second=0,microsecond=0)
+
+            m = start_month.month+1
+            y = start_month.year
+            if m > 12:
+                m = 1
+                y = start_month.year + 1
+            next_month = start_month.replace(year=y,month=m)
             
             seconds_decade = (start_decade.replace(year=start_decade.year+10) - start_decade).total_seconds()
             seconds_year   = (start_year.replace(year=start_year.year+1) - start_year).total_seconds()
-            seconds_day    = datetime.timedelta(days=1).total_seconds()             
+            seconds_month  = (next_month - start_month).total_seconds()
+            seconds_day    = datetime.timedelta(days=1).total_seconds()  
             
             fraction_decade = (now - start_decade).total_seconds() / seconds_decade * 100.
             fraction_year   = (now - start_year).total_seconds() / seconds_year * 100.
+            fraction_month  = (now - start_month).total_seconds() / seconds_month * 100.
             fraction_day    = (now - start_day).total_seconds() / seconds_day * 100.
     
-            detail = "DECADE:{:3.0f}% YEAR:{:3.0f}% DAY:{:3.0f}%".format(fraction_decade,fraction_year,fraction_day)
+            detail = "DECADE:{:3.0f}% YEAR:{:3.0f}% MON:{:3.0f}%".format(fraction_decade,fraction_year,fraction_month)
     
             text = self.large.render(date_time,fixed=True)
             ret.addMask(text,pos=pos0)
