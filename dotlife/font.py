@@ -96,7 +96,7 @@ class Font:
                 dim.w += self.size.w + self.spacer
             else:
                 dim.w += self.glyph(c).w + self.spacer
-        dim.h = self.size.h + 1
+        dim.h = self.size.h
     
         ret = Mask(size=dim)
         pos = Position(0,0)

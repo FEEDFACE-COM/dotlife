@@ -391,7 +391,6 @@ if __name__ == "__main__":
     long = [l for (_,l,_,_,_,_) in modeflags if l is not None] 
     modeparams = dict( [(n,d) for (_,_,n,d,_,_) in modeflags if n is not None] )
     
-
     try:
         opts, args = getopt.getopt(args,short,long)
     except getopt.GetoptError as x:
@@ -403,6 +402,8 @@ if __name__ == "__main__":
             usage(runmode)
         else:
             for (s,l,p,_,h,f) in modeflags:
+                if s == None == l: # unnamed flag
+                    continue
                 if opt in ["-"+s.rstrip(":"),"--"+l.rstrip("=")]:
                     fun = f if f else lambda x: x
                     if s.endswith(":") or l.endswith("="):
@@ -417,10 +418,11 @@ if __name__ == "__main__":
                 usage(runmode,"internal error: option {} not implemented.".format(opt))            
 
 
-    ## read remainder into no-flags mode param    
-    for (s,l,p,_,_,_) in modeflags:
-        if not s and not l:
-            modeparams[p] = " ".join(args)
+    ## read remainder into no-flags mode param
+    if len(args) > 0:    
+        for (s,l,p,_,_,_) in modeflags:
+            if not s and not l:
+                modeparams[p] = " ".join(args)
         
 
 #    dump(params)

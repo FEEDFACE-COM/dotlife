@@ -36,6 +36,19 @@ class Direction(Enum):
     center=    ( 0, 0)
 
 
+
+class AlignHorizontal(Enum):
+    left   = auto()
+    center = auto()
+    right  = auto()
+    
+
+class AlignVertical(Enum):
+    top    = auto()
+    center = auto()
+    bottom = auto()
+    
+
 #class Palette(Enum):
 #    Linear =    [  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16 ]
 #    Custom =    [  1,  2,  3,  4,  5,  6,  7,  8,  9, 11, 13, 19, 29, 38, 51, 63 ] 

@@ -8,6 +8,10 @@ from dotlife import *
 
 class Mode():
 
+
+    Pattern = ()
+
+
     def __init__(self,timer,**params):
         self.timer = timer
         self.timer.fun = lambda: self.step(**params)
@@ -33,21 +37,27 @@ class Mode():
 
 
     def FLAG(name,default=None):
-        return {
+        (s,l,n,d,h,f) = {
             # param: short long name default help func #             
-            "speed":     ("s:", "speed=",       "speed",      1.0,             "step speed [s]",       lambda x : float(x) ),
-            "invert":    ("i",  "invert",       "invert",     False,           "invert pattern?",                     None ),
-            "count":     ("c:", "count=",       "count",      1,               "count",                  lambda x : int(x) ),
-            "font":      ("F:", "font=",        "font",       default,         "font",                   lambda x: FONT[x] ),
-            "pattern":   ("p:", "pattern=",     "pattern",    default,         "pattern",      lambda x:  type(default)[x] ), # get type of default, then lookup x in type
-            "step":      ("q:", "step=",        "step",       0,               "step",                   lambda x : int(x) ),
-            "flip":      ("f:", "flip=",        "flip",       Flip.noflip,     ",".join([str(f) for f in Flip]),                  lambda x : Flip[x] ),
-            "x":         ("x:", "",             "x",          0,               "x offset",               lambda x : int(x) ),
-            "y":         ("y:", "",             "y",          0,               "y offset",               lambda x : int(x) ),
-            "randomize": ("r", "random",        "randomize",  False,           "randomize?",                          None ),
-            "style":     ("Y:", "style=",       "style",      default,         "style",        lambda x:  type(default)[x] ), # get type of default, then lookup x in type
+            "speed":     ("s:", "speed=",       "speed",      1.0,                     "step speed [s]",                                      lambda x : float(x) ),
+            "invert":    ("i",  "invert",       "invert",     False,                   "invert pattern?",                                                    None ),
+            "count":     ("c:", "count=",       "count",      1,                       "count",                                                 lambda x : int(x) ),
+            "font":      ("F:", "font=",        "font",       default,                 "font",                                                  lambda x: FONT[x] ),
+            "pattern":   ("p:", "pattern=",     "pattern",    default,                 "pattern",                                     lambda x:  type(default)[x] ), # get type of default, then lookup x in type
+            "step":      ("q:", "step=",        "step",       0,                       "step",                                                  lambda x : int(x) ),
+            "flip":      ("f:", "flip=",        "flip",       Flip.noflip,             ",".join([str(f) for f in Flip]),                       lambda x : Flip[x] ),
+            "x":         ("x:", "",             "x",          0,                       "x offset",                                              lambda x : int(x) ),
+            "y":         ("y:", "",             "y",          0,                       "y offset",                                              lambda x : int(x) ),
+            "randomize": ("R", "random",        "randomize",  False,                   "randomize?",                                                         None ),
+            "style":     ("Y:", "style=",       "style",      default,                 "style",                                       lambda x:  type(default)[x] ), # get type of default, then lookup x in type
+            "msg":       (None, None,           "msg",        "hello, world.",         "message",                                                            None ),
+            "alignv":    ("V:", "vertical=",    "alignv",     AlignVertical.top,       ",".join([str(j) for j in AlignVertical]),      lambda x: AlignVertical[x] ),
+            "alignh":    ("H:", "horizontal=",  "alignh",     AlignHorizontal.left,    ",".join([str(j) for j in AlignHorizontal]),  lambda x: AlignHorizontal[x] ),
         }.get(name,("","","",None,"",None))
 
-    Pattern = ()
+        if default != None:
+            d = default
+            
+        return (s,l,n,d,h,f)
 
     
