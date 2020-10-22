@@ -53,8 +53,6 @@ class Clock(Mode):
         
         return True
     
-#    def coocooc(self,**params):
-#       info("FIRED FIRED")
     
     def step(self,style,stamp,**params):
         self.now = datetime.datetime.now()
