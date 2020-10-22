@@ -17,7 +17,7 @@ class Glider(Mode):
     
     def start(self,count,randomize,**params):
         info("start life")
-        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.diff)
 
 
         mask = self.fluepdot.buffer.read()        

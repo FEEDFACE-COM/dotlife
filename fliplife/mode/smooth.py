@@ -22,8 +22,8 @@ class Smooth(Mode):
     DefaultFont = FONT.font3x5
     
     def start(self,font,msg=None,**params):
-#        self.fluepdot.rendering.setMode(Fluepdot.Mode.Full)
-        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
+#        self.fluepdot.rendering.setMode(Fluepdot.Mode.full)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.diff)
         
         self.font = Font(font)
         debug(str(self.font))

@@ -24,8 +24,8 @@ class Echo(Mode):
     DefaultFont = FONT.font5x5
     
     def start(self,randomize,x,y,font,fixed,msg=None,**params):
-#        self.fluepdot.rendering.setMode(Fluepdot.Mode.Full)
-        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
+#        self.fluepdot.rendering.setMode(Fluepdot.Mode.full)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.diff)
         self.randomize = randomize
         
         self.font = Font(font)

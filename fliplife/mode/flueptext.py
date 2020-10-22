@@ -18,8 +18,8 @@ class Flueptext(Mode):
         
     
     def start(self,randomize,x,y,fluepfont,msg=None,**params):
-#        self.fluepdot.rendering.setMode(Fluepdot.Mode.Full)
-        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
+#        self.fluepdot.rendering.setMode(Fluepdot.Mode.full)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.diff)
         self.randomize = randomize
         self.font = font
         

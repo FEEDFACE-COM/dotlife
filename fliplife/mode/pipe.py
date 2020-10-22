@@ -18,8 +18,8 @@ class Pipe(Mode):
         
     
     def start(self,font,**params):
-#        self.fluepdot.rendering.setMode(Fluepdot.Mode.Full)
-        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
+#        self.fluepdot.rendering.setMode(Fluepdot.Mode.full)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.diff)
 
         
 

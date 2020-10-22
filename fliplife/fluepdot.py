@@ -13,8 +13,8 @@ from fliplife import FRAMESIZE, Mask
 class Fluepdot():
 
     class Mode(Enum):
-        Full = b"0\n\x00"
-        Diff = b"1\n\x00"
+        full = b"0\n\x00"
+        diff = b"1\n\x00"
 
 
     def __init__(self,address,nowrite,noread):

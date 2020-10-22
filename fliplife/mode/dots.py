@@ -21,7 +21,7 @@ class Dots(Mode):
         self.count = 0
         
         
-        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.diff)
         
         self.mask = self.fluepdot.buffer.read()
         self.mask= self.draw(**params)

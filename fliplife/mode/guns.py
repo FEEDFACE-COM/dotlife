@@ -17,7 +17,7 @@ class Guns(Mode):
     
     def start(self,randomize,**params):
         info("start guns")
-        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.diff)
     
         self.life = life.Life(mask=self.mask)
         

@@ -18,7 +18,7 @@ class Exec(Mode):
     
     def start(self,randomize,x,y,font,cmd=None,**params):
 
-        self.fluepdot.rendering.setMode(Fluepdot.Mode.Full)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.full)
         
         self.randomize = randomize
         self.cmd = 'date "+%F %T %z"'
@@ -32,7 +32,7 @@ class Exec(Mode):
 
         self.draw(x,y,**params)
 
-        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.diff)
 
         return True
     

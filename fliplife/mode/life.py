@@ -16,7 +16,7 @@ class Life(Mode):
     
     def start(self,count,**params):
         info("start life")
-        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.diff)
 
         mask = self.fluepdot.buffer.read()
         self.life = life.Life(mask=mask)

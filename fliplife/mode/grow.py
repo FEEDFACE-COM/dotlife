@@ -16,7 +16,7 @@ class Grow(Mode):
     def start(self,**params):
         info("start grow")
 
-        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.diff)
         self.mask = self.draw(**params)
         return True
         

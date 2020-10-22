@@ -25,7 +25,7 @@ class Spawn(Mode):
     
         
         info("start spawn {:s}".format(pattern.name.lower()))
-        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.diff)
 
         self.life = life.Life(mask=self.mask)
 

@@ -22,10 +22,10 @@ class Rendering():
         if rsp == None:
             return None
         val = rsp.read()
-        if val == Rendering.Mode.Full.value:
-            return Rendering.Mode.Full
-        if val == Rendering.Mode.Diff.value:
-            return Rendering.Mode.Diff
+        if val == Rendering.Mode.full.value:
+            return Rendering.Mode.full
+        if val == Rendering.Mode.diff.value:
+            return Rendering.Mode.diff
         return None
 
 

@@ -30,7 +30,7 @@ class Clock(Mode):
    
     
     def start(self,style,stamp,**params):
-        self.fluepdot.rendering.setMode(Fluepdot.Mode.Full)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.full)
         
         self.clock = dotlife.clock.Clock()
 
@@ -46,7 +46,7 @@ class Clock(Mode):
         self.mask = self.clock.mask(size=FRAMESIZE,now=self.now,style=style)
         self.next = self.mask
 
-        self.fluepdot.rendering.setMode(Fluepdot.Mode.Diff)
+        self.fluepdot.rendering.setMode(Fluepdot.Mode.diff)
 
         self.kuckuck = None
         self.hour = self.now.hour
