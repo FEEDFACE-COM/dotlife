@@ -5,7 +5,7 @@ from dotlife.util import *
 
 from dotlife.mask import Mask
 
-from dotlife.fonts import font3x5, fixed3x5, font5x5, font5x7, blinkenlights
+from dotlife.fonts import font3x5, fixed3x5, font5x5, font5x7, blinkenlights, font10x14
 
 
 def debug(s): pass
@@ -16,6 +16,7 @@ class FONT(Enum):
     font3x5        = font3x5
     font5x5        = font5x5
     font5x7        = font5x7
+    font10x14      = font10x14
     blinkenlights  = blinkenlights
 
 
