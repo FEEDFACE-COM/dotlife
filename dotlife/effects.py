@@ -55,7 +55,7 @@ def Scan(fromMask,toMask):
     
     return ret
 
-def Morph2(fromMask,toMask,steps=0):
+def Morph2(fromMask,toMask,steps=0,flipcount=1):
     ret = [ Mask(fromMask) ]
     
     # scan for deltas
@@ -75,34 +75,36 @@ def Morph2(fromMask,toMask,steps=0):
     step = 0
     while True:
         m = Mask(m)
-
-        # pick random on
-        on = None
-        if len(ons) > 0:
-            r = random.randint(0,len(ons)-1)
-            on = ons[r]
-            ons = ons[:r] + ons[r+1:]
         
-        # pick random off
-        off = None
-        if len(offs) > 0:
-            r = random.randint(0,len(offs)-1)
-            off = offs[r]
-            offs = offs[:r] + offs[r+1:]
+        flipped = 0
+        while flipped < flipcount:
         
+            # pick random on
+            on = None
+            if len(ons) > 0:
+                r = random.randint(0,len(ons)-1)
+                on = ons[r]
+                ons = ons[:r] + ons[r+1:]
+            
+            # pick random off
+            off = None
+            if len(offs) > 0:
+                r = random.randint(0,len(offs)-1)
+                off = offs[r]
+                offs = offs[:r] + offs[r+1:]
     
-        if on and off:
-            m[on.x,on.y] = True
-            m[off.x,off.y] = False
-            ret += [m]
-        elif on:
-            m[on.x,on.y] = True
-            ret += [m]
-        elif off:
-            m[off.x,off.y] = False
-            ret += [m]
-        else:
-            break
+            # flip ons/offs
+            if on:
+                m[on.x,on.y] = True
+                flipped += 1
+            if off:
+                m[off.x,off.y] = False
+                flipped += 1
+    
+            if not on and not off:
+                break
+
+        ret += [m]
 
         step += 1
         if steps != 0 and step >= steps:
