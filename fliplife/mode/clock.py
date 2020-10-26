@@ -129,7 +129,11 @@ class Clock(Mode):
         if self.next != self.mask:
         
         
-            if style in [Clock.Style.small,Clock.Style.large,Clock.Style.double,Clock.Style.giant]:
+            if style in [Clock.Style.small,Clock.Style.large,Clock.Style.double]:
+                m = Morph2(self.mask,self.next,steps=1,flipcount=1)
+                debug("to\n"+str(self.next))
+                self.mask = m[1]
+            elif style in [Clock.Style.split]:
                 m = Morph2(self.mask,self.next,steps=1,flipcount=2)
                 debug("to\n"+str(self.next))
                 self.mask = m[1]

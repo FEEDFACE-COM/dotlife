@@ -21,157 +21,112 @@ class Style(Enum):
     lyric  = auto() 
     words  = auto()
     mini   = auto()
-    giant  = auto()
+    split  = auto()
 
 
 
 
-def humanDate(then,lang="de"):    
+def humanDate(then):    
     ret = ""
     year,month,day,hour,minute,_,weekday,_,_ = then.timetuple()
 
-    ret = "Ein "  if lang=="de" else "A "
-    ret += humanWeekday(then,lang)
-    ret += " im " if lang=="de" else " in "
-    ret += humanMonth(then,lang)
+    ret = "Ein "
+    ret += humanWeekday(then)
+    ret += " im "
+    ret += humanMonth(then)
     return ret
 
-def humanWeekday(then,lang="de"):
+def humanWeekday(then):
     ret = ""
     _,_,_,_,_,_,weekday,_,_ = then.timetuple()
-    if lang=="de":
-        ret += {
-            0: "Montag",
-            1: "Dienstag",
-            2: "Mittwoch",
-            3: "Donnerstag",
-            4: "Freitag",
-            5: "Samstag",
-            6: "Sonntag",
-        }[weekday%7]
-    else:
-        ret += {
-            0: "Monday",
-            1: "Tuesday",
-            2: "Wednesday",
-            3: "Thursday",
-            4: "Friday",
-            5: "Saturday",
-            6: "Sunday",
-        }[weekday%7]
+    ret += {
+        0: "Montag",
+        1: "Dienstag",
+        2: "Mittwoch",
+        3: "Donnerstag",
+        4: "Freitag",
+        5: "Samstag",
+        6: "Sonntag",
+    }[weekday%7]
     return ret
 
-def humanMonth(then,lang="de"):
+def humanMonth(then):
     ret = ""
     _,month,_,_,_,_,_,_,_ = then.timetuple()
-    if lang=="de":
-        ret += {
-             1: "Januar",
-             2: "Februar",
-             3: "März",
-             4: "April",
-             5: "Mai",
-             6: "Juni",
-             7: "Juli",
-             8: "August",
-             9: "September",
-            10: "Oktober",
-            11: "November",
-             0: "Dezember",
-        }[month%12]
-    else:
-        ret += {
-             1: "January",
-             2: "February",
-             3: "March",
-             4: "April",
-             5: "May",
-             6: "June",
-             7: "July",
-             8: "August",
-             9: "September",
-            10: "October",
-            11: "November",
-             0: "December",
-        }[month%12]
+    ret += {
+         1: "Januar",
+         2: "Februar",
+         3: "März",
+         4: "April",
+         5: "Mai",
+         6: "Juni",
+         7: "Juli",
+         8: "August",
+         9: "September",
+        10: "Oktober",
+        11: "November",
+         0: "Dezember",
+    }[month%12]
     return ret    
 
-def humanTime(then,lang="de"):
+def humanTime(then):
     ret = ""
     year,month,day,hour,minute,_,weekday,_,_ = then.timetuple()
     if 0 <= minute <= 1:
         ret += ""
     elif 2 <= minute <= 9:
-            ret += "kurz nach "  if lang=="de" else "around "
+            ret += "kurz nach "
     elif 10 <= minute <= 19:
-        ret += "viertel nach "   if lang=="de" else "a quarter past "
+        ret += "viertel nach "
     elif 20 <= minute <= 28:
-        ret += "kurz vor halb "  if lang=="de" else "around half "
+        ret += "kurz vor halb "
     elif 29 <= minute <= 31:
-        ret += "halb "           if lang=="de" else "half"
+        ret += "halb "
     elif 32 <= minute <= 39:
-        ret += "kurz nach halb " if lang=="de" else "around half "
+        ret += "kurz nach halb "
     elif 40 <= minute <= 49:
-        ret += "viertel vor "    if lang=="de" else "a quarter to "
+        ret += "viertel vor "
     elif 50 <= minute <= 58:
-        ret += "kurz vor "       if lang=="de" else "around "
+        ret += "kurz vor "
     elif 59 <= minute <= 60:
         ret += ""
-    x = 1 if minute >= 29 else 0
-    if lang=="de":
-        ret += {
-            1: "Eins",
-            2: "Zwei",
-            3: "Drei",
-            4: "Vier",
-            5: "Fünf",
-            6: "Sechs",
-            7: "Sieben",
-            8: "Acht",
-            9: "Neun",
-           10: "Zehn",
-           11: "Elf",
-            0: "Zwölf",
-        }[(hour+x)%12]
-    else:
-        ret += {
-            1: "One",
-            2: "Two",
-            3: "Three",
-            4: "Four",
-            5: "Five",
-            6: "Six",
-            7: "Seven",
-            8: "Eight",
-            9: "Nine",
-           10: "Ten",
-           11: "Eleven",
-            0: "Twelve",
-        }[(hour+x)%12]
-    if lang=="de" and (minute <= 1 or minute >= 59):
+    x = 1 if minute >= 20 else 0
+    ret += {
+        1: "Eins",
+        2: "Zwei",
+        3: "Drei",
+        4: "Vier",
+        5: "Fünf",
+        6: "Sechs",
+        7: "Sieben",
+        8: "Acht",
+        9: "Neun",
+       10: "Zehn",
+       11: "Elf",
+        0: "Zwölf",
+    }[(hour+x)%12]
+    if minute <= 1 or minute >= 59:
         if (hour+x)%12 == 1: #FIXUP:  Eins<>Ein
             ret = ret[:-1]
-        ret += " Uhr"
-    elif lang!="de" and not ( 5 <= hour+x <= 10 ) and not ( 19 <= hour+x <= 23 ):
-        ret += " o'Clock"
+        ret += " Uhr"    
             
     return ret
 
 
-def humanTimeOfDay(then,lang="de"):
+def humanTimeOfDay(then):
     ret = ""
     _,_,_,hour,minute,_,_,_,_ = then.timetuple()
     x = 1 if minute >= 29 else 0
     if 0 <= hour+x <= 4:
-        ret += "Nachts"  if lang=="de" else "At Night"
+        ret += "Nachts"
     elif  5 <= hour+x <= 10:
-        ret += "Morgens" if lang=="de" else "In The Morning"
+        ret += "Morgens"
     elif 10 <= hour+x <= 18:
         ret += ""
     elif 19 <= hour+x <= 23:
-        ret += "Abends"  if lang=="de" else "In The Evening"
+        ret += "Abends"
     elif 24 <= hour+x <= 24:
-        ret += "Nachts"  if lang=="de" else "At Night"
+        ret += "Nachts"
     return ret      
 
 
@@ -207,7 +162,7 @@ class Clock():
             ret = ret.addMask(text,pos=pos0,wrap=True)
     
     
-        elif style == Style.giant:
+        elif style == Style.split:
             time = now.strftime("%H:%M")
             spacer = 6 #self.giant.size.w
             w = size.w - len(time)*(self.giant.size.w+1)
@@ -215,21 +170,22 @@ class Clock():
             text0 = self.giant.render(time)
             ret = ret.addMask(text0,pos=pos0,wrap=True)
 
-            day = humanWeekday(now).upper() + ", "
+            wkd = humanWeekday(now).upper() + ", "
             pos1 = Position(w+spacer, 2)
-            text1 = self.fixed.render(day,fixed=True)
+            text1 = self.fixed.render(wkd,fixed=True)
             ret = ret.addMask(text1,pos=pos1,wrap=True)
 
-            mon = humanMonth(now).upper()
-            pos2 = Position(w+spacer + 3*(1+self.full.size.w), size.h - (self.fixed.size.h+1) )
-            text2 = self.fixed.render(mon,fixed=True,space=1)
+            _,_,d,_,_,_,_,_,_ = now.timetuple()
+            day = "{:d}".format(d)
+            text2 = self.full.render(day,fixed=True)
+            pos2 = Position(w+spacer, (size.h-1)-self.full.size.h)
             ret = ret.addMask(text2,pos=pos2,wrap=True)
-
-            wkd = now.strftime("%d.")
-            pos3 = Position(w+spacer, (size.h-1)-self.full.size.h)
-            text3 = self.full.render(wkd,fixed=False,space=1)
-            ret = ret.addMask(text3,pos=pos3,wrap=True)
             
+            mon = ". " + humanMonth(now).upper()
+            pos3 = Position(pos2.x + text2.w - 1, size.h - (self.fixed.size.h+1) )
+            text3 = self.fixed.render(mon,fixed=True,space=1)
+            ret = ret.addMask(text3,pos=pos3,wrap=True)
+
         
     
     
@@ -249,8 +205,8 @@ class Clock():
         elif style == Style.lyric:
             pos0 = Position(0,3)
             pos1 = Position(0,9)
-            txt0 = humanDate(now,"en")+","
-            txt1 = humanTime(now,"en")+ " " + humanTimeOfDay(now,"en")+"..."
+            txt0 = humanDate(now)+","
+            txt1 = humanTime(now)+ " " + humanTimeOfDay(now)+"..."
             text0 = self.small.render(txt0.upper(),fixed=False)
             text1 = self.small.render(txt1.upper(),fixed=False)
             ret = ret.addMask(text0,pos=pos0)
