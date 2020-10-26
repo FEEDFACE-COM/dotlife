@@ -6,8 +6,6 @@ import datetime, time
 import logging, getopt
 import signal
 
-from bdb import BdbQuit
-
 import dotlife
 from dotlife import *
 from dotlife.util import *
@@ -25,7 +23,9 @@ from oledlife.paneloled import Paneloled
 
 
 DEFAULT_MODE = MODE.fyi
-DEFAULT_DEVICE = "/dev/ttyUSB1"
+DEFAULT_FRAMERATE = 60.
+DEFAULT_DEVICE = "/dev/ttyUSB0"
+
 
 ## MAIN ########################################################################
 
@@ -35,7 +35,7 @@ DEFAULT_DEVICE = "/dev/ttyUSB1"
 
 def main(runmode, device, nowrite, forever,preview, framerate, speed, **params):
 
-    info("oledlife start at {:.2f}fps".format(framerate))
+    info("oledlife start at {:.2f}fps{:s}".format(framerate," [forever]" if forever else ""))
 
     # register signals
     signal.signal(signal.SIGQUIT, quit)
@@ -78,7 +78,7 @@ def main(runmode, device, nowrite, forever,preview, framerate, speed, **params):
                 Clock.Tick()
                 
                 if framerate < 1. or Clock.frame % int(framerate) == 0:
-                    info("{:s} {:s} {:.1f}fps".format(Clock.Str(),str(mode),Clock.fps(prev)))
+                    info("{:s} {:s} {:.1f}fps".format(Clock.Str(),str(mode),Clock.fps(prev_frame)))
                     prev = ( FRAME(), NOW() )
                     
             
@@ -201,15 +201,15 @@ HELPFLAGS = [
 
 FLAGS = [
     # short long param default help func #             
-    ("h",  "help",         None,                None,    "display help",           None ),
-    ("S:", "serial=",      "device",  DEFAULT_DEVICE,    "paneloled serial device",                                              None ),
-    ("W",  "nowrite",      "nowrite",          False,    "no writes to paneloled?", None ),
-    ("C",  "clear",        "clear",             True,    "clear paneloled?",        None ),
-    ("F",  "forever",      "forever",          True,     "run continuously?",      None ),
-    ("P",  "preview",      "preview",          False,    "buffer preview on stdout?",      None ),
-    ("f:", "framerate=",   "framerate",          60.,    "paneloled update interval (fps)",      lambda x: float(x) ),
-    ("v",  "",      None,                None,    "increase verbosity",     None ),
-    ("V",  "",      None,                None,    "display version",        None ),
+    ("h",  "help",         None,                      None,    "display help",                                   None ),
+    ("S:", "serial=",      "device",        DEFAULT_DEVICE,    "paneloled serial device",                        None ),
+    ("W",  "nowrite",      "nowrite",                False,    "no writes to paneloled?",                        None ),
+    ("C",  "clear",        "clear",                   True,    "clear paneloled?",                               None ),
+    ("F",  "forever",      "forever",                True,     "run continuously?",                              None ),
+    ("P",  "preview",      "preview",                False,    "buffer preview on stdout?",                      None ),
+    ("f:", "framerate=",   "framerate",  DEFAULT_FRAMERATE,    "paneloled update interval (fps)",  lambda x: float(x) ),
+    ("v",  "",             None,                      None,    "increase verbosity",                             None ),
+    ("V",  "",             None,                      None,    "display version",                                None ),
 ]
     
 
@@ -455,7 +455,7 @@ if __name__ == "__main__":
                         except Exception as x:
                             usage(runmode,"invalid argument: {} {}".format(opt,arg))
                     else:
-                        modeparams[p] = True
+                        modeparams[p] ^= True
                     break
             else:
                 usage(runmode,"internal error: option {} not implemented.".format(opt))            

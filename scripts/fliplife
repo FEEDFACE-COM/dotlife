@@ -7,8 +7,6 @@ import logging, getopt
 import signal, socket
 import math
 
-from bdb import BdbQuit
-
 import dotlife
 from dotlife import *
 from dotlife.util import *
@@ -26,6 +24,7 @@ from fliplife.mode import Mode
 from fliplife.fluepdot import Fluepdot
 
 DEFAULT_MODE = MODE.clock
+DEFAULT_FRAMERATE = 1.
 DEFAULT_HOST = "87.193.3.53"
 
 ## MAIN ########################################################################
@@ -36,7 +35,7 @@ DEFAULT_HOST = "87.193.3.53"
 
 def main(runmode, host, speed, clear, forever, nowrite, noread, preview, framerate, **params):
 
-    info("fliplife start at {:.2f}fps{:s}".format(framerate," FOREVER" if forever else ""))
+    info("fliplife start at {:.2f}fps{:s}".format(framerate," [forever]" if forever else ""))
 
     # register signals
     signal.signal(signal.SIGQUIT, quit)
@@ -76,19 +75,20 @@ def main(runmode, host, speed, clear, forever, nowrite, noread, preview, framera
         if preview:
             printBuffer(str(buf))
 
+        prev = ( FRAME(), NOW() )
         while run and forever:
-
-            prev = buf
 
             try:
                 Clock.Sleep( 1./framerate )
                 Clock.Tick()
                 
                 if framerate < 1. or Clock.frame % int(framerate) == 0:
-                    info("{:s} {:s}".format(Clock.Str(),str(mode)))
+                    info("{:s} {:s} {:.1f}fps".format(Clock.Str(),str(mode),Clock.fps(prev)))
+                    prev = ( FRAME(), NOW() )
                 
+                tmp = Mask(buf)
                 buf = mode.draw(**params)
-                if buf != prev:
+                if buf != tmp:
                     fluepdot.buffer.write(buf)
                 if preview:
                     printBuffer(str(buf))
@@ -167,7 +167,7 @@ FLAGS = [
     ("C",  "clear",        "clear",             True,    "clear fluepdot?",        None ),
     ("F",  "forever",      "forever",          False,    "run continuously?",      None ),
     ("P",  "preview",      "preview",          False,    "buffer preview on stdout?",      None ),
-    ("f:", "framerate=",   "framerate",           10.,    "fluepdot update interval (f/s)",      lambda x: float(x) ),
+    ("f:", "framerate=",   "framerate",   DEFAULT_FRAMERATE,    "fluepdot update interval (f/s)",      lambda x: float(x) ),
     ("v",  "",      None,                None,    "increase verbosity",     None ),
     ("V",  "",      None,                None,    "display version",        None ),
 ]
@@ -412,7 +412,7 @@ if __name__ == "__main__":
                         except Exception as x:
                             usage(runmode,"invalid argument: {} {}".format(opt,arg))
                     else:
-                        modeparams[p] = True
+                        modeparams[p] ^= True
                     break
             else:
                 usage(runmode,"internal error: option {} not implemented.".format(opt))            
