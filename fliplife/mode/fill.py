@@ -12,7 +12,7 @@ from fliplife.mode import Mode
 from enum import auto
 
     
-class Pattern(Enum):
+class Style(Enum):
     check = auto()
     gauss = auto()
     font = auto()
@@ -24,20 +24,20 @@ class Pattern(Enum):
 class Fill(Mode):
 
 
-    Pattern = Pattern
-    DefaultPattern = Pattern.check
+    Style = Style
+    DefaultStyle = Style.check
     DefaultFont = FONT.font3x5
     
     
-    def start(self,pattern,invert,font,offset,**params):
-        log("start fill with {:s}{:s}".format(str(pattern)," [invert]" if invert else ""))
+    def start(self,style,invert,font,offset,**params):
+        log("start fill with {:s}{:s}".format(str(style)," [invert]" if invert else ""))
 
         self.font = Font(font)
         self.offset = offset
         
         log("before:\n"+str(self.mask))
         
-        msk = self.render(pattern,invert,**params)
+        msk = self.render(style,invert,**params)
         self.mask.addMask(msk)
         log("after:\n"+str(self.mask))
         
@@ -45,33 +45,33 @@ class Fill(Mode):
     
     
 
-    def render(self,pattern,invert,cutoff,**params):
+    def render(self,style,invert,cutoff,**params):
     
         ret = Mask()
         
     
-        if pattern == Pattern.check:
+        if style == Style.check:
             for y in range(FRAMESIZE.h):
                 for x in range(FRAMESIZE.w):
                     if x%2 != y%2:
                         ret[x,y] = True
 
-        elif pattern == Pattern.gauss:
+        elif style == Style.gauss:
             for y in range(FRAMESIZE.h):
                 for x in range(FRAMESIZE.w):
                     if random.gauss(0.,1.) > cutoff:
                         ret[x,y] = True
 
-        elif pattern == Pattern.font:
+        elif style == Style.font:
             fill = self.font.render_repertoire(offset=self.offset,size=self.mask.size())
             self.offset += 1
             ret.addMask(fill)
         
-        elif pattern == Pattern.axis:
+        elif style == Style.axis:
             fill = Axis(self.mask.size())
             ret.addMask(fill)
 
-        elif pattern == Pattern.border:
+        elif style == Style.border:
             fill = Border(self.mask.size())
             ret.addMask(fill)
         
@@ -81,16 +81,9 @@ class Fill(Mode):
         return ret
 
     
-    def draw(self,pattern,invert,**params):
-
+    def draw(self,style,invert,**params):
         self.offset += 1
-
-        self.mask = self.render(pattern,invert,**params)
-#        next = self.render(pattern,invert,**params)
-        
- #       log("from:\n"+str(mask))
- #       log("to:\n"+str(next))
-        
+        self.mask = self.render(style,invert,**params)
         return self.mask
     
 
@@ -98,7 +91,7 @@ class Fill(Mode):
     flags = [
         ("o:", "offset=",      "offset",                  0, "offset",  lambda x: int(x)             ),
         ("c:", "cutoff=",      "cutoff",                0.5, "cutoff",  lambda x: float(x)             ),
-        Mode.FLAG("pattern",DefaultPattern),
+        Mode.FLAG("style",DefaultStyle),
         Mode.FLAG("invert"),
         Mode.FLAG("font",DefaultFont),
     ]        
