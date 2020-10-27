@@ -13,6 +13,9 @@ from dotlife.effects import Morph, Morph2, Axis, Scan
 
 from enum import auto
 
+
+#def debug(foo): pass
+
 class Style(Enum):
     large  = auto()
     small  = auto()
@@ -121,9 +124,11 @@ def humanTimeOfDay(then):
         ret += "Nachts"
     elif  5 <= hour+x <= 10:
         ret += "Morgens"
-    elif 10 <= hour+x <= 18:
+    elif 11 <= hour+x <= 13:
         ret += ""
-    elif 19 <= hour+x <= 23:
+    elif 14 <= hour+x <= 17:
+        ret += ""
+    elif 18 <= hour+x <= 23:
         ret += "Abends"
     elif 24 <= hour+x <= 24:
         ret += "Nachts"
@@ -164,26 +169,26 @@ class Clock():
     
         elif style == Style.split:
             time = now.strftime("%H:%M")
-            spacer = 6 #self.giant.size.w
+            spacer = 0 #self.giant.size.w
             w = size.w - len(time)*(self.giant.size.w+1)
             pos0 = Position( 0  , floor(abs(size.h-self.giant.size.h)/2) )
             text0 = self.giant.render(time)
             ret = ret.addMask(text0,pos=pos0,wrap=True)
 
             wkd = humanWeekday(now).upper() + ", "
-            pos1 = Position(w+spacer, 2)
-            text1 = self.fixed.render(wkd,fixed=True)
+            pos1 = Position(w+spacer, 1)
+            text1 = self.large.render(wkd,fixed=False)
             ret = ret.addMask(text1,pos=pos1,wrap=True)
 
             _,_,d,_,_,_,_,_,_ = now.timetuple()
-            day = "{:d}".format(d)
+            day = "{:2d}".format(d)
             text2 = self.full.render(day,fixed=True)
             pos2 = Position(w+spacer, (size.h-1)-self.full.size.h)
             ret = ret.addMask(text2,pos=pos2,wrap=True)
             
             mon = ". " + humanMonth(now).upper()
-            pos3 = Position(pos2.x + text2.w - 1, size.h - (self.fixed.size.h+1) )
-            text3 = self.fixed.render(mon,fixed=True,space=1)
+            text3 = self.large.render(mon,fixed=False,space=1)
+            pos3 = Position(pos2.x + text2.w - 0, size.h - text3.h + 1)
             ret = ret.addMask(text3,pos=pos3,wrap=True)
 
         
@@ -206,7 +211,7 @@ class Clock():
             pos0 = Position(0,3)
             pos1 = Position(0,9)
             txt0 = humanDate(now)+","
-            txt1 = humanTime(now)+ " " + humanTimeOfDay(now)+"..."
+            txt1 = humanTimeOfDay(now) + (", " if len(humanTimeOfDay(now))>0 else "") + humanTime(now) + "..."
             text0 = self.small.render(txt0.upper(),fixed=False)
             text1 = self.small.render(txt1.upper(),fixed=False)
             ret = ret.addMask(text0,pos=pos0)
@@ -265,15 +270,15 @@ class Clock():
             m0 = int(minute/10)
             m1 = minute%10
     
-            H0 = Mask.Load( Clock.font[ h0%10 ] )
-            H1 = Mask.Load( Clock.font[ h1%10 ] )
-            M0 = Mask.Load( Clock.font[ m0%10 ] )
-            M1 = Mask.Load( Clock.font[ m1%10 ] )
+            H0 = Mask.Load( Clock.dots[ h0%10 ] )
+            H1 = Mask.Load( Clock.dots[ h1%10 ] )
+            M0 = Mask.Load( Clock.dots[ m0%10 ] )
+            M1 = Mask.Load( Clock.dots[ m1%10 ] )
 
             ret.addMask(H0,Position(0,0))
-            ret.addMask(H1,Position(4,0))
-            ret.addMask(M0,Position(0,4))
-            ret.addMask(M1,Position(4,4))
+            ret.addMask(H1,Position(5,0))
+            ret.addMask(M0,Position(0,5))
+            ret.addMask(M1,Position(5,5))
 
     
         return ret
@@ -283,7 +288,7 @@ class Clock():
 
 
 
-    font = [ """
+    font44 = [ """
 [][][][]
 []    []
 []    []
@@ -333,5 +338,92 @@ class Clock():
 []    []
 [][][][]
       []
+"""]
+
+
+    font33 = [
+"""
+[][][]
+[]  []
+[][][]
+""","""
+  []  
+  []  
+  []  
+""", """
+[]    
+  []  
+[][][]
+""","""
+[][][]
+  [][]
+[][][]
+""","""
+[]  []
+[][][]
+    []
+""","""
+[][][]
+  []  
+[][]  
+""","""
+[]    
+[][][]
+[][][]
+""","""
+[][][]
+    []
+    []
+""","""
+[][][]
+[][][]
+[][][]
+""","""
+[][][]
+[][][]
+    []
+"""]    
+
+
+    dots = ["""
+      
+      
+      
+""","""
+      
+  []  
+      
+""","""
+[]    
+      
+    []
+""","""
+    []
+  []  
+[]    
+""","""
+[]  []
+      
+[]  []
+""","""
+[]  []
+  []  
+[]  []
+""","""
+[]  []
+[]  []
+[]  []
+""","""
+[]  []
+[][][]
+[]  []
+""","""
+[][][]
+[]  []
+[][][]
+""","""
+[][][]
+[][][]
+[][][]
 """]
 

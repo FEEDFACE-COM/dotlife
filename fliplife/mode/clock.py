@@ -66,45 +66,39 @@ class Clock(Mode):
 
 
         if self.kuckuck and self.kuckuck.active():
-            count = self.kuckuck.count + 1
+            hour = int(self.kuckuck.repeat/1)
+            count = int(self.kuckuck.count/1) + 1
             ret = Mask()
-            info("kuckuck: "+str(self.kuckuck))
-            idx = count % 2
-
             
-            vader = invader.INVADER.one.Mask(idx).double()
-            cnt = 1
-            msk = Mask(size=Size((4+vader.w)*cnt, vader.h))
-            for c in range(cnt):
-                pos = Position(c*(4+vader.w),0)
-                msk.addMask(vader,pos=pos)
-            ret.addMask(msk)
+            idx = self.kuckuck.count%2
+
+            if 1 <= hour <= 4:
+                vader = invader.INVADER.one.Mask(idx).double()
+                msk = Mask(size=Size((4+vader.w)*hour, vader.h))
+                for c in range(hour):
+                    pos = Position(c*(4+vader.w),0)
+                    msk.addMask(vader,pos=pos)
+                ret.addMask(msk)
+
+            elif 5 <= hour <= 8:
+                vader = invader.INVADER.one.Mask(idx)
+                msk = Mask(size=Size((2+vader.w)*hour, vader.h))
+                for c in range(hour):
+                    pos = Position(c*(2+vader.w),0)
+                    msk.addMask(vader,pos=pos)
+                ret.addMask(msk)
+                
+            elif 9 <= hour <= 12:
+                vader = invader.INVADER.one.Mask(idx)
+                msk = Mask(size=Size((2+vader.w)*ceil(hour/2), 2 * (vader.h)))
+                for c in range(hour):
+                    pos = Position(int(c/2)*(2+vader.w),0)
+                    if c % 2 == 1:
+                        pos.y += vader.h
+                    msk.addMask(vader,pos=pos)
+                ret.addMask(msk)
+
             return ret
-#            if count < 4:
-#                vader = invader.INVADER.one.Mask(idx).double()
-#                msk = Mask(size=Size((4+vader.w)*count, vader.h))
-#                for c in range(count):
-#                    pos = Position(c*(4+vader.w),0)
-#                    msk.addMask(vader,pos=pos)
-#                ret.addMask(msk)
-#            elif count < 7:
-#                vader = invader.INVADER.one.Mask(idx)
-#                msk = Mask(size=Size((2+vader.w)*count, vader.h))
-#                for c in range(count):
-#                    pos = Position(c*(2+vader.w),0)
-#                    msk.addMask(vader,pos=pos)
-#                ret.addMask(msk)
-#            else:
-#                vader = invader.INVADER.one.Mask(idx)
-#                msk = Mask(size=Size((2+vader.w)*ceil(count/2), 2*vader.h))
-#                for c in range(count):
-#                    if c % 2 == 0:
-#                        pos = Position(int(c/2)*(2+vader.w),0)
-#                    else:
-#                        pos = Position(int((c-1)/2)*(2+vader.w),vader.h)
-#                    msk.addMask(vader,pos=pos)
-#                ret.addMask(msk)
-#            return ret
 
     
         hour = datetime.datetime.now(self.timezone).hour
@@ -122,7 +116,7 @@ class Clock(Mode):
             self.step(style,stamp,**params)
             prev = self.mask
             self.mask = self.next
-            return prev
+            return self.draw(style,stamp,cuckoo,**params) # recurse once!
 
 
 
@@ -140,7 +134,7 @@ class Clock(Mode):
                 
                 
             else:
-                debug("to\n"+str(self.next))
+#                debug("to\n"+str(self.next))
                 self.mask = self.next
                 
 

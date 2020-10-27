@@ -78,7 +78,7 @@ def main(runmode, device, nowrite, forever,preview, framerate, speed, **params):
                 Clock.Tick()
                 
                 if framerate < 1. or Clock.frame % int(framerate) == 0:
-                    info("{:s} {:s} {:.1f}fps".format(Clock.Str(),str(mode),Clock.fps(prev_frame)))
+                    info("{:s} {:s} {:.1f}fps".format(Clock.Str(),str(mode),Clock.fps(prev)))
                     prev = ( FRAME(), NOW() )
                     
             
