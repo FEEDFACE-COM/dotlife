@@ -17,14 +17,12 @@ from enum import auto
 #def debug(foo): pass
 
 class Style(Enum):
-    large  = auto()
     small  = auto()
-    double = auto()  
-    stats  = auto()
-    lyric  = auto() 
-    words  = auto()
-    mini   = auto()
+    large  = auto()
     split  = auto()
+    stats  = auto()
+    words  = auto()
+    florid = auto() 
 
 
 
@@ -152,21 +150,29 @@ class Clock():
     def mask(self,now,size=DefaultSize,style=Style.large):
         ret = Mask(size=size)
     
-    
         debug("clock "+now.strftime("%F %T"))
-        if style in [ Style.small, Style.large]:
-            date_time = now.strftime("%F %T")
-            font = self.large
-            if style == Style.small:
-            
-                date_time = now.strftime("%F %T %Z")
-                font = self.fixed   
-            w = size.w - len(date_time)*(font.size.w+1)
-            pos0 = Position( int(ceil(w/2)), floor(abs(size.h-font.size.h)/2) )
-            text = font.render(date_time,fixed=True)
+
+        if style == Style.small:
+            date_time = now.strftime("%F %T %Z")
+            w = size.w - len(date_time)*(self.fixed.size.w+1)
+            pos0 = Position( int(ceil(w/2)), floor(abs(size.h-self.fixed.size.h)/2) )
+            text = self.fixed.render(date_time,fixed=True)
             ret = ret.addMask(text,pos=pos0,wrap=True)
-    
-    
+            return ret
+
+        elif style == Style.large:
+            date = now.strftime("%F")
+            time = now.strftime("%T")
+            w0 = size.w - len(date)*(self.large.size.w+1)
+            w1 = size.w - (len(date)-2)*(self.large.size.w+1)
+            pos0 = Position(int(w0/2),1)
+            pos1 = Position(int(w1/2),8)
+            text = self.large.render(date,fixed=True)
+            ret = ret.addMask(text,pos=pos0)
+            text = self.large.render(time,fixed=True)
+            ret = ret.addMask(text,pos=pos1)
+            return ret
+
         elif style == Style.split:
             time = now.strftime("%H:%M")
             spacer = 0 #self.giant.size.w
@@ -190,33 +196,7 @@ class Clock():
             text3 = self.large.render(mon,fixed=False,space=1)
             pos3 = Position(pos2.x + text2.w - 0, size.h - text3.h + 1)
             ret = ret.addMask(text3,pos=pos3,wrap=True)
-
-        
-    
-    
-        elif style == Style.double:
-            date = now.strftime("%F")
-            time = now.strftime("%T")
-            w0 = size.w - len(date)*(self.large.size.w+1)
-            w1 = size.w - (len(date)-2)*(self.large.size.w+1)
-            pos0 = Position(int(w0/2),1)
-            pos1 = Position(int(w1/2),8)
-            text = self.large.render(date,fixed=True)
-            ret = ret.addMask(text,pos=pos0)
-            text = self.large.render(time,fixed=True)
-            ret = ret.addMask(text,pos=pos1)
-    
-    
-        elif style == Style.lyric:
-            pos0 = Position(0,3)
-            pos1 = Position(0,9)
-            txt0 = humanDate(now)+","
-            txt1 = humanTimeOfDay(now) + (", " if len(humanTimeOfDay(now))>0 else "") + humanTime(now) + "..."
-            text0 = self.small.render(txt0.upper(),fixed=False)
-            text1 = self.small.render(txt1.upper(),fixed=False)
-            ret = ret.addMask(text0,pos=pos0)
-            ret = ret.addMask(text1,pos=pos1)
-            
+            return ret
     
         elif style == Style.words:
             pos0 = Position(0,4)
@@ -226,12 +206,12 @@ class Clock():
             pos0 = Position( 4+int((size.w - text0.w)/2), 4)
             
             ret = ret.addMask(text0,pos=pos0)
-            
+            return ret
     
         elif style == Style.stats:
-            date_time = now.strftime("%F %T")
-            pos0 = Position(0,1)
-            pos1 = Position(0,10)
+            date_time = now.strftime("%F  %T")
+            pos0 = Position(0,2)
+            pos1 = Position(0,9)
             
             start_decade = now.replace(year=(now.year-now.year%10),month=1,day=1,hour=0,minute=0,second=0,microsecond=0)
             start_year   = now.replace(                            month=1,day=1,hour=0,minute=0,second=0,microsecond=0)
@@ -255,175 +235,39 @@ class Clock():
             fraction_month  = (now - start_month).total_seconds() / seconds_month * 100.
             fraction_day    = (now - start_day).total_seconds() / seconds_day * 100.
     
-            detail = "DECADE:{:3.0f}% YEAR:{:3.0f}% MON:{:3.0f}%".format(fraction_decade,fraction_year,fraction_month)
+            decade_name = "Twenties"
+            year_name = "{:d}".format(now.year)
+            month_name = humanMonth(now)
+            wkd_name = humanWeekday(now)
     
-            text = self.large.render(date_time,fixed=True)
-            ret.addMask(text,pos=pos0)
-            text = self.small.render(detail,fixed=False,space=3)
-            ret.addMask(text,pos=pos1)
+            # = "{:}:{:5.1f}%".format(
     
+            str1 = date_time
+            str2 = "DECADE:{:3.0f}% YEAR:{:3.0f}% MON:{:3.0f}%".format(fraction_decade,fraction_year,fraction_month)
+
+            text1 = self.large.render(str1,fixed=True,space=1)
+            ret = ret.addMask(text1,pos=pos0)
+            text2 = self.small.render(str2,fixed=True,space=1)
+            ret = ret.addMask(text2,pos=pos1)
+            return ret
+
+        elif style == Style.florid:
+            pos0 = Position(0,3)
+            pos1 = Position(0,9)
+            txt0 = humanDate(now)+","
+            txt1 = humanTime(now) + (" " if len(humanTimeOfDay(now))>0 else "") + humanTimeOfDay(now) + "..."
+            text0 = self.small.render(txt0.upper(),fixed=False)
+            text1 = self.small.render(txt1.upper(),fixed=False)
+            ret = ret.addMask(text0,pos=pos0)
+            ret = ret.addMask(text1,pos=pos1)
+            return ret
+            
     
-        elif style == Style.mini:
-            _,_,_,hour,minute,_,_,_,_ = now.timetuple()
-            h0 = int(hour / 10)
-            h1 = hour % 10
-            m0 = int(minute/10)
-            m1 = minute%10
+        return Mask(size=size)
     
-            H0 = Mask.Load( Clock.dots[ h0%10 ] )
-            H1 = Mask.Load( Clock.dots[ h1%10 ] )
-            M0 = Mask.Load( Clock.dots[ m0%10 ] )
-            M1 = Mask.Load( Clock.dots[ m1%10 ] )
-
-            ret.addMask(H0,Position(0,0))
-            ret.addMask(H1,Position(5,0))
-            ret.addMask(M0,Position(0,5))
-            ret.addMask(M1,Position(5,5))
-
-    
-        return ret
 
 
 
 
 
-
-    font44 = [ """
-[][][][]
-[]    []
-[]    []
-[][][][]
-""","""
-    []  
-  [][]  
-    []  
-    []  
-""","""
-[][]    
-    [][]
-  []    
-[][][][]
-""","""
-[][][][]
-    [][]
-      []
-[][][][]
-""","""
-[]    []
-[]    []
-[][][][]
-      []
-""","""
-[][][][]
-[]     
-    [][]
-[][]  
-""","""
-[]      
-[][][][]
-[]    []
-[][][][]
-""","""
-[][][][]
-      []
-    []  
-    []  
-""","""
-  [][]
-[][][][]
-[]    []
-[][][][]
-""","""
-[][][][]
-[]    []
-[][][][]
-      []
-"""]
-
-
-    font33 = [
-"""
-[][][]
-[]  []
-[][][]
-""","""
-  []  
-  []  
-  []  
-""", """
-[]    
-  []  
-[][][]
-""","""
-[][][]
-  [][]
-[][][]
-""","""
-[]  []
-[][][]
-    []
-""","""
-[][][]
-  []  
-[][]  
-""","""
-[]    
-[][][]
-[][][]
-""","""
-[][][]
-    []
-    []
-""","""
-[][][]
-[][][]
-[][][]
-""","""
-[][][]
-[][][]
-    []
-"""]    
-
-
-    dots = ["""
-      
-      
-      
-""","""
-      
-  []  
-      
-""","""
-[]    
-      
-    []
-""","""
-    []
-  []  
-[]    
-""","""
-[]  []
-      
-[]  []
-""","""
-[]  []
-  []  
-[]  []
-""","""
-[]  []
-[]  []
-[]  []
-""","""
-[]  []
-[][][]
-[]  []
-""","""
-[][][]
-[]  []
-[][][]
-""","""
-[][][]
-[][][]
-[][][]
-"""]
 

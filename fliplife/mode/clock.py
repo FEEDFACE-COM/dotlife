@@ -123,7 +123,7 @@ class Clock(Mode):
         if self.next != self.mask:
         
         
-            if style in [Clock.Style.small,Clock.Style.large,Clock.Style.double]:
+            if style in [Clock.Style.small,Clock.Style.large]:
                 m = Morph2(self.mask,self.next,steps=1,flipcount=1)
                 debug("to\n"+str(self.next))
                 self.mask = m[1]
@@ -131,8 +131,6 @@ class Clock(Mode):
                 m = Morph2(self.mask,self.next,steps=1,flipcount=2)
                 debug("to\n"+str(self.next))
                 self.mask = m[1]
-                
-                
             else:
 #                debug("to\n"+str(self.next))
                 self.mask = self.next
