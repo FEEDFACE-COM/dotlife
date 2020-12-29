@@ -24,7 +24,7 @@ install: package
 	pip3 install -e .
 
 package: 
-	rm -f ${PACKAGE_NAME}/about.py
+	unlink ${PACKAGE_NAME}/about.py
 	${MAKE} dist/${PACKAGE_PRODUCT}
 
 release:
@@ -42,7 +42,9 @@ info:
 	@${BUILD_RELEASE} && echo "  release:  dist/${PACKAGE_PRODUCT}"; true
 	
 
-
+version:
+	unlink ${PACKAGE_NAME}/about.py
+	${MAKE} ${PACKAGE_NAME}/about.py 
 
 ${PACKAGE_NAME}/about.py:
 	@echo "### Tag Source ${PACKAGE_NAME} ${PACKAGE_VERSION} ###"
