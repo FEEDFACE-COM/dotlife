@@ -12,7 +12,7 @@ DefaultSize = Size(16,16)
 
 class Invader():
 
-    def __init__(self,duration):
+    def __init__(self,duration,count=None,alt=False,species=None):
         self.timers = [
             Timer(duration,fun=self.step),
         ]
@@ -20,16 +20,19 @@ class Invader():
             INVADER.one.Masks(),
             INVADER.two.Masks(),
         ]
+        self.count = count
         self.idx = 0
         self.size = Size(16,10)
+        self.alternate = alt
 
         self.east = True
                 
         debug("invader size is {}".format(self.size))
-        self.start = Position(-self.size.w+2, -2*self.size.h)
-        self.pos = Position(self.start.x,self.start.y)
-#        self.pos = Position(-self.size.w,self.starty)
         
+        self.start = Position(0,0)
+        self.pos = self.start.copy()
+
+
 
     def step(self):
         self.idx += 1
@@ -49,24 +52,48 @@ class Invader():
             self.east ^= True
             self.pos.y += 2
             
+            
         if self.pos.y >= self.start.y + 2*self.size.h:
-            self.pos.y = self.start.y
+            self.pos.y -= 2*self.size.h
+            
+        
 
     def mask(self,size=DefaultSize):
-    
+        margin = 0
         ret = Mask(size=size)
-
-#        import pdb; pdb.set_trace()
-
+        
+        
         cols = math.ceil(size.w / self.size.w) + 1
-        rows = math.ceil(size.h / self.size.h) + 2
-#        debug("{:} rows".format(rows))
-        for r in range(rows):
-            for c in range(cols):
-                s = r % len(self.species)
-                pos = self.pos + Position(c * self.size.w, r * self.size.h)
-                ret.addMask(self.species[s][self.idx], pos=pos)
-            
+        rows = 1
+        
+        
+        if self.count > (size.w / self.size.w):
+            self.count = ceil(size.w / self.size.w)
+        
+        if self.count:
+            cols = self.count
+        
+        
+        bounds = Size(cols * self.size.w,  rows * self.size.h)
+        center = Position( int(size.w/2), int(size.h/2) )
+        
+        
+        pos = self.pos.copy()
+        off = Position()
+        pos.x += size.center().x - bounds.center().x 
+        pos.y += size.center().y - bounds.center().y
+        
+        
+        
+        for c in range(cols):
+            off.x = c * self.size.w
+            ret.addMask( self.species[0][self.idx], pos=pos+off )
+            ret.addMask( self.species[0][self.idx], pos=pos+off+Position(0,-2*self.size.h))
+            if self.alternate:
+                ret.addMask( self.species[1][self.idx], pos=pos+off+Position(0,-1*self.size.h))#            if self.alternate:
+                ret.addMask( self.species[1][self.idx], pos=pos+off+Position(0,+1*self.size.h))#            if self.alternate:
+              
+        
         return ret
 
 

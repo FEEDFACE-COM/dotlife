@@ -11,9 +11,9 @@ from dotlife.invader import INVADER
 class Invader(Mode):
 
 
-    def start(self,species,**params):
-        info("start invader {:}".format(species))
-        self.invader = invader.Invader(self.timer.duration)
+    def start(self,count,alternate,**params):
+        info("start invader{:s}{:s}".format(" ({:d} invaders)".format(count) if count else "" ,"alt" if alternate else ""))
+        self.invader = invader.Invader(self.timer.duration,count,alternate)
         return True
         
     
@@ -22,5 +22,6 @@ class Invader(Mode):
         
     
     flags = [
-        ("i:","invader=","species",INVADER.one,"invader species",lambda x: invader.INVADER[x]),
+        ("c:","count=","count",0,"invader count", lambda x: int(x)),
+        ("A","alt","alternate",False,"alternate rows?", None),
     ]

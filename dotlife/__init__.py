@@ -74,6 +74,9 @@ class Size():
 
     def __add__(self,b):
         return Size(w=self.w+b.w, h=self.h+b.h)
+        
+    def center(self):
+        return Position( int(self.w/2), int(self.h/2) )
 
 DefaultSize = Size(8,8)
 
@@ -92,3 +95,6 @@ class Position():
     def __sub__(self,b):
         return Position(x=self.x-b.x, y=self.y-b.y)
     
+    def copy(self):
+        return Position(x=self.x,y=self.y)
+        

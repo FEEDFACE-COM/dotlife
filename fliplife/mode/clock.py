@@ -143,7 +143,7 @@ class Clock(Mode):
         
     flags = [
         Mode.FLAG("style",DefaultStyle),
-        ("K","cuckoo","cuckoo",True,"cuckoo?", None ),
+        ("K","kuckuck","cuckoo",True,"kuckuck?", None ),
         ("", "stamp=", "stamp", "", "timestamp", None ),
     ]
     
