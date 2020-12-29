@@ -33,7 +33,7 @@ class Invader():
 #        debug("invader size is {}".format(self.size))
 
         self.east = True
-        self.start = Position(0,0)
+        self.start = Position(0,2)
         self.pos = self.start.copy()
 
 
