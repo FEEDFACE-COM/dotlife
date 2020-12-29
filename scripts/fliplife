@@ -25,7 +25,7 @@ from fliplife.fluepdot import Fluepdot
 
 DEFAULT_MODE = MODE.clock
 DEFAULT_FRAMERATE = 1.
-DEFAULT_HOST = "87.193.3.53"
+DEFAULT_HOST = "192.0.2.2"
 
 ## MAIN ########################################################################
 
