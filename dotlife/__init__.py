@@ -75,6 +75,9 @@ class Size():
     def __add__(self,b):
         return Size(w=self.w+b.w, h=self.h+b.h)
         
+    def __mul__(self,x):
+        return Size(w=self.w*x, h=self.h*x)
+        
     def center(self):
         return Position( int(self.w/2), int(self.h/2) )
 

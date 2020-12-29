@@ -12,23 +12,27 @@ DefaultSize = Size(16,16)
 
 class Invader():
 
-    def __init__(self,duration,count=None,alt=False,species=None):
+    def __init__(self,duration,count=None,alt=False,large=False):
         self.timers = [
             Timer(duration,fun=self.step),
         ]
         self.species = [
-            INVADER.one.Masks(),
-            INVADER.two.Masks(),
+            [ ( m.double() if large else m ) for m in INVADER.one.Masks() ],
+            [ ( m.double() if large else m ) for m in INVADER.two.Masks() ],
         ]
+#        for m in self.species[0] + self.species[1]:
+#            debug("{}".format(str(m)))
+
         self.count = count
         self.idx = 0
         self.size = Size(16,10)
+        if large:
+            self.size = self.size * 2
         self.alternate = alt
 
+#        debug("invader size is {}".format(self.size))
+
         self.east = True
-                
-        debug("invader size is {}".format(self.size))
-        
         self.start = Position(0,0)
         self.pos = self.start.copy()
 
