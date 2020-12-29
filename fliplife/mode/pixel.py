@@ -36,6 +36,12 @@ class Pixel(Mode):
         return False
         
     
+    def draw(self,**params):
+        log(str(self.mask))
+        return self.mask
+
+        
+    
     flags = [
         Mode.FLAG("x"),
         Mode.FLAG("y"),

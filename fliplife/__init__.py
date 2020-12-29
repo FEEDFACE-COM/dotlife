@@ -19,25 +19,25 @@ from fliplife.mode import grow, pixel, dots, life, glider, guns, spawn
 from fliplife.mode import flueptext, pipe, scroll, clock, smooth, invader
 
 class MODE(Enum):
-    test      = test.Test
+#    test      = test.Test
     read      = read.Read
     clear     = clear.Clear
     reset     = reset.Reset
     fill      = fill.Fill
     echo      = echo.Echo
-    exec      = exec.Exec
+#    exec      = exec.Exec
     grow      = grow.Grow
-    pixel     = pixel.Pixel
+#    pixel     = pixel.Pixel
     dots      = dots.Dots
     life      = life.Life
-    glider    = glider.Glider
-    guns      = guns.Guns
+#    glider    = glider.Glider
+#    guns      = guns.Guns
     spawn     = spawn.Spawn
     flueptext = flueptext.Flueptext
     pipe      = pipe.Pipe
-    scroll    = scroll.Scroll
+#    scroll    = scroll.Scroll
     clock     = clock.Clock
-    smooth    = smooth.Smooth
+#    smooth    = smooth.Smooth
     invader   = invader.Invader
 
 

@@ -16,6 +16,7 @@ from dotlife.font import Font, FONT
 
 class Pipe(Mode):
         
+    DefaultFont = FONT.font3x5
     
     def start(self,font,**params):
 #        self.fluepdot.rendering.setMode(Fluepdot.Mode.full)
@@ -30,6 +31,9 @@ class Pipe(Mode):
         
 
         if font == FONT.font3x5:        
+            self.pos = [ Position(0,2), Position(0,9) ]
+            self.buffer = [ " ", " " ]
+        elif font == FONT.font5x5:        
             self.pos = [ Position(0,2), Position(0,9) ]
             self.buffer = [ " ", " " ]
         elif font == FONT.font5x7:
@@ -55,7 +59,8 @@ class Pipe(Mode):
                 log("end of file.")
                 break
             debug("read "+line)
-            self.buffer[1] = self.buffer[0]
+            if len(self.buffer) > 1:
+                self.buffer[1] = self.buffer[0]
             self.buffer[0] = line.rstrip()[:30]
             self.draw(**params)
         
@@ -79,6 +84,6 @@ class Pipe(Mode):
         return ret 
         
     flags = [
-        Mode.FLAG("font"),
+        Mode.FLAG("font",DefaultFont),
     ]
         

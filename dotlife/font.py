@@ -38,7 +38,7 @@ class Font:
                 except Error:
                     pass
         except Exception as x:
-            raise Error("font {} broken: {}".format(font.name,str(x)))
+            raise Error("font {} broken: {}".format(font,str(x)))
 
 
     def __str__(self):
