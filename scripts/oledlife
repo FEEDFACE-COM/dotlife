@@ -12,7 +12,7 @@ from dotlife.util import *
 from dotlife.about import NAME, VERSION
 
 from dotlife.time import Clock, FRAME, NOW
-
+from dotlife.hid import HID, HIDError
 
 import oledlife
 from oledlife import MODE
@@ -20,6 +20,7 @@ from oledlife import MODE
 from oledlife import Buffer, FRAMESIZE
 from oledlife.mode import Mode
 from oledlife.paneloled import Paneloled
+
 
 
 DEFAULT_MODE = MODE.fyi
@@ -33,7 +34,7 @@ DEFAULT_DEVICE = "/dev/ttyUSB0"
 
 
 
-def main(runmode, device, nowrite, forever,preview, framerate, speed, **params):
+def main(runmode, device, nowrite, nohid, forever,preview, framerate, speed, **params):
 
     info("oledlife start at {:.2f}fps{:s}".format(framerate," [forever]" if forever else ""))
 
@@ -44,7 +45,16 @@ def main(runmode, device, nowrite, forever,preview, framerate, speed, **params):
     try:
         paneloled = Paneloled(device,nowrite)
     except Error as x:
-        FATAL("fail open paneloled dmx: "+str(x))
+        FATAL("fail init paneloled dmx: "+str(x))
+
+
+    hid = None 
+    if not nohid:
+        try:
+            hid = HID()
+        except Error as x:
+            error("fail init hid: "+str(x))
+
 
     timer = Clock.Timer(1000.*speed,repeat=0)
     buffer = Buffer()
@@ -70,6 +80,7 @@ def main(runmode, device, nowrite, forever,preview, framerate, speed, **params):
             printBuffer(str(buf))
         
 
+
         prev = ( FRAME(), NOW() )
         while run and forever:
         
@@ -87,6 +98,17 @@ def main(runmode, device, nowrite, forever,preview, framerate, speed, **params):
                 
                 if preview:
                     printBuffer(str(buf))
+
+
+                if hid:
+                    try:
+                        r = hid.read()
+                        if r:
+                            debug(str(r))
+                    except HIDError as x:
+                        error("fail read hid: "+str(x))
+                        hid = None
+
 
             except KeyboardInterrupt as x:
                 if pausable():
@@ -204,6 +226,7 @@ FLAGS = [
     ("h",  "help",         None,                      None,    "display help",                                   None ),
     ("S:", "serial=",      "device",        DEFAULT_DEVICE,    "paneloled serial device",                        None ),
     ("W",  "nowrite",      "nowrite",                False,    "no writes to paneloled?",                        None ),
+    ("H",  "nohid",        "nohid",                  False,    "no reads from hid?",                             None),
     ("C",  "clear",        "clear",                   True,    "clear paneloled?",                               None ),
     ("F",  "forever",      "forever",                True,     "run continuously?",                              None ),
     ("P",  "preview",      "preview",                False,    "buffer preview on stdout?",                      None ),
@@ -350,7 +373,7 @@ def usage(mode=None,msg=""):
 def about():
     sys.stderr.write("""\
 oledlife {}
-©2020 FEEDFACE.COM
+©2021 FEEDFACE.COM
 """.format(VERSION) )
     exit(0)
     
