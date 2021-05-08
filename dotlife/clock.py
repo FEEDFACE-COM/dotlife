@@ -22,7 +22,9 @@ class Style(Enum):
     split  = auto()
     stats  = auto()
     words  = auto()
-    florid = auto() 
+    florid = auto()
+    date   = auto() 
+    date2  = auto()
 
 
 
@@ -50,6 +52,10 @@ def humanWeekday(then):
         6: "Sonntag",
     }[weekday%7]
     return ret
+
+def humanDay(then):
+    return then.strftime("%e").strip()
+
 
 def humanMonth(then):
     ret = ""
@@ -281,8 +287,29 @@ class Clock():
             ret = ret.addMask(text0,pos=pos0)
             ret = ret.addMask(text1,pos=pos1)
             return ret
+
+        elif style == Style.date2:
+            pos = Position(0,0)
+            txt = "{:s}, {:s}. {:s}".format(humanWeekday(now),humanDay(now),humanMonth(now))
+            text = self.small.render(txt.upper())
+            ret = ret.addMask(text,pos=None)
+            return ret
             
-    
+            
+        elif style == Style.date:
+            day = self.giant.render(now.strftime("%e."))
+            ret = ret.addMask(day,pos=Position(0,2))
+            
+
+            wkd = self.full.render(humanWeekday(now).upper()+",")
+            x = ret.size().w - wkd.size().w
+            ret = ret.addMask(wkd,pos=Position(x,0))
+
+            mon = self.full.render(humanMonth(now).upper())#+" {:d}".format(now.year) )
+            ret = ret.addMask(mon,pos=Position(30,9))
+            return ret
+            
+            
         return Mask(size=size)
     
 
