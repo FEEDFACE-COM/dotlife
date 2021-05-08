@@ -187,7 +187,7 @@ class Clock():
             ret = ret.addMask(text1,pos=pos1,wrap=True)
 
             _,_,d,_,_,_,_,_,_ = now.timetuple()
-            day = "{:2d}".format(d)
+            day = "{:d}".format(d)
             text2 = self.full.render(day,fixed=True)
             pos2 = Position(w+spacer, (size.h-1)-self.full.size.h)
             ret = ret.addMask(text2,pos=pos2,wrap=True)
