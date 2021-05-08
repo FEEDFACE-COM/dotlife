@@ -20,9 +20,6 @@ from dotlife import invader
 import dotlife.clock
 
 
-import time        
-        
-
 class Clock(Mode):
     
     Style = dotlife.clock.Style
@@ -33,7 +30,7 @@ class Clock(Mode):
         self.fluepdot.rendering.setMode(Fluepdot.Mode.full)
         
         self.clock = dotlife.clock.Clock()
-        self.timezone = datetime.timezone( datetime.timedelta(seconds=-time.timezone) )
+        self.timezone = datetime.datetime.now().astimezone().tzinfo
         
         self.now = datetime.datetime.now(self.timezone)
         if stamp != "":
