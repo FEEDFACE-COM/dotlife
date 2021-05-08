@@ -10,6 +10,10 @@ class Enum(Enum):
         return self.name
 
 
+class Struct: 
+    pass
+
+
 
 from dotlife.about import NAME
 
