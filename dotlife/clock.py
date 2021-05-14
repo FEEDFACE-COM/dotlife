@@ -264,8 +264,11 @@ class Clock():
     
             decade.name = "DECADE"
             year.name = "YEAR"
+            year.name = now.strftime("%Y")
             month.name = "MONTH"
+            month.name = humanMonth(now).upper()[0:3]
             day.name = "DAY"
+            day.name = humanWeekday(now).upper()[0:2] + " " + now.strftime("%e")
             hour.name = "HOUR"
     
     
@@ -279,8 +282,8 @@ class Clock():
             text1 = self.tiny.render(str1,fixed=True,space=4)
             ret = ret.addMask(text1,pos=Position(76,0))
 
-            for s in ( decade, year, month, day ):
-              log("{:16s}  {:.0f}%".format(s.name,s.fraction))
+#            for s in ( decade, year, month, day ):
+#              log("{:16s}  {:.0f}%".format(s.name,s.fraction))
 
             o = 0
             for s in ( decade, year, month, day ):
@@ -290,18 +293,6 @@ class Clock():
                 ret.addMask(frac, pos=Position(o,11))
                 ret.addMask(name, pos=Position(o+x, 5))
                 o += frac.w + 6
-
-
-
-#            ret = ret.addMask(self.small.render(decade.name,fixed=True), pos=Position(4,5))
-#            ret = ret.addMask(self.small.render("{:3.0f}%".format(decade.fraction),fixed=False,space=1), pos=Position(4,11))
-#
-#
-#            ret = ret.addMask(self.small.render(year.name,fixed=True), pos=Position(35,5))
-#            ret = ret.addMask(self.small.render("{:3.0f}%".format(year.fraction),fixed=False,space=1), pos=Position(35,11))
-#
-#            ret = ret.addMask(self.small.render(month.name,fixed=True), pos=Position(50,5))
-#            ret = ret.addMask(self.small.render("{:3.0f}%".format(month.fraction),fixed=False,space=1), pos=Position(50,11))
 
             return ret
 
@@ -376,6 +367,8 @@ class Clock():
 
         elif style == Style.invader:
             hour = int(now.hour)
+            if hour > 12:
+                hour -= 12
             idx = 0
             if int(now.minute) > 30:
               idx = 1
@@ -398,15 +391,15 @@ class Clock():
             elif 9 <= hour <= 12:
                 vader1 = invader.INVADER.one.Mask(idx)
                 vader2 = invader.INVADER.two.Mask(idx)
-                msk1 = Mask(size=Size((2+vader1.w)*ceil(hour/2), 2 * (vader1.h)))
-                msk2 = Mask(size=Size((2+vader1.w)*ceil(hour/2), 2 * (vader2.h)))
+                msk = Mask(size=Size((2+vader1.w)*ceil(hour/2), 2 * (vader1.h)))
                 for c in range(hour):
-                    pos1 = Position(int(c/2)*(2+vader1.w),0)
-                    pos2 = Position(int(c/2)*(2+vader2.w),8)
-                    msk1.addMask(vader1,pos=pos1)
-                    msk2.addMask(vader2,pos=pos2)
-                ret.addMask(msk1)
-                ret.addMask(msk2)
+                    if c % 2 == 0:
+                        pos = Position(int(c/2)*(2+vader1.w),0)
+                        msk.addMask(vader1,pos=pos)
+                    else:
+                        pos = Position(int(c/2)*(2+vader1.w),8)
+                        msk.addMask(vader2,pos=pos)
+                ret.addMask(msk)
                 
             return ret
                 
