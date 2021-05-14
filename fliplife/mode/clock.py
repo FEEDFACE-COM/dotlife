@@ -34,7 +34,10 @@ class Clock(Mode):
         
         self.now = datetime.datetime.now(self.timezone)
         if stamp != "":
-            self.now = datetime.datetime.fromisoformat(stamp)
+            try:
+                self.now = datetime.datetime.fromisoformat(stamp)
+            except ValueError as x:
+                raise Error(str(x))
             self.start = datetime.datetime.now(self.timezone)
         
         
@@ -128,6 +131,10 @@ class Clock(Mode):
                 m = Morph2(self.mask,self.next,steps=1,flipcount=2)
                 debug("to\n"+str(self.next))
                 self.mask = m[1]
+#            elif style in [Clock.Style.unix]:
+#                m = Morph2(self.mask,self.next,steps=1,flipcount=4)
+#                debug("to\n"+str(self.next))
+#                self.mask = m[1]
             else:
 #                debug("to\n"+str(self.next))
                 self.mask = self.next

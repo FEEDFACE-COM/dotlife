@@ -1,6 +1,11 @@
 
 import datetime, dateutil
 
+try:
+    import zoneinfo
+except ModuleNotFoundError:
+    pass
+
 from dotlife import *
 from dotlife.util import *
 from dotlife.math import *
@@ -25,6 +30,9 @@ class Style(Enum):
     florid = auto()
     date   = auto() 
     date2  = auto()
+    unix   = auto()
+    world  = auto()
+    invader= auto()
 
 
 
@@ -151,6 +159,7 @@ class Clock():
         self.large = Font(FONT.font5x5)
         self.full =  Font(FONT.font5x7)
         self.giant = Font(FONT.font10x14)
+        self.tiny  = Font(FONT.font3x4)
 
 
     def mask(self,now,size=DefaultSize,style=Style.large):
@@ -248,7 +257,7 @@ class Clock():
             fraction.hour   = (now - start.hour).total_seconds() / seconds.hour * 100.
    
             name = Struct() 
-            name.decade = "Twenties"
+            name.decade = "20s"
             name.year = "{:d}".format(now.year)
             name.month = humanMonth(now)
             name.wkd= humanWeekday(now)
@@ -256,9 +265,12 @@ class Clock():
             name.hour = now.strftime("%I")
     
     
-            str1 =  now.strftime("%F  %T")
-            str2 = "DECADE:{:3.0f}% YEAR:{:3.0f}% MON:{:3.0f}%".format(fraction.decade,fraction.year,fraction.month)
+            #str1 =  now.strftime("%F  %T")
+            #str2 = "DECADE:{:3.0f}% YEAR:{:3.0f}% MON:{:3.0f}%".format(fraction.decade,fraction.year,fraction.month)
 
+            str1 =  now.strftime(" %Y-%m-%d   %H:%M ")
+            str2 = "{:3s}:{:3.0f}% '{:2s}:{:3.0f}% {:3s}:{:3.0f}% {:2s}:{:3.0f}%".format(name.decade,fraction.decade,name.year[-2:],fraction.year,name.month[0:3].upper(),fraction.month,name.wkd[0:2].upper(),fraction.day)
+            str2 = "{:3s}:{:.0f}% '{:2s}:{:.0f}% {:3s}:{:.0f}% {:2s}:{:.0f}%".format(name.decade,fraction.decade,name.year[-2:],fraction.year,name.month[0:3].upper(),fraction.month,name.wkd[0:2].upper(),fraction.day)
 
             #str1 =  now.strftime("%Y   %m-%d   %H:%M")
             #str2 = "{:3.0f}% {:3.0f}% MON:{:3.0f}%".format(fraction.decade,fraction.year,fraction.month)
@@ -271,7 +283,7 @@ class Clock():
             #str1 = "{:s} {:s} {:9s} {:s}".format(name.wkd[0:2].upper(),name.day,name.month.upper(),name.year)
             #str2 = "{:3.0f}% {:3.0f}% {:3.0f}%".format(fraction.year,fraction.month,100.)
 
-            text1 = self.large.render(str1,fixed=True,space=1)
+            text1 = self.large.render(str1,fixed=True,space=4)
             ret = ret.addMask(text1,pos=pos0)
             text2 = self.small.render(str2,fixed=True,space=1)
             ret = ret.addMask(text2,pos=pos1)
@@ -308,8 +320,80 @@ class Clock():
             mon = self.full.render(humanMonth(now).upper())#+" {:d}".format(now.year) )
             ret = ret.addMask(mon,pos=Position(30,9))
             return ret
+
+        elif style == Style.unix:
+            seconds = "{:08x}".format( int(now.timestamp()) - (int(now.timestamp()) % 0x400 ))
+            unix = self.giant.render('0x'+seconds.upper())
+            ret = ret.addMask(unix)
+            return ret
+
+        elif style == Style.world:
+            localities = [ 'America/Los_Angeles', 'Europe/Berlin', 'Europe/London', 'UTC', 'Asia/Hong_Kong' ]
+            infos = {}
+            for locality in localities:
+                try:
+                    zone = zoneinfo.ZoneInfo(locality)
+                except NameError: # name 'zoneinfo' is not defined
+                    zone = datetime.timezone.utc
+                time = datetime.datetime.now( zone )
+                info = Struct()
+                info.name = time.strftime("%Z")
+                info.time = time.strftime("%H:%M")
+                info.offset = time.strftime("%z")
+                infos[locality] = info
+                debug("{:20s} {:6s} {:6s} {:6s}".format(locality,info.name,info.time,info.offset))
+
+            off = 0
+            for locality in localities:
+                time = self.small.render(infos[locality].time,fixed=True)
+                name = self.small.render(infos[locality].name)
+                offset = self.tiny.render(infos[locality].offset,fixed=True)
+                x = int( (time.w - name.w)/2)
+                ret = ret.addMask(name,pos=Position(off + x,0))
+                ret = ret.addMask(time,pos=Position(off + 0,6))
+                ret = ret.addMask(offset,pos=Position(off + 0,12))
+                off += time.w + 4
+            return ret
             
             
+
+
+        elif style == Style.invader:
+            hour = int(now.hour)
+            idx = 0
+            if int(now.minute) > 30:
+              idx = 1
+            
+            if 1 <= hour <= 4:
+                vader = invader.INVADER.one.Mask(idx).double()
+                msk = Mask(size=Size((4+vader.w)*hour, vader.h))
+                for c in range(hour):
+                    pos = Position(c*(4+vader.w),0)
+                    msk.addMask(vader,pos=pos)
+                ret.addMask(msk)
+            elif 5 <= hour <= 8:
+                vader = invader.INVADER.one.Mask(idx)
+                msk = Mask(size=Size((2+vader.w)*hour, vader.h))
+                for c in range(hour):
+                    pos = Position(c*(2+vader.w),0)
+                    msk.addMask(vader,pos=pos)
+                ret.addMask(msk)
+                
+            elif 9 <= hour <= 12:
+                vader1 = invader.INVADER.one.Mask(idx)
+                vader2 = invader.INVADER.two.Mask(idx)
+                msk1 = Mask(size=Size((2+vader1.w)*ceil(hour/2), 2 * (vader1.h)))
+                msk2 = Mask(size=Size((2+vader1.w)*ceil(hour/2), 2 * (vader2.h)))
+                for c in range(hour):
+                    pos1 = Position(int(c/2)*(2+vader1.w),0)
+                    pos2 = Position(int(c/2)*(2+vader2.w),8)
+                    msk1.addMask(vader1,pos=pos1)
+                    msk2.addMask(vader2,pos=pos2)
+                ret.addMask(msk1)
+                ret.addMask(msk2)
+                
+            return ret
+                
         return Mask(size=size)
     
 

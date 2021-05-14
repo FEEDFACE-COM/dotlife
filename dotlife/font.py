@@ -5,7 +5,7 @@ from dotlife.util import *
 
 from dotlife.mask import Mask
 
-from dotlife.fonts import font3x5, fixed3x5, font5x5, font5x7, font10x14
+from dotlife.fonts import font3x5, fixed3x5, font5x5, font5x7, font10x14, font3x4
 from dotlife.fonts import blinkenlights
 from dotlife.fonts import lifebars, lifedots
 
@@ -19,6 +19,7 @@ class FONT(Enum):
     font5x5        = font5x5
     font5x7        = font5x7
     font10x14      = font10x14
+    font3x4        = font3x4
     blinkenlights  = blinkenlights
     lifebars       = lifebars
     lifedots       = lifedots
@@ -63,7 +64,7 @@ class Font:
         k = offset % len(keys)
         key = keys[k]
         while pos.y + self.size.h <= size.h+1:
-            while pos.x + self.size.w <= size.w:
+            while pos.x + self.size.w < size.w:
                 buf = self.glyph(key)
                 if fixed and buf.w < self.size.w:
                     pass # TODO: add columns to buf                            

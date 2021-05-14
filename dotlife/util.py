@@ -27,7 +27,7 @@ def info(msg): _log(msg,logging.INFO)
 def log(msg): _log(msg,logging.WARNING)
 def usage(msg): _log(msg,logging.ERROR)
 def error(msg): _log(msg,logging.ERROR,"!!ERROR! ")
-def FATAL(msg): _log(msg,logging.CRITICAL,"!!FATAL! "+msg); exit(-2)
+def FATAL(msg): _log(msg,logging.DEBUG,"!!FATAL! "); exit(-2)
 
     
 
