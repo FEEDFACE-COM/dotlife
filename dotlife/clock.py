@@ -224,69 +224,85 @@ class Clock():
             return ret
     
         elif style == Style.stats:
-            pos0 = Position(0,2)
-            pos1 = Position(0,9)
            
-            start = Struct()
-            start.decade = now.replace(year=(now.year-now.year%10),month=1,day=1,hour=0,minute=0,second=0,microsecond=0)
-            start.year  = now.replace(month=1,day=1,hour=0,minute=0,second=0,microsecond=0)
-            start.month = now.replace(day=1,hour=0,minute=0,second=0,microsecond=0)
-            start.day   = now.replace(hour=0,minute=0,second=0,microsecond=0)
-            start.hour  = now.replace(minute=0)
+            decade,year,month,day,hour = Struct(), Struct(), Struct(), Struct(), Struct()
+
+            decade.start = now.replace(year=(now.year-now.year%10),month=1,day=1,hour=0,minute=0,second=0,microsecond=0)
+            year.start   = now.replace(month=1,day=1,hour=0,minute=0,second=0,microsecond=0)
+            month.start  = now.replace(day=1,hour=0,minute=0,second=0,microsecond=0)
+            day.start    = now.replace(hour=0,minute=0,second=0,microsecond=0)
+            hour.start   = now.replace(minute=0)
             
 
-            m = start.month.month+1
-            y = start.month.year
+            m = month.start.month+1
+            y = month.start.year
             if m > 12:
                 m = 1
-                y = start.month.year + 1
-            next_month = start.month.replace(year=y,month=m)
+                y = month.start.year + 1
+            next_month = month.start.replace(year=y,month=m)
            
-            seconds = Struct() 
-            seconds.decade = (start.decade.replace(year=start.decade.year+10) - start.decade).total_seconds()
-            seconds.year   = (start.year.replace(year=start.year.year+1) - start.year).total_seconds()
-            seconds.month  = (next_month - start.month).total_seconds()
-            seconds.day    = datetime.timedelta(days=1).total_seconds()  
-            seconds.hour   = datetime.timedelta(hours=1).total_seconds()
            
-            fraction = Struct() 
-            fraction.decade = (now - start.decade).total_seconds() / seconds.decade * 100.
-            fraction.year   = (now - start.year).total_seconds() / seconds.year * 100.
-            fraction.month  = (now - start.month).total_seconds() / seconds.month * 100.
-            fraction.day    = (now - start.day).total_seconds() / seconds.day * 100.
-            fraction.hour   = (now - start.hour).total_seconds() / seconds.hour * 100.
+            decade.seconds = (decade.start.replace(year=decade.start.year+10) - decade.start).total_seconds()
+            year.seconds   = (year.start.replace(year=year.start.year+1) - year.start).total_seconds()
+            month.seconds  = (next_month - month.start).total_seconds()
+            day.seconds    = datetime.timedelta(days=1).total_seconds()  
+            hour.seconds   = datetime.timedelta(hours=1).total_seconds()
+           
+            decade.fraction = (now - decade.start).total_seconds() / decade.seconds * 100.
+            year.fraction   = (now - year.start).total_seconds() / year.seconds * 100.
+            month.fraction  = (now - month.start).total_seconds() / month.seconds * 100.
+            day.fraction    = (now - day.start).total_seconds() / day.seconds * 100.
+            hour.fraction   = (now - hour.start).total_seconds() / hour.seconds * 100.
    
-            name = Struct() 
-            name.decade = "20s"
-            name.year = "{:d}".format(now.year)
-            name.month = humanMonth(now)
-            name.wkd= humanWeekday(now)
-            name.day = now.strftime("%d.")
-            name.hour = now.strftime("%I")
+            decade.name = "    "
+            year.name = "'"+"{:d}".format(now.year)[-2:]
+#            year.name = "YEAR"
+            month.name = humanMonth(now).upper()[0:]
+            day.name = humanWeekday(now).upper()[0:]
+#            day.name = now.strftime("%d.")
+            hour.name = now.strftime("%I")
+    
+            decade.name = "DECADE"
+            year.name = "YEAR"
+            month.name = "MONTH"
+            day.name = "DAY"
+            hour.name = "HOUR"
     
     
-            #str1 =  now.strftime("%F  %T")
-            #str2 = "DECADE:{:3.0f}% YEAR:{:3.0f}% MON:{:3.0f}%".format(fraction.decade,fraction.year,fraction.month)
+            str0 =  now.strftime("%Y-%m-%d")
+            str1 =  now.strftime("%H:%M%z")
 
-            str1 =  now.strftime(" %Y-%m-%d   %H:%M ")
-            str2 = "{:3s}:{:3.0f}% '{:2s}:{:3.0f}% {:3s}:{:3.0f}% {:2s}:{:3.0f}%".format(name.decade,fraction.decade,name.year[-2:],fraction.year,name.month[0:3].upper(),fraction.month,name.wkd[0:2].upper(),fraction.day)
-            str2 = "{:3s}:{:.0f}% '{:2s}:{:.0f}% {:3s}:{:.0f}% {:2s}:{:.0f}%".format(name.decade,fraction.decade,name.year[-2:],fraction.year,name.month[0:3].upper(),fraction.month,name.wkd[0:2].upper(),fraction.day)
+            pos0 = Position(0,0)
 
-            #str1 =  now.strftime("%Y   %m-%d   %H:%M")
-            #str2 = "{:3.0f}% {:3.0f}% MON:{:3.0f}%".format(fraction.decade,fraction.year,fraction.month)
+            text0 = self.tiny.render(str0,fixed=True,space=4)
+            ret = ret.addMask(text0,pos=Position(0,0))
+            text1 = self.tiny.render(str1,fixed=True,space=4)
+            ret = ret.addMask(text1,pos=Position(76,0))
+
+            for s in ( decade, year, month, day ):
+              log("{:16s}  {:.0f}%".format(s.name,s.fraction))
+
+            o = 0
+            for s in ( decade, year, month, day ):
+                name = self.small.render(s.name,fixed=True)
+                frac = self.large.render("{:3.0f}%".format(s.fraction),fixed=True)
+                x = int( abs(name.w-frac.w)/2)
+                ret.addMask(frac, pos=Position(o,11))
+                ret.addMask(name, pos=Position(o+x, 5))
+                o += frac.w + 6
 
 
-            #str1 = "{:4s}: {:3.0f}%  {:s}: {:3.0f}%".format(name.year,fraction.year,name.month.upper(),fraction.month)
-            #str2 = "{:s}: {:3.0f}% {:s}: {:3.0f}%".format(name.day.upper(),fraction.day,name.hour,fraction.hour)
 
+#            ret = ret.addMask(self.small.render(decade.name,fixed=True), pos=Position(4,5))
+#            ret = ret.addMask(self.small.render("{:3.0f}%".format(decade.fraction),fixed=False,space=1), pos=Position(4,11))
+#
+#
+#            ret = ret.addMask(self.small.render(year.name,fixed=True), pos=Position(35,5))
+#            ret = ret.addMask(self.small.render("{:3.0f}%".format(year.fraction),fixed=False,space=1), pos=Position(35,11))
+#
+#            ret = ret.addMask(self.small.render(month.name,fixed=True), pos=Position(50,5))
+#            ret = ret.addMask(self.small.render("{:3.0f}%".format(month.fraction),fixed=False,space=1), pos=Position(50,11))
 
-            #str1 = "{:s} {:s} {:9s} {:s}".format(name.wkd[0:2].upper(),name.day,name.month.upper(),name.year)
-            #str2 = "{:3.0f}% {:3.0f}% {:3.0f}%".format(fraction.year,fraction.month,100.)
-
-            text1 = self.large.render(str1,fixed=True,space=4)
-            ret = ret.addMask(text1,pos=pos0)
-            text2 = self.small.render(str2,fixed=True,space=1)
-            ret = ret.addMask(text2,pos=pos1)
             return ret
 
         elif style == Style.florid:
