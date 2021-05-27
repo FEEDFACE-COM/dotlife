@@ -330,8 +330,10 @@ class Clock():
 
         elif style == Style.unix:
             seconds = "{:08x}".format( int(now.timestamp()) - (int(now.timestamp()) % 0x400 ))
-            unix = self.giant.render('0x'+seconds.upper())
+            unix = self.full.render('0x'+seconds.upper())
             ret = ret.addMask(unix)
+            ret = ret.addMask( self.tiny.render(now.strftime("%H:%M")),pos=Position(ret.w-18,0))  
+            ret = ret.addMask( self.tiny.render(now.strftime("%m-%d")),pos=Position(0,0)) 
             return ret
 
         elif style == Style.world:
