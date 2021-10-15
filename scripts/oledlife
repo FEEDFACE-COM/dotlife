@@ -231,7 +231,7 @@ FLAGS = [
     ("F",  "forever",      "forever",                True,     "run continuously?",                              None ),
     ("P",  "preview",      "preview",                False,    "buffer preview on stdout?",                      None ),
     ("f:", "framerate=",   "framerate",  DEFAULT_FRAMERATE,    "paneloled update interval (fps)",  lambda x: float(x) ),
-    ("v",  "",             None,                      None,    "increase verbosity",                             None ),
+    ("v",  "",             "verbosity",               None,    "increase verbosity",                             None ),
     ("V",  "",             None,                      None,    "display version",                                None ),
 ]
     
@@ -265,7 +265,7 @@ def usage(mode=None,msg=""):
         for (s,l,p,d,h,_) in FLAGS:
             if not p:
                 continue
-            log("  {:3} {:20}    {}{}".format( "-"+s.rstrip(":")+"," if s else "","--"+l if l else "",h,("" if d in [None,False] else ", default: "+str(d).lower()) ))
+            log("  {:2}{:1} {:20}    {}{}".format( "-"+s.rstrip(":") if s else "", "," if s and l else " ", "--"+l if l else "",h,("" if d in [None,False] else ", default: "+str(d).lower()) ))
         log("")
 
         log("## Modes")
