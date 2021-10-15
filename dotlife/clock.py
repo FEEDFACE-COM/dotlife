@@ -1,5 +1,5 @@
 
-import datetime, dateutil
+import datetime 
 
 try:
     import zoneinfo
@@ -339,7 +339,8 @@ class Clock():
             return ret
 
         elif style == Style.world:
-            localities = [ 'America/Los_Angeles', 'Europe/Berlin', 'Europe/London', 'UTC', 'Asia/Hong_Kong' ]
+            #localities = [ 'America/Los_Angeles', 'Europe/Berlin', 'Europe/London', 'UTC', 'Asia/Hong_Kong' ]
+            localities = [ 'America/Los_Angeles', 'UTC', 'Europe/Berlin', 'Asia/Hong_Kong' , 'Australia/Melbourne' ]
             infos = {}
             for locality in localities:
                 try:
