@@ -264,11 +264,11 @@ class Clock():
     
             decade.name = "DECADE"
             year.name = "YEAR"
-            year.name = now.strftime("%Y")
+            #year.name = now.strftime("%Y")
             month.name = "MONTH"
-            month.name = humanMonth(now).upper()[0:3]
+            #month.name = humanMonth(now).upper()[0:3]
             day.name = "DAY"
-            day.name = humanWeekday(now).upper()[0:2] + " " + now.strftime("%e")
+            #day.name = humanWeekday(now).upper()[0:2] + " " + now.strftime("%e")
             hour.name = "HOUR"
     
     
@@ -285,14 +285,17 @@ class Clock():
 #            for s in ( decade, year, month, day ):
 #              log("{:16s}  {:.0f}%".format(s.name,s.fraction))
 
-            o = 0
+            o = 1
             for s in ( decade, year, month, day ):
                 name = self.small.render(s.name,fixed=True)
-                frac = self.large.render("{:3.0f}%".format(s.fraction),fixed=True)
-                x = int( abs(name.w-frac.w)/2)
+                frac = self.large.render("{:5.1f}%".format(s.fraction),fixed=False,space=4)
+                x = int( (frac.w-name.w)) -1
+                if s == decade:
+                    frac = self.large.render("{:4.1f}%".format(s.fraction),fixed=False,space=4)
+                    x = int( (frac.w-name.w)) -0
                 ret.addMask(frac, pos=Position(o,11))
                 ret.addMask(name, pos=Position(o+x, 5))
-                o += frac.w + 6
+                o += frac.w + 2
 
             return ret
 

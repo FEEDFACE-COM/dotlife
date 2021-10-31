@@ -6,6 +6,9 @@ from dotlife.mask import Mask
 
 class Pattern(Enum):
 
+    def __str__(self):
+        return "pattern p"
+
     def Mask(self,step=0,flip=Flip.noflip):
         if self.name == "none":
             return Mask()

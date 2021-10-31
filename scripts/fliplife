@@ -35,6 +35,7 @@ DEFAULT_HOST = "192.0.2.2"
 def main(runmode, host, speed, clear, forever, nowrite, noread, preview, framerate, **params):
 
     info("fliplife start at {:.2f}fps{:s}".format(framerate," [forever]" if forever else ""))
+    debug("params: "+ " ".join( [ ("!" if v==False else "")+k if type(v)==type(False) else k+"="+str(v) for k,v in params.items() ] ) )
 
     # register signals
     signal.signal(signal.SIGQUIT, quit)
