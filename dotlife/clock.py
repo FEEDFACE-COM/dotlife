@@ -36,114 +36,6 @@ class Style(Enum):
 
 
 
-def humanDate(then):    
-    ret = ""
-    year,month,day,hour,minute,_,weekday,_,_ = then.timetuple()
-
-    ret = "Ein "
-    ret += humanWeekday(then)
-    ret += " im "
-    ret += humanMonth(then)
-    return ret
-
-def humanWeekday(then):
-    ret = ""
-    _,_,_,_,_,_,weekday,_,_ = then.timetuple()
-    ret += {
-        0: "Montag",
-        1: "Dienstag",
-        2: "Mittwoch",
-        3: "Donnerstag",
-        4: "Freitag",
-        5: "Samstag",
-        6: "Sonntag",
-    }[weekday%7]
-    return ret
-
-def humanDay(then):
-    return then.strftime("%e").strip()
-
-
-def humanMonth(then):
-    ret = ""
-    _,month,_,_,_,_,_,_,_ = then.timetuple()
-    ret += {
-         1: "Januar",
-         2: "Februar",
-         3: "März",
-         4: "April",
-         5: "Mai",
-         6: "Juni",
-         7: "Juli",
-         8: "August",
-         9: "September",
-        10: "Oktober",
-        11: "November",
-         0: "Dezember",
-    }[month%12]
-    return ret    
-
-def humanTime(then):
-    ret = ""
-    year,month,day,hour,minute,_,weekday,_,_ = then.timetuple()
-    if 0 <= minute <= 1:
-        ret += ""
-    elif 2 <= minute <= 9:
-            ret += "kurz nach "
-    elif 10 <= minute <= 19:
-        ret += "viertel nach "
-    elif 20 <= minute <= 28:
-        ret += "kurz vor halb "
-    elif 29 <= minute <= 31:
-        ret += "halb "
-    elif 32 <= minute <= 39:
-        ret += "kurz nach halb "
-    elif 40 <= minute <= 49:
-        ret += "viertel vor "
-    elif 50 <= minute <= 58:
-        ret += "kurz vor "
-    elif 59 <= minute <= 60:
-        ret += ""
-    x = 1 if minute >= 20 else 0
-    ret += {
-        1: "Eins",
-        2: "Zwei",
-        3: "Drei",
-        4: "Vier",
-        5: "Fünf",
-        6: "Sechs",
-        7: "Sieben",
-        8: "Acht",
-        9: "Neun",
-       10: "Zehn",
-       11: "Elf",
-        0: "Zwölf",
-    }[(hour+x)%12]
-    if minute <= 1 or minute >= 59:
-        if (hour+x)%12 == 1: #FIXUP:  Eins<>Ein
-            ret = ret[:-1]
-        ret += " Uhr"    
-            
-    return ret
-
-
-def humanTimeOfDay(then):
-    ret = ""
-    _,_,_,hour,minute,_,_,_,_ = then.timetuple()
-    x = 1 if minute >= 29 else 0
-    if 0 <= hour+x <= 4:
-        ret += "Nachts"
-    elif  5 <= hour+x <= 10:
-        ret += "Morgens"
-    elif 11 <= hour+x <= 13:
-        ret += ""
-    elif 14 <= hour+x <= 17:
-        ret += ""
-    elif 18 <= hour+x <= 23:
-        ret += "Abends"
-    elif 24 <= hour+x <= 24:
-        ret += "Nachts"
-    return ret      
 
 
 
@@ -412,11 +304,119 @@ class Clock():
             return ret
                 
         return Mask(size=size)
-    
 
 
+def humanDate(then):
+    ret = ""
+    year, month, day, hour, minute, _, weekday, _, _ = then.timetuple()
+
+    ret = "Ein "
+    ret += humanWeekday(then)
+    ret += " im "
+    ret += humanMonth(then)
+    return ret
 
 
+def humanWeekday(then):
+    ret = ""
+    _, _, _, _, _, _, weekday, _, _ = then.timetuple()
+    ret += {
+        0: "Montag",
+        1: "Dienstag",
+        2: "Mittwoch",
+        3: "Donnerstag",
+        4: "Freitag",
+        5: "Samstag",
+        6: "Sonntag",
+    }[weekday % 7]
+    return ret
+
+
+def humanDay(then):
+    return then.strftime("%e").strip()
+
+
+def humanMonth(then):
+    ret = ""
+    _, month, _, _, _, _, _, _, _ = then.timetuple()
+    ret += {
+        1: "Januar",
+        2: "Februar",
+        3: "März",
+        4: "April",
+        5: "Mai",
+        6: "Juni",
+        7: "Juli",º
+        8: "August",
+        9: "September",
+        10: "Oktober",
+        11: "November",
+        0: "Dezember",
+    }[month % 12]
+    return ret
+
+
+def humanTime(then):
+    ret = ""
+    year, month, day, hour, minute, _, weekday, _, _ = then.timetuple()
+    if 0 <= minute <= 1:
+        ret += ""
+    elif 2 <= minute <= 9:
+        ret += "kurz nach "
+    elif 10 <= minute <= 19:
+        ret += "viertel nach "
+    elif 20 <= minute <= 28:
+        ret += "kurz vor halb "
+    elif 29 <= minute <= 31:
+        ret += "halb "
+    elif 32 <= minute <= 39:
+        ret += "kurz nach halb "
+    elif 40 <= minute <= 49:
+        ret += "viertel vor "
+    elif 50 <= minute <= 58:
+        ret += "kurz vor "
+    elif 59 <= minute <= 60:
+        ret += ""
+    x = 1 if minute >= 20 else 0
+    ret += {
+        1: "Eins",
+        2: "Zwei",
+        3: "Drei",
+        4: "Vier",
+        5: "Fünf",
+        6: "Sechs",
+        7: "Sieben",
+        8: "Acht",
+        9: "Neun",
+        10: "Zehn",
+        11: "Elf",
+        0: "Zwölf",
+    }[(hour + x) % 12]
+    if minute <= 1 or minute >= 59:
+        if (hour + x) % 12 == 1:  # FIXUP:  Eins<>Ein
+            ret = ret[:-1]
+        ret += " Uhr"
+
+    return ret
+
+
+def humanTimeOfDay(then):
+    ret = ""
+    _, _, _, hour, minute, _, _, _, _ = then.timetuple()
+    x = 1 if minute >= 29 else 0
+    if 0 <= hour + x <= 4:
+        ret += "Nachts"
+    elif 5 <= hour + x <= 10:
+        ret += "Morgens"
+    elif 11 <= hour + x <= 13:
+        ret += ""
+    elif 14 <= hour + x <= 17:
+        ret += ""
+    elif 18 <= hour + x <= 23:
+        ret += "Abends"
+    elif 24 <= hour + x <= 24:
+        ret += "Nachts"
+    return ret
 
 
 
