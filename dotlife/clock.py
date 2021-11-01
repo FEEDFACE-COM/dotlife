@@ -34,31 +34,7 @@ class Style(Enum):
     invader= auto()
 
 
-
-
-
-
-
-
-class Clock():
-
-    DefaultSize = Size(115,60)
-
-    def __init__(self):
-        self.small = Font(FONT.font3x5) 
-        self.fixed = Font(FONT.fix3x5)
-        self.large = Font(FONT.font5x5)
-        self.full =  Font(FONT.font5x7)
-        self.giant = Font(FONT.font10x14)
-        self.tiny  = Font(FONT.font3x4)
-
-
-    def mask(self,now,size=DefaultSize,style=Style.large):
-        debug("clock "+now.strftime("%F %T"))
-        ret = Mask(size=size)
-        return ret
-
-    def move_aside(self,now,size=DefaultSize,style=Style.large):
+    def move_aside(self,now,size=DefaultSize):
         if style == Style.small:
             date_time = now.strftime("%F %T %Z")
             w = size.w - len(date_time)*(self.fixed.size.w+1)
@@ -306,6 +282,29 @@ class Clock():
         return Mask(size=size)
 
 
+## clock #################################################################################
+
+class Clock():
+
+    DefaultSize = Size(115,60)
+
+    def __init__(self):
+        self.small = Font(FONT.font3x5)
+        self.fixed = Font(FONT.fix3x5)
+        self.large = Font(FONT.font5x5)
+        self.full =  Font(FONT.font5x7)
+        self.giant = Font(FONT.font10x14)
+        self.tiny  = Font(FONT.font3x4)
+
+
+    def mask(self,now,size=DefaultSize,style=Style.large):
+        debug("clock "+now.strftime("%F %T"))
+        ret = Mask(size=size)
+        return ret
+
+
+## helper functions ######################################################################
+
 def humanDate(then):
     ret = ""
     year, month, day, hour, minute, _, weekday, _, _ = then.timetuple()
@@ -346,7 +345,7 @@ def humanMonth(then):
         4: "April",
         5: "Mai",
         6: "Juni",
-        7: "Juli",º
+        7: "Juli",
         8: "August",
         9: "September",
         10: "Oktober",
