@@ -19,7 +19,6 @@ from dotlife.effects import Morph, Morph2, Axis, Scan
 from enum import auto
 
 
-#def debug(foo): pass
 
 class Style(Enum):
     small  = auto()
@@ -163,10 +162,11 @@ class Clock():
 
 
     def mask(self,now,size=DefaultSize,style=Style.large):
-        ret = Mask(size=size)
-    
         debug("clock "+now.strftime("%F %T"))
+        ret = Mask(size=size)
+        return ret
 
+    def move_aside(self,now,size=DefaultSize,style=Style.large):
         if style == Style.small:
             date_time = now.strftime("%F %T %Z")
             w = size.w - len(date_time)*(self.fixed.size.w+1)
