@@ -21,21 +21,10 @@ from enum import auto
 
 
 class Style(Enum):
-    small  = auto()
-    large  = auto()
-    split  = auto()
-    stats  = auto()
-    words  = auto()
-    florid = auto()
-    date   = auto() 
-    date2  = auto()
-    unix   = auto()
-    world  = auto()
-    invader= auto()
 
-
-    def move_aside(self,now,size=DefaultSize):
-        if style == Style.small:
+    class small():
+        def fun(self,now,size):
+            ret = Mask(size=size)
             date_time = now.strftime("%F %T %Z")
             w = size.w - len(date_time)*(self.fixed.size.w+1)
             pos0 = Position( int(ceil(w/2)), floor(abs(size.h-self.fixed.size.h)/2) )
@@ -43,7 +32,10 @@ class Style(Enum):
             ret = ret.addMask(text,pos=pos0,wrap=True)
             return ret
 
-        elif style == Style.large:
+
+    class large():
+        def fun(self,now,size):
+            ret = Mask(size=size)
             date = now.strftime("%F")
             time = now.strftime("%T")
             w0 = size.w - len(date)*(self.large.size.w+1)
@@ -56,7 +48,9 @@ class Style(Enum):
             ret = ret.addMask(text,pos=pos1)
             return ret
 
-        elif style == Style.split:
+    class split():
+        def fun(self,now,size):
+            ret = Mask(size=size)
             time = now.strftime("%H:%M")
             spacer = 0 #self.giant.size.w
             w = size.w - len(time)*(self.giant.size.w+1)
@@ -80,19 +74,22 @@ class Style(Enum):
             pos3 = Position(pos2.x + text2.w - 0, size.h - text3.h + 1)
             ret = ret.addMask(text3,pos=pos3,wrap=True)
             return ret
-    
-        elif style == Style.words:
+
+    class words():
+        def fun(self,now,size):
+            ret = Mask(size=size)
             pos0 = Position(0,4)
             txt0 = humanTime(now).upper()
-            
+
             text0 = self.full.render(txt0,space=2,fixed=False)
             pos0 = Position( 4+int((size.w - text0.w)/2), 4)
-            
+
             ret = ret.addMask(text0,pos=pos0)
             return ret
-    
-        elif style == Style.stats:
-           
+
+    class stats():
+        def fun(self, now, size):
+            ret = Mask(size=size)
             decade,year,month,day,hour = Struct(), Struct(), Struct(), Struct(), Struct()
 
             decade.start = now.replace(year=(now.year-now.year%10),month=1,day=1,hour=0,minute=0,second=0,microsecond=0)
@@ -167,7 +164,9 @@ class Style(Enum):
 
             return ret
 
-        elif style == Style.florid:
+    class florid():
+        def fun(self, now, size):
+            ret = Mask(size=size)
             pos0 = Position(0,3)
             pos1 = Position(0,9)
             txt0 = humanDate(now)+","
@@ -178,15 +177,18 @@ class Style(Enum):
             ret = ret.addMask(text1,pos=pos1)
             return ret
 
-        elif style == Style.date2:
+    class date2():
+        def fun(self, now, size):
+            ret = Mask(size=size)
             pos = Position(0,0)
             txt = "{:s}, {:s}. {:s}".format(humanWeekday(now),humanDay(now),humanMonth(now))
             text = self.small.render(txt.upper())
             ret = ret.addMask(text,pos=None)
             return ret
             
-            
-        elif style == Style.date:
+    class date():
+        def fun(self, now, size):
+            ret = Mask(size=size)
             day = self.giant.render(now.strftime("%e."))
             ret = ret.addMask(day,pos=Position(0,2))
             
@@ -199,7 +201,9 @@ class Style(Enum):
             ret = ret.addMask(mon,pos=Position(30,9))
             return ret
 
-        elif style == Style.unix:
+    class unix():
+        def fun(self, now, size):
+            ret = Mask(size=size)
             seconds = "{:08x}".format( int(now.timestamp()) - (int(now.timestamp()) % 0x400 ))
             unix = self.full.render('0x'+seconds.upper())
             ret = ret.addMask(unix,pos=Position(28,8))
@@ -209,9 +213,10 @@ class Style(Enum):
 #            ret = ret.addMask( self.tiny.render(now.strftime("%m-%d")),pos=Position(0,0)) 
             return ret
 
-        elif style == Style.world:
-            #localities = [ 'America/Los_Angeles', 'Europe/Berlin', 'Europe/London', 'UTC', 'Asia/Hong_Kong' ]
-            localities = [ 'America/Los_Angeles', 'UTC', 'Europe/Berlin', 'Asia/Hong_Kong' , 'Australia/Melbourne' ]
+    class world():
+        def fun(self, now, size):
+            ret = Mask(size=size)
+            localities = [ 'UTC', 'Europe/London', 'Europe/Berlin', 'Asia/Hong_Kong' , 'Australia/Melbourne' ]
             infos = {}
             for locality in localities:
                 try:
@@ -240,8 +245,9 @@ class Style(Enum):
             
             
 
-
-        elif style == Style.invader:
+    class invader():
+        def fun(self, now, size):
+            ret = Mask(size=size)
             hour = int(now.hour)
             if hour > 12:
                 hour -= 12
@@ -279,7 +285,6 @@ class Style(Enum):
                 
             return ret
                 
-        return Mask(size=size)
 
 
 ## clock #################################################################################
@@ -297,9 +302,9 @@ class Clock():
         self.tiny  = Font(FONT.font3x4)
 
 
-    def mask(self,now,size=DefaultSize,style=Style.large):
+    def mask(self,now,size=DefaultSize,style=Style.small):
         debug("clock "+now.strftime("%F %T"))
-        ret = Mask(size=size)
+        ret = style.value.fun(self,now,size)
         return ret
 
 

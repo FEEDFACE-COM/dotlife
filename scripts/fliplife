@@ -337,7 +337,8 @@ if __name__ == "__main__":
         opts, args = getopt.getopt(sys.argv[1:],short,long)
     except getopt.GetoptError as x:
         usage(None,"{}".format(x))
-    
+
+    # scan verbose flags first
     for opt, arg in opts:
         if opt in ("-h", "--help"):
             usage()
@@ -351,22 +352,24 @@ if __name__ == "__main__":
             verbosity = logging.ERROR
             logger.setLevel(verbosity)
             handler.setLevel(verbosity)
+
+    for opt, arg in opts:
+        if opt in ("-h", "--help", "-V", "--version", "-v", "--verbose", "-q", "--quiet"):
+            continue
+        for (s,l,p,_,h,f) in FLAGS:
+            if s is None and l is None:
+                continue
+            if opt in ["-"+s.rstrip(":"),"--"+l.rstrip("=")]:
+                if s.endswith(":") or l.endswith("="):
+                    try:
+                        params[p] = f(arg) if f else arg
+                    except Exception as x:
+                        usage(None,"invalid argument: {} {}".format(opt,arg))
+                else:
+                    params[p] ^= True
+                break
         else:
-            for (s,l,p,_,h,f) in FLAGS:
-                if s is None and l is None:
-                    continue
-                if opt in ["-"+s.rstrip(":"),"--"+l.rstrip("=")]:
-                    fun = f if f else lambda x: x
-                    if s.endswith(":") or l.endswith("="):
-                        try:
-                            params[p] = fun(arg)
-                        except Exception as x:
-                            usage(None,"invalid argument: {} {}".format(opt,arg))
-                    else:
-                        params[p] ^= True
-                    break
-            else:
-                usage(None,"internal error: option {} not implemented.".format(opt))
+            usage(None,"internal error: option {} not implemented.".format(opt))
 
     for (s,l,n,_,_,_) in FLAGS:
         if n and params[n] is None:
@@ -405,10 +408,9 @@ if __name__ == "__main__":
                 if s == None == l: # unnamed flag
                     continue
                 if opt in ["-"+s.rstrip(":"),"--"+l.rstrip("=")]:
-                    fun = f if f else lambda x: x
                     if s.endswith(":") or l.endswith("="):
                         try:
-                            modeparams[p] = fun(arg)
+                            modeparams[p] = f(arg) if f else arg
                         except Exception as x:
                             usage(runmode,"invalid argument: {} {}".format(opt,arg))
                     else:

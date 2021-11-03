@@ -23,7 +23,7 @@ import dotlife.clock
 class Clock(Mode):
     
     Style = dotlife.clock.Style
-    DefaultStyle = dotlife.clock.Style.large
+    DefaultStyle = dotlife.clock.Style.small
    
     
     def start(self,style,stamp,cuckoo,**params):
@@ -147,8 +147,9 @@ class Clock(Mode):
         
     flags = [
         Mode.FLAG("style",DefaultStyle),
-        ("K","kuckuck","cuckoo",True,"kuckuck?", None ),
-        ("", "stamp=", "stamp", "", "timestamp", None ),
+        ( "m","morph",   "morph", False, "morph?",    None ),
+        ( "K","kuckuck", "cuckoo", True, "kuckuck?",  None ),
+        ( "", "stamp=",  "stamp",    "", "timestamp", None ),
     ]
     
     

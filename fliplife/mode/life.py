@@ -11,8 +11,16 @@ from fliplife.mode import Mode
 from fliplife import Mask, FRAMESIZE
 from fliplife.fluepdot import Fluepdot
 
+class Style(Enum):
+
+    class glider():
+        pass
+
 class Life(Mode):
-    
+
+    DefaultStyle = Style.glider
+
+
     
     def start(self,count,**params):
         info("start life")
@@ -34,5 +42,5 @@ class Life(Mode):
 
     
     flags = [
-        Mode.FLAG("count"),
+        Mode.FLAG("style",DefaultStyle),
     ]
