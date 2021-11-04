@@ -20,7 +20,7 @@ from enum import auto
 
 
 
-class Style(Enum):
+class Style(Enum):   # one class() per style, each has fun()
 
     class small():
         def fun(self,now,size):
@@ -119,48 +119,32 @@ class Style(Enum):
             day.fraction    = (now - day.start).total_seconds() / day.seconds * 100.
             hour.fraction   = (now - hour.start).total_seconds() / hour.seconds * 100.
    
-            decade.name = "    "
-            year.name = "'"+"{:d}".format(now.year)[-2:]
-#            year.name = "YEAR"
-            month.name = humanMonth(now).upper()[0:]
-            day.name = humanWeekday(now).upper()[0:]
-#            day.name = now.strftime("%d.")
-            hour.name = now.strftime("%I")
-    
             decade.name = "DECADE"
             year.name = "YEAR"
-            #year.name = now.strftime("%Y")
             month.name = "MONTH"
-            #month.name = humanMonth(now).upper()[0:3]
             day.name = "DAY"
-            #day.name = humanWeekday(now).upper()[0:2] + " " + now.strftime("%e")
-            hour.name = "HOUR"
-    
-    
-            str0 =  now.strftime("%Y-%m-%d")
-            str1 =  now.strftime("%H:%M%z")
+            hour.name = "xxx"
 
-            pos0 = Position(0,0)
-
-            text0 = self.tiny.render(str0,fixed=True,space=4)
+            # render date + time
+            text0 = self.tiny.render(now.strftime("%Y-%m-%d"),fixed=True,space=4)
             ret = ret.addMask(text0,pos=Position(0,0))
-            text1 = self.tiny.render(str1,fixed=True,space=4)
+            text1 = self.tiny.render(now.strftime("%H:%M%z"),fixed=True,space=4)
             ret = ret.addMask(text1,pos=Position(76,0))
 
 #            for s in ( decade, year, month, day ):
 #              log("{:16s}  {:.0f}%".format(s.name,s.fraction))
 
-            o = 1
+
+            pos = Position(0,11)
+            tmpl = self.large.render("100.0%")
+            print(f"width {tmpl.w} size {size.w} ratio {tmpl.w/size.w}")
             for s in ( decade, year, month, day ):
                 name = self.small.render(s.name,fixed=True)
                 frac = self.large.render("{:5.1f}%".format(s.fraction),fixed=False,space=4)
-                x = int( (frac.w-name.w)) -1
-                if s == decade:
-                    frac = self.large.render("{:4.1f}%".format(s.fraction),fixed=False,space=4)
-                    x = int( (frac.w-name.w)) -0
-                ret.addMask(frac, pos=Position(o,11))
-                ret.addMask(name, pos=Position(o+x, 5))
-                o += frac.w + 2
+                #ret.addMask(tmpl,pos)
+                ret.addMask(frac,pos=pos)
+                ret.addMask(name,pos=Position(pos.x + (tmpl.w - name.w), 5))
+                pos.x += tmpl.w + 1
 
             return ret
 

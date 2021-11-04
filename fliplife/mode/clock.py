@@ -26,7 +26,7 @@ class Clock(Mode):
     DefaultStyle = dotlife.clock.Style.small
    
     
-    def start(self,style,stamp,cuckoo,**params):
+    def start(self,style,stamp,cuckoo,morph,**params):
         self.fluepdot.rendering.setMode(Fluepdot.Mode.full)
         
         self.clock = dotlife.clock.Clock()
@@ -50,7 +50,8 @@ class Clock(Mode):
 
         self.kuckuck = None
         self.hour = self.now.hour
-        
+
+        self.morph = morph
         return True
     
     
@@ -123,20 +124,19 @@ class Clock(Mode):
         if self.next != self.mask:
         
         
-            if style in [Clock.Style.small,Clock.Style.large]:
+            if self.morph and style in [Clock.Style.small,Clock.Style.large]:
                 m = Morph2(self.mask,self.next,steps=1,flipcount=1)
                 debug("to\n"+str(self.next))
                 self.mask = m[1]
-            elif style in [Clock.Style.split]:
+            elif self.morph and style in [Clock.Style.split]:
                 m = Morph2(self.mask,self.next,steps=1,flipcount=2)
                 debug("to\n"+str(self.next))
                 self.mask = m[1]
-#            elif style in [Clock.Style.unix]:
+#            elif self.morph and style in [Clock.Style.unix]:
 #                m = Morph2(self.mask,self.next,steps=1,flipcount=4)
 #                debug("to\n"+str(self.next))
 #                self.mask = m[1]
             else:
-#                debug("to\n"+str(self.next))
                 self.mask = self.next
                 
 
@@ -147,9 +147,9 @@ class Clock(Mode):
         
     flags = [
         Mode.FLAG("style",DefaultStyle),
-        ( "m","morph",   "morph", False, "morph?",    None ),
-        ( "K","kuckuck", "cuckoo", True, "kuckuck?",  None ),
-        ( "", "stamp=",  "stamp",    "", "timestamp", None ),
+        ( "m","morph",   "morph", False,  "morph?",    None ),
+        ( "K","kuckuck", "cuckoo", False, "kuckuck?",  None ),
+        ( "", "stamp=",  "stamp",    "",  "timestamp", None ),
     ]
     
     
