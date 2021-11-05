@@ -307,7 +307,7 @@ def usage(mode=None,msg=""):
 def about():
     sys.stderr.write("""\
 fliplife {}
-©2020 FEEDFACE.COM
+©2021 FEEDFACE.COM
 """.format(VERSION) )
     exit(0)
     

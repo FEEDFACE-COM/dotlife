@@ -10,9 +10,9 @@ from dotlife.mask import Mask
 
 class Life(Mask):
 
-
-    ALIVE = 0x80
-    DEAD = 0x00
+    class Fate(Enum):
+        ALIVE = 0x80
+        DEAD  = 0x00
 
     def __str__(self):
         count = self.sum()
@@ -24,7 +24,7 @@ class Life(Mask):
         return ret
 
 
-    def buffer(self,alive=ALIVE,dead=DEAD):
+    def buffer(self,alive=Fate.ALIVE,dead=Fate.DEAD):
         ret = Buffer()
         ret.addMask( self, light=alive )
         return ret
@@ -39,7 +39,7 @@ class Life(Mask):
 
 
     def step(self):
-        prev = Life(mask=self)
+        prev = Life(mask=self,wrap=self.wrap)
         for x in range(self.w):
             for y in range(self.h):
                 if prev.alive(x,y):
@@ -53,7 +53,7 @@ class Life(Mask):
         pat = pattern.Mask(step,flip)
         if pos == None:
             pos = Position( int(abs(self.w-pat.w)/2), int(abs(self.h-pat.h)/2) )
-        log(f"spawn {str(pattern)} step {step} {str(flip)}")
+        debug(f"spawn {str(pattern)} #{step} {str(flip)} {pos}")
         self.addMask( pat, pos=pos, wrap=True )
         return
 
@@ -85,7 +85,7 @@ class Life(Mask):
         neighbours = 0
         for r in [-1,0,1]:
             for c in [-1,0,1]:
-                if r == 0 == c:
+                if r == 0 == c: # dont count self
                     continue
                 if self[x+c,y+r]:
                     neighbours += 1
@@ -96,8 +96,6 @@ class Life(Mask):
         return False
 
 
-    def addGlider(self,pos=Position(2,2),step=0,direction=Direction.southeast):
-        return self.spawn(Pattern.glider,pos=pos,step=step)
 
 
         
@@ -125,6 +123,32 @@ class Pattern(Enum):
   []  
     []
 [][][]
+"""
+
+    lwss = \
+"""
+  []    []
+[]        
+[]      []
+[][][][]  
+"""
+
+    mwss = \
+"""
+      []    
+  []      []
+[]          
+[]        []
+[][][][][]  
+"""
+
+    hwss = \
+"""
+      [][]    
+  []        []
+[]            
+[]          []
+[][][][][][]  
 """
 
     gun = \
@@ -260,4 +284,49 @@ class Pattern(Enum):
     []        []    
 [][]  [][][][]  [][]
     []        []    
+"""
+
+    schick = \
+"""
+  []    []                              
+[]                                      
+[]      []                              
+[][][][]                  [][]          
+            [][][]          [][]        
+            [][]  [][]            [][][]
+            [][][]          [][]        
+[][][][]                  [][]          
+[]      []                              
+[]                                      
+  []    []                              
+"""
+
+    coe = \
+"""
+                            [][]  
+[]              []  [][][][]  [][]
+[]              []    [][][][][]  
+                []      [][][]    
+    []                            
+    []                            
+                        [][][][]  
+                      []      []  
+                              []  
+                      []    []    
+"""
+
+    fireship = \
+"""
+      [][]                                
+    [][][][]                              
+  [][]  [][]              [][]            
+  [][]    [][]          []  [][][][][]    
+[][][]                    [][]        [][]
+[][][]        [][][]      []              
+[][][]        [][][]      []              
+[][][]                    [][]        [][]
+  [][]    [][]          []  [][][][][]    
+  [][]  [][]              [][]            
+    [][][][]                              
+      [][]                                
 """

@@ -1,7 +1,8 @@
+import enum
 
 from dotlife.util import *
 from enum import auto
-import random
+import random, datetime
 
 LIGHT = 0x1
 DARK  = 0x0
@@ -109,7 +110,10 @@ class Position():
 class Random:
 
     def Init(seed=None):
+        if seed is None:
+            seed = int( datetime.datetime.utcnow().timestamp() )
         random.seed( seed )
+        info(f"seed random {seed:0x}")
 
     def Coin():
         return random.randint(0,1) > 0
@@ -118,7 +122,9 @@ class Random:
         return random.randint(a,b)
 
     def Choice(choices):
-        return random.choice( list( choices.__members__.values() ))
+        if type(choices) == enum.EnumMeta:
+            return random.choice( list( choices.__members__.values() ))
+        return random.choice( choices )
 
     def Position(size,fit=Size(0,0)):
         x = random.randint(0,size.w-fit.w)
