@@ -34,7 +34,8 @@ class Mode(dotlife.mode.Mode):
     
     FLAGS = [
         dotlife.mode.Mode.FLAG("speed"),
+        dotlife.mode.Mode.FLAG("seed"),
     ]
-    
+
     flags = []
 

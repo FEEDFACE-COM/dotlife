@@ -38,7 +38,12 @@ class Mask:
     def size(self):
         return Size(self.w,self.h)
 
-    
+    def sum(self):
+        ret = 0
+        for y in range(self.h):
+            for x in range(self.w):
+                ret += 1 if self[x,y] else 0
+        return ret
 
     def inverse(self):
         ret = Mask(mask=self)

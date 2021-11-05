@@ -1,4 +1,4 @@
-
+import dotlife
 from dotlife import *
 from dotlife.util import *
 from dotlife.buffer import Buffer
@@ -11,12 +11,17 @@ from dotlife.mask import Mask
 class Life(Mask):
 
 
-    
     ALIVE = 0x80
     DEAD = 0x00
 
     def __str__(self):
-        return "gen#{}\n".format(self.gen) + super().__str__()
+        count = self.sum()
+        frac = count / ( self.w * self.h)
+        ret = "life {:d}x{:d} ".format(self.w,self.h)
+        if self.wrap:
+            ret += "[wrap] "
+        ret +=  "gen #{:d} {:2.0f}% alive: {:d}".format(self.gen,frac,count)
+        return ret
 
 
     def buffer(self,alive=ALIVE,dead=DEAD):
@@ -24,13 +29,14 @@ class Life(Mask):
         ret.addMask( self, light=alive )
         return ret
     
-    def __init__(self,size=Size(8,8),gen=0,mask=None):
+    def __init__(self,size=Size(8,8),wrap=False,mask=None):
+        self.gen = 0
+        self.wrap = wrap
         if mask == None:
             super().__init__(size=size)
         else:
             super().__init__(mask=mask)
-        self.gen = gen
-        
+
 
     def step(self):
         prev = Life(mask=self)
@@ -40,18 +46,14 @@ class Life(Mask):
                     self[x,y] = True
                 else:
                     self[x,y] = False
-                
-                
-
-        self.gen = self.gen+1
-#        info(str(self))
+        self.gen += 1
 
 
     def spawn(self,pattern,pos=None,step=0,flip=Flip.noflip):
         pat = pattern.Mask(step,flip)
         if pos == None:
             pos = Position( int(abs(self.w-pat.w)/2), int(abs(self.h-pat.h)/2) )
-        log("spawn " + str(self.name) + "step "+step + ("flip "+str(flip)) if flip!=Flip.noflip else '' )
+        log(f"spawn {str(pattern)} step {step} {str(flip)}")
         self.addMask( pat, pos=pos, wrap=True )
         return
 
@@ -105,7 +107,7 @@ class Pattern(Enum):
     def Mask(self,step=0,flip=Flip.noflip):
         msk = Mask.Load(self.value)
         if step > 0:
-            tmp = Life(size=Size(msk.w*2,msk.h*2))
+            tmp = Life(size=Size(msk.w*2+2+step,msk.h*2+2+step))
             tmp.addMask(msk)
             for s in range(step):
                 tmp.step()
@@ -170,6 +172,12 @@ class Pattern(Enum):
 [][][]
     []
 """
+
+    blinker = \
+"""
+[][][]
+"""
+
 
     block = \
 """

@@ -1,6 +1,7 @@
 
 from dotlife.util import *
 from enum import auto
+import random
 
 LIGHT = 0x1
 DARK  = 0x0
@@ -101,3 +102,26 @@ class Position():
     def copy(self):
         return Position(x=self.x,y=self.y)
         
+##########################################################################
+
+
+
+class Random:
+
+    def Init(seed=None):
+        random.seed( seed )
+
+    def Coin():
+        return random.randint(0,1) > 0
+
+    def Number(a,b):
+        return random.randint(a,b)
+
+    def Choice(choices):
+        return random.choice( list( choices.__members__.values() ))
+
+    def Position(size,fit=Size(0,0)):
+        x = random.randint(0,size.w-fit.w)
+        y = random.randint(0,size.h-fit.h)
+        return Position(x,y)
+

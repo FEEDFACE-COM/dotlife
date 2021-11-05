@@ -32,7 +32,7 @@ DEFAULT_HOST = "192.0.2.2"
 
 
 
-def main(runmode, host, speed, clear, forever, nowrite, noread, preview, framerate, **params):
+def main(runmode, host, speed, clear, forever, nowrite, noread, preview, framerate, seed, **params):
 
     info("fliplife start at {:.2f}fps{:s}".format(framerate," [forever]" if forever else ""))
     debug("params: "+ " ".join( [ ("!" if v==False else "")+k if type(v)==type(False) else k+"="+str(v) for k,v in params.items() ] ) )
@@ -50,6 +50,7 @@ def main(runmode, host, speed, clear, forever, nowrite, noread, preview, framera
     
     
     Clock.Init()
+    Random.Init(seed)
 
     fluepdot = Fluepdot(address,nowrite,noread)
     timer = Clock.Timer(1000.*speed,repeat=0)
@@ -83,7 +84,7 @@ def main(runmode, host, speed, clear, forever, nowrite, noread, preview, framera
                 Clock.Tick()
                 
                 if framerate < 1. or Clock.frame % int(framerate) == 0:
-                    info("{:s} {:s} {:.1f}fps".format(Clock.Str(),str(mode),Clock.fps(prev)))
+                    #debug("{:s} {:s} {:.1f}fps".format(Clock.Str(),str(mode),Clock.fps(prev)))
                     prev = ( FRAME(), NOW() )
                 
                 tmp = Mask(buf)

@@ -34,14 +34,15 @@ DEFAULT_DEVICE = "/dev/ttyUSB0"
 
 
 
-def main(runmode, device, nowrite, nohid, forever,preview, framerate, speed, **params):
+def main(runmode, device, nowrite, nohid, forever,preview, framerate, speed, seed, **params):
 
     info("oledlife start at {:.2f}fps{:s}".format(framerate," [forever]" if forever else ""))
 
     # register signals
     signal.signal(signal.SIGQUIT, quit)
-    
+
     Clock.Init()
+    Random.Init(seed)
     try:
         paneloled = Paneloled(device,nowrite)
     except Error as x:

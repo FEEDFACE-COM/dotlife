@@ -38,7 +38,8 @@ class Mode():
 
     def FLAG(name,default=None):
         (s,l,n,d,h,f) = {
-            # param: short long name default help func #             
+            # param: short long name default help func #
+            "seed":      ("S:", "seed=",        "seed",       None,                    "random seed",                                                        None ),
             "speed":     ("s:", "speed=",       "speed",      1.0,                     "step speed [s]",                                      lambda x : float(x) ),
             "invert":    ("i",  "invert",       "invert",     False,                   "invert pattern?",                                                    None ),
             "count":     ("c:", "count=",       "count",      1,                       "count",                                                 lambda x : int(x) ),
